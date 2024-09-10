@@ -1,0 +1,8 @@
+export const apiCreatePaymentLink = "https://api-merchant.payos.vn/v2/payment-requests"
+export const apiCreatePayment = "payment/createPayment"
+export const apiGetListPaymentHistoryByUser = "payment/getListPaymentHistoryByUser"
+export const apiChangePaymentStatus = "payment/changePaymentStatus"
+export const apiGetListPayment = "payment/getListPayment"
+export const apiExportExcel = "payment/exportExcel"
+export const apiGetListTransfer = "payment/getListTransfer"
+export const apiSendRequestExplanation = "payment/sendRequestExplanation"

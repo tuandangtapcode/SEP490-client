@@ -1,0 +1,1 @@
+export const apiGetListSystemKey = "systemkey/getListSystemkey"

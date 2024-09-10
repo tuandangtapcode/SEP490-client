@@ -1,0 +1,17 @@
+.ant-modal-confirm-btns {
+  border-top: none;
+  display: flex;
+  justify-content: center;
+  padding-top: 20px;
+  gap: 10px;
+}
+
+.ok-button:hover {
+  background: #d71a1a !important;
+  transform: scale(1.05);
+}
+
+.cancel-button:hover {
+  background: #e1e3e5 !important;
+  transform: scale(1.05);
+}

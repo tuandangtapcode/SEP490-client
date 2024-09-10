@@ -1,0 +1,7 @@
+export const apiCreateBlog = "blog/createBlog"
+export const apiUpdateBlog = "blog/updateBlog"
+export const apiGetListBlog = "blog/getListBlog"
+export const apiDeleteBlog = "blog/deleteBlog"
+export const apiFollowBlog = "blog/followBlog"
+export const apiGetBlogDetail = "blog/getDetailBlog"
+export const apiGetListBlogOfTeacher = "blog/getListBlogOfTeacher"

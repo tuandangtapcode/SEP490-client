@@ -1,0 +1,143 @@
+.title-type-1 {
+  font-size: 25px !important;
+  font-weight: 700 !important;
+  color: var(--color-primary-hover) !important;
+  margin: 15px 0 !important;
+}
+
+.title-type-1::after {
+  content: "";
+  width: 10%;
+  height: 4px;
+  background-color: var(--color-primary-hover);
+  position: absolute;
+  left: 50px;
+  bottom: -2px;
+  margin: 0 0 0 -40px;
+}
+
+.title-type-2 {
+  font-size: 20px !important;
+  font-weight: 600 !important;
+  color: var(color-primary-hover) !important;
+  text-align: center !important;
+  margin: 10px 0 !important;
+}
+
+.title-type-3 {
+  font-size: 20px;
+  color: var(--color-primary-hover);
+  font-family: "Inter Bold", sans-serif;
+  border-bottom: 1px solid #ebebeb;
+  position: relative;
+  font-weight: 700;
+  padding: 8px 0;
+  margin-bottom: 8px;
+}
+
+.title-type-3::after {
+  content: "";
+  width: 100%;
+  height: 4px;
+  background-color: var(--color-primary-hover);
+  position: absolute;
+  left: 40px;
+  bottom: -2px;
+  margin: 0 0 0 -40px;
+}
+
+.title-type-4 {
+  font-size: 16px;
+  color: var(--color-primary-hover);
+  font-family: "Inter Bold", sans-serif;
+  border-bottom: 1px solid #ebebeb;
+  position: relative;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.title-type-4::after {
+  content: "";
+  width: 100%;
+  height: 0.5px;
+  background-color: var(--color-primary-hover);
+  position: absolute;
+  left: 40px;
+  bottom: -6px;
+  margin: 0 0 0 -40px;
+}
+
+.title-type-5 {
+  font-size: 25px;
+  font-weight: 700;
+  padding-bottom: 10px;
+  color: transparent;
+  background-image: linear-gradient(to right, #553c9a, #ee4b2b, #00c2cb, #ff7f50, #553c9a);
+  -webkit-background-clip: text;
+  background-clip: text;
+  background-size: 200%;
+  background-position: -200%;
+  animation: animated-gradient 3.7s infinite alternate-reverse;
+
+  &::after {
+    content: '';
+    position: absolute;
+    height: 5px;
+    /* Chiều cao của thanh ngang */
+    background-image: linear-gradient(to right, #553c9a, #ee4b2b, #00c2cb, #ff7f50, #553c9a);
+    /* Màu của thanh ngang */
+  }
+
+  &::after {
+    bottom: 0;
+    /* Đặt thanh ngang trên cùng */
+    left: 0;
+    /* Đặt thanh ngang ở góc trên bên trái */
+    width: 10%;
+    /* Độ dài của thanh ngang trên */
+  }
+}
+
+@keyframes animated-gradient {
+  to {
+    background-position: 200%;
+  }
+}
+
+.white-text {
+  color: white;
+}
+
+.blue-text {
+  color: var(--color-primary);
+}
+
+.gray-text {
+  color: #aaa;
+}
+
+.black-text {
+  color: black;
+}
+
+.burlywood-text {
+  color: burlywood;
+}
+
+.red-text {
+  color: red;
+}
+
+.center-text {
+  text-align: center;
+}
+
+.spaced-text {
+  letter-spacing: 0.3px;
+  line-height: 1.5;
+  white-space: pre-line;
+}
+
+.green-text {
+  color: rgb(29, 185, 84);
+}
