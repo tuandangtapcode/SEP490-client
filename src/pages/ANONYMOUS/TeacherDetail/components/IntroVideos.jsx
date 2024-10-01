@@ -1,7 +1,7 @@
 import { Swiper, SwiperSlide } from "swiper/react"
 import VideoItem from "./VideoItem"
 import { useState } from "react"
-import PreviewVideo from "src/pages/USER/UserProfile/TeacherProfile/modal/PreviewVideo"
+// import PreviewVideo from "src/pages/USER/UserProfile/TeacherProfile/modal/PreviewVideo"
 
 const IntroVideos = ({ teacher }) => {
 
@@ -25,13 +25,13 @@ const IntroVideos = ({ teacher }) => {
         }
       </Swiper>
 
-      {
+      {/* {
         !!openPreviewVideo &&
         <PreviewVideo
           open={openPreviewVideo}
           onCancel={() => setOpenPreviewVideo(false)}
         />
-      }
+      } */}
     </>
   )
 }
