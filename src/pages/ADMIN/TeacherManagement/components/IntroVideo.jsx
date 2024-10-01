@@ -1,7 +1,7 @@
 import { Col, Empty, Row } from "antd"
 import { useState } from "react"
 import VideoItem from "src/pages/ANONYMOUS/TeacherDetail/components/VideoItem"
-import PreviewVideo from "src/pages/USER/UserProfile/TeacherProfile/modal/PreviewVideo"
+// import PreviewVideo from "src/pages/USER/UserProfile/TeacherProfile/modal/PreviewVideo"
 
 const IntroVideo = ({ user }) => {
 
@@ -23,13 +23,13 @@ const IntroVideo = ({ user }) => {
           : <Empty description="Giáo viên không có video giới thiệu" />
       }
 
-      {
+      {/* {
         !!openPreviewVideo &&
         <PreviewVideo
           open={openPreviewVideo}
           onCancel={() => setOpenPreviewVideo(false)}
         />
-      }
+      } */}
     </Row>
   )
 }
