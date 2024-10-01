@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { useDispatch } from 'react-redux'
 import { useNavigate, useRoutes } from 'react-router-dom'
-import { ToastContainer } from 'react-toastify'
+import { toast, ToastContainer } from 'react-toastify'
 import SpinCustom from './components/SpinCustom'
 import { decodeData, getCookie } from './lib/commonFunction'
 import FindTeacher from './pages/ANONYMOUS/FindTeacher'
@@ -9,7 +9,6 @@ import NotFoundPage from './pages/ErrorPage/NotFoundPage'
 import globalSlice from './redux/globalSlice'
 import Router from './routers'
 import CommonService from './services/CommonService'
-import SubjectService from './services/SubjectService'
 import UserService from './services/UserService'
 import socket from './utils/socket'
 import InactiveModal from './components/Layout/components/ModalInactiveAccount'
@@ -45,6 +44,7 @@ const MeetingRoom = React.lazy(() => import("src/pages/ANONYMOUS/MeetingRoom"))
 // USER
 const UserRoutes = React.lazy(() => import("src/pages/USER/UserRoutes"))
 const UserProfile = React.lazy(() => import("src/pages/USER/UserProfile"))
+const SubjectSetting = React.lazy(() => import("src/pages/USER/SubjectSetting"))
 const InboxPage = React.lazy(() => import("src/pages/USER/InboxPage"))
 const BillingPage = React.lazy(() => import("src/pages/USER/BillingPage"))
 const JournalPage = React.lazy(() => import("src/pages/USER/JournalPage"))
@@ -165,6 +165,14 @@ const routes = [
         element: (
           <LazyLoadingComponent>
             <UserProfile />
+          </LazyLoadingComponent>
+        )
+      },
+      {
+        path: Router.SUBJECT_SETTING,
+        element: (
+          <LazyLoadingComponent>
+            <SubjectSetting />
           </LazyLoadingComponent>
         )
       },
@@ -368,15 +376,21 @@ const App = () => {
 
   const getListSystemkey = async () => {
     const res = await CommonService.getListSystemkey()
-    if (res?.isError) return
+    if (!!res?.isError) return toast.error(res?.msg)
     dispatch(globalSlice.actions.setListSystemKey(res?.data))
+  }
+
+  const getProfitPercent = async () => {
+    const res = await CommonService.getProfitPercent()
+    if (!!res?.isError) return toast.error(res?.msg)
+    dispatch(globalSlice.actions.setProfitPercent(res?.data?.Percent))
   }
 
   const getDetailProfile = async () => {
     try {
       setLoading(true)
       const res = await UserService.getDetailProfile()
-      if (res?.isError) return
+      if (!!res?.isError) return toast.error(res?.msg)
       socket.connect()
       socket.emit("add-user-online", res?.data?._id)
       dispatch(globalSlice.actions.setUser(res?.data))
@@ -387,6 +401,7 @@ const App = () => {
 
   useEffect(() => {
     getListSystemkey()
+    getProfitPercent()
     if (!!getCookie("token")) {
       const user = decodeData(getCookie("token"))
       if (!!user.ID) {

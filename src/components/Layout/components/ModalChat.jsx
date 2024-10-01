@@ -14,6 +14,7 @@ import { globalSelector } from "src/redux/selector"
 import ChatBox from "src/components/ChatBox"
 import { ADMIN_ID } from "src/lib/constant"
 import NotificationService from "src/services/NotificationService"
+import { toast } from "react-toastify"
 
 const ModalChat = () => {
 
@@ -35,7 +36,7 @@ const ModalChat = () => {
       const res = await MessageService.getChatWithUser({
         Receiver: ADMIN_ID
       })
-      if (res?.isError) return
+      if (!!res?.isError) return toast.error(res?.msg)
       setChat(res?.data)
     } finally {
       setLoading(false)
@@ -49,7 +50,7 @@ const ModalChat = () => {
         ...pagination,
         ChatID: !!chat ? chat?._id : undefined
       })
-      if (res?.isError) return
+      if (!!res?.isError) return toast.error(res?.msg)
       setMessages(res?.data?.List)
       setTotal(res?.data?.Total)
     } finally {
@@ -83,7 +84,7 @@ const ModalChat = () => {
       }
       const resNotification = NotificationService.createNotification(bodyNotification)
       const result = await Promise.all([resMessage, resNotification])
-      if (result[0]?.isError || result[1]?.isError) return
+      if (!!result[0]?.isError || !!result[1]?.isError) return
       socket.emit("send-message", {
         ...bodyMessage,
         Receiver: ADMIN_ID,

@@ -2,9 +2,8 @@ import { Col, Form, Row, Space } from "antd"
 import { useEffect, useState } from "react"
 import { toast } from "react-toastify"
 import InputCustom from "src/components/InputCustom"
-import ModalCustom from "src/components/Modal/ModalCustom"
+import ModalCustom from "src/components/ModalCustom"
 import ButtonCustom from "src/components/MyButton/ButtonCustom"
-import Notice from "src/components/Notice"
 import SpinCustom from "src/components/SpinCustom"
 import SubjectCateService from "src/services/SubjectCateService"
 import styled from "styled-components"
@@ -41,7 +40,7 @@ const InsertUpdateSubjectCate = ({ open, onCancel, onOk }) => {
       const res = !!open?._id
         ? await SubjectCateService.updateSubjectCate(body)
         : await SubjectCateService.createSubjectCate(body)
-      if (res?.isError) return toast.error(res?.msg)
+      if (!!res?.isError) return toast.error(res?.msg)
       onCancel()
       toast.success(res?.msg)
       onOk()

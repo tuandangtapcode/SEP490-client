@@ -9,6 +9,7 @@ import ChatBox from "src/components/ChatBox"
 import InputCustom from "src/components/InputCustom"
 import { BiSolidSend } from "react-icons/bi"
 import { ChatBoxWrapper, MessageItemStyled } from "./styled"
+import { toast } from "react-toastify"
 
 const InboxManagement = () => {
 
@@ -28,7 +29,7 @@ const InboxManagement = () => {
     try {
       // setLoading(true)
       const res = await MessageService.getChatOfAdmin()
-      if (res?.isError) return
+      if (!!res?.isError) return toast.error(res?.msg)
       setChats(res?.data)
     } finally {
       // setLoading(false)
@@ -39,7 +40,7 @@ const InboxManagement = () => {
     try {
       setLoading(true)
       const res = await MessageService.getMessageByChat(pagination)
-      if (res?.isError) return
+      if (!!res?.isError) return toast.error(res?.msg)
       setMessages(res?.data?.List)
       setTotal(res?.data?.Total)
     } finally {
@@ -50,7 +51,7 @@ const InboxManagement = () => {
   const seenMessage = async (ChatID) => {
     try {
       const res = await MessageService.seenMessage(ChatID)
-      if (res?.isError) return
+      if (!!res?.isError) return toast.error(res?.msg)
       getChatOfAdmin()
     } finally {
       console.log();
@@ -76,7 +77,7 @@ const InboxManagement = () => {
         ChatID: pagination?.ChatID
       }
       const res = await MessageService.createMessage(body)
-      if (res?.isError) return
+      if (!!res?.isError) return toast.error(res?.msg)
       socket.emit("send-message", {
         ...body,
         Receiver: chats?.find(i => i?._id === pagination?.ChatID)?.Members?.find(item => item?._id !== user?._id)?._id,
@@ -120,7 +121,7 @@ const InboxManagement = () => {
     <SpinCustom spinning={loading}>
       <Row gutter={[16, 8]}>
         <Col span={6}>
-          <div className="blue-text fs-18 fw-700 mb-16">Danh sách tin nhắn</div>
+          <div className="primary-text fs-18 fw-700 mb-16">Danh sách tin nhắn</div>
           {
             !!chats?.length ?
               chats?.map((i, idx) =>
@@ -171,7 +172,7 @@ const InboxManagement = () => {
                   marginRight: "8px"
                 }}
               />
-              <div className="blue-text fs-18 fw-700 mb-16">
+              <div className="primary-text fs-18 fw-700 mb-16">
                 {
                   chats?.find(i => i?._id === pagination?.ChatID)?.Members?.find(item => item?._id !== user?._id)?.FullName
                 }

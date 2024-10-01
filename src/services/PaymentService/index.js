@@ -28,11 +28,7 @@ const getDetailPaymentLink = PaymentLinkID => axios.get(`${apiCreatePaymentLink}
 })
 const createPayment = body => http.post(apiCreatePayment, body)
 const getListPaymentHistoryByUser = body => http.post(apiGetListPaymentHistoryByUser, body)
-const changePaymentStatus = body => http.post(apiChangePaymentStatus, body, {
-  headers: {
-    'Content-Type': 'multipart/form-data',
-  }
-})
+const changePaymentStatus = body => http.post(apiChangePaymentStatus, body)
 const getListPayment = body => http.post(apiGetListPayment, body)
 const exportExcel = () => http.get(apiExportExcel, {
   responseType: 'blob',

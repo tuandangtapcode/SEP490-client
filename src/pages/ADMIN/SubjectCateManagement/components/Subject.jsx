@@ -1,16 +1,15 @@
-import { Col, Form, Row, Space } from "antd"
+import { Col, Row, Space } from "antd"
 import { useEffect, useState } from "react"
 import ListIcons from "src/components/ListIcons"
 import CB1 from "src/components/Modal/CB1"
-import ModalCustom from "src/components/Modal/ModalCustom"
 import ButtonCircle from "src/components/MyButton/ButtonCircle"
 import SpinCustom from "src/components/SpinCustom"
 import TableCustom from "src/components/TableCustom"
 import SubjectService from "src/services/SubjectService"
 import InsertUpdateSubject from "./modal/InsertUpdateSubject"
-import Notice from "src/components/Notice"
 import { toast } from "react-toastify"
 import ButtonCustom from "src/components/MyButton/ButtonCustom"
+import ModalCustom from "src/components/ModalCustom"
 
 
 const ModalSubject = ({ open, onCancel }) => {
@@ -30,13 +29,14 @@ const ModalSubject = ({ open, onCancel }) => {
     try {
       setLoading(true)
       const res = await SubjectService.getListSubject(pagination)
-      if (res?.isError) return toast.error(res?.msg)
+      if (!!res?.isError) return toast.error(res?.msg)
       setListData(res?.data?.List)
       setTotal(res?.data?.Total)
     } finally {
       setLoading(false)
     }
   }
+
   useEffect(() => {
     if (pagination.PageSize) getListSubject()
   }, [pagination])
@@ -45,7 +45,7 @@ const ModalSubject = ({ open, onCancel }) => {
     try {
       setLoading(true)
       const res = await SubjectService.deleteSubject(id)
-      if (res?.isError) return toast.error(res?.msg)
+      if (!!res?.isError) return toast.error(res?.msg)
       toast.success(res?.msg)
     } finally {
       setLoading(false)
@@ -116,11 +116,12 @@ const ModalSubject = ({ open, onCancel }) => {
       width={1300}
       open={open}
       onCancel={onCancel}
+      footer={null}
     >
       <SpinCustom spinning={loading}>
         <Row>
           <Col span={24} className="d-flex-sb">
-            <div className="title-type-5">
+            <div className="title-type-1">
               QUẢN LÝ MÔN HỌC THUỘC DANH MỤC {open?.SubjectCateName.toUpperCase()}
             </div>
             <ButtonCustom

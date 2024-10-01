@@ -8,8 +8,19 @@ import IntroVideo from "../components/IntroVideo"
 import { Tabs } from "antd"
 import ButtonCustom from "src/components/MyButton/ButtonCustom"
 import ExperiencesOrEducations from "../components/ExperiencesOrEducations"
+import Certificates from "../components/Certificates"
 
 const ViewProfileTeacher = ({ open, onCancel }) => {
+
+  const listSubjectItem = open?.SubjectSettings?.map(i => ({
+    key: i?._id,
+    label: `Môn học ${i?.Subject?.SubjectName}`,
+    children: (
+      <PatentChildBorder>
+        <Quotes user={open?.SubjectSettings} />
+      </PatentChildBorder>
+    )
+  }))
 
   const items = [
     {
@@ -21,60 +32,7 @@ const ViewProfileTeacher = ({ open, onCancel }) => {
         </PatentChildBorder>
       )
     },
-    {
-      key: 2,
-      label: "Môn học",
-      children: (
-        <PatentChildBorder>
-          <Quotes user={open} />
-        </PatentChildBorder>
-      )
-    },
-    {
-      key: 3,
-      label: "Lịch học và giá",
-      children: (
-        <PatentChildBorder>
-          <TimeTable user={open} />
-        </PatentChildBorder>
-      )
-    },
-    {
-      key: 4,
-      label: "Kinh nghiệm",
-      children: (
-        <PatentChildBorder>
-          <ExperiencesOrEducations user={open} isExperience={true} />
-        </PatentChildBorder>
-      )
-    },
-    {
-      key: 5,
-      label: "Học vấn",
-      children: (
-        <PatentChildBorder>
-          <ExperiencesOrEducations user={open} isExperience={false} />
-        </PatentChildBorder>
-      )
-    },
-    {
-      key: 6,
-      label: "Mô tả thêm",
-      children: (
-        <PatentChildBorder>
-          <Description user={open} />
-        </PatentChildBorder>
-      )
-    },
-    {
-      key: 7,
-      label: "Video intro",
-      children: (
-        <PatentChildBorder>
-          <IntroVideo user={open} />
-        </PatentChildBorder>
-      )
-    }
+    ...listSubjectItem
   ]
 
   return (

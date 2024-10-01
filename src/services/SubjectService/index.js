@@ -6,17 +6,9 @@ import {
   apiUpdateSubject,
 } from "./urls"
 
-const createSubject = body => http.post(apiCreateSubject, body, {
-  headers: {
-    'Content-Type': 'multipart/form-data',
-  }
-})
+const createSubject = body => http.post(apiCreateSubject, body)
 const getListSubject = body => http.post(apiGetListSubject, body)
-const updateSubject = body => http.post(apiUpdateSubject, body, {
-  headers: {
-    'Content-Type': 'multipart/form-data',
-  }
-})
+const updateSubject = body => http.post(apiUpdateSubject, body)
 const deleteSubject = SubjectID => http.get(`${apiDeleteSubject}/${SubjectID}`)
 
 const SubjectService = {

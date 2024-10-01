@@ -11,6 +11,7 @@ import MessageService from "src/services/MessageService"
 import socket from "src/utils/socket"
 import { BiSolidSend } from "react-icons/bi"
 import NotificationService from "src/services/NotificationService"
+import { toast } from "react-toastify"
 
 const ModalSendMessage = ({ open, onCancel, onOk }) => {
 
@@ -29,7 +30,7 @@ const ModalSendMessage = ({ open, onCancel, onOk }) => {
     try {
       setLoading(true)
       const res = await MessageService.getChatWithUser({ Receiver: open?._id })
-      if (res?.isError) return
+      if (!!res?.isError) return toast.error(res?.msg) 
       setChat(res?.data)
     } finally {
       setLoading(false)
@@ -43,7 +44,7 @@ const ModalSendMessage = ({ open, onCancel, onOk }) => {
         ...pagination,
         ChatID: !!chat ? chat?._id : undefined
       })
-      if (res?.isError) return
+      if (!!res?.isError) return toast.error(res?.msg) 
       setMessages(res?.data?.List)
       setTotal(res?.data?.Total)
     } finally {

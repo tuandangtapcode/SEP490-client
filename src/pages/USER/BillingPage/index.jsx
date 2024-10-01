@@ -9,6 +9,7 @@ import { SYSTEM_KEY } from "src/lib/constant"
 import { getListComboKey } from "src/lib/commonFunction"
 import InputCustom from "src/components/InputCustom"
 import { formatMoney } from "src/lib/stringUtils"
+import SpinCustom from "src/components/SpinCustom"
 
 
 const BillingPage = () => {
@@ -32,7 +33,7 @@ const BillingPage = () => {
     try {
       setLoading(true)
       const res = await PaymentService.getListPaymentHistoryByUser(pagination)
-      if (res?.isError) return toast.error(res?.msg)
+      if (!!res?.isError) return toast.error(res?.msg)
       setListData(res?.data?.List)
       setTotal(res?.data?.Total)
     } finally {
@@ -100,78 +101,79 @@ const BillingPage = () => {
   ]
 
   return (
-    <Row gutter={[16, 16]}>
-      <Col span={24} className="mb-5">
-        <div className="title-type-1">
-          LỊCH SỬ GIAO DỊCH
-        </div>
-      </Col>
-      <Col span={14}>
-        <InputCustom
-          type="isSearch"
-          placeholder="Tìm kiếm mã giao dịch..."
-          onSearch={e => setPagination(pre => ({ ...pre, TraddingCode: e }))}
-        />
-      </Col>
-      <Col span={6}>
-        <Select
-          placeholder="Loại thanh toán"
-          onChange={e => setPagination(pre => ({ ...pre, PaymentType: e }))}
-        >
-          {PaymentTypeKey.map(PaymentType => (
-            <Select.Option key={PaymentType._id} value={PaymentType.ParentID}>
-              {PaymentType?.ParentName}
-            </Select.Option>
-          ))}
-        </Select>
-      </Col>
-      <Col span={4}>
-        <Select
-          placeholder="Trạng thái thanh toán"
-          onChange={e => setPagination(pre => ({ ...pre, PaymentStatus: e }))}
-        >
-          {PaymentStatuskey.map(PaymentType => (
-            <Select.Option key={PaymentType._id} value={PaymentType.ParentID}>
-              {PaymentType?.ParentName}
-            </Select.Option>
-          ))}
-        </Select>
-      </Col>
-      <Col span={24} className="mt-16">
-        <TableCustom
-          isPrimary
-          bordered
-          noMrb
-          showPagination
-          loading={loading}
-          dataSource={listData}
-          columns={columns}
-          editableCell
-          sticky={{ offsetHeader: -12 }}
-          textEmpty="Không có dữ liệu"
-          rowKey="key"
-          pagination={
-            !!pagination?.PageSize
-              ? {
-                hideOnSinglePage: total <= 10,
-                current: pagination?.CurrentPage,
-                pageSize: pagination?.PageSize,
-                responsive: true,
-                total,
-                showSizeChanger: total > 10,
-                locale: { items_per_page: "" },
-                onChange: (CurrentPage, PageSize) =>
-                  setPagination(pre => ({
-                    ...pre,
-                    CurrentPage,
-                    PageSize,
-                  })),
-              }
-              : false
-          }
-        />
-      </Col>
-    </Row>
+    <SpinCustom spinning={loading}>
+      <Row gutter={[16, 16]}>
+        <Col span={24} className="mb-5">
+          <div className="title-type-1">
+            LỊCH SỬ GIAO DỊCH
+          </div>
+        </Col>
+        <Col span={14}>
+          <InputCustom
+            type="isSearch"
+            placeholder="Tìm kiếm mã giao dịch..."
+            onSearch={e => setPagination(pre => ({ ...pre, TraddingCode: e }))}
+          />
+        </Col>
+        <Col span={6}>
+          <Select
+            placeholder="Loại thanh toán"
+            onChange={e => setPagination(pre => ({ ...pre, PaymentType: e }))}
+          >
+            {PaymentTypeKey.map(PaymentType => (
+              <Select.Option key={PaymentType._id} value={PaymentType.ParentID}>
+                {PaymentType?.ParentName}
+              </Select.Option>
+            ))}
+          </Select>
+        </Col>
+        <Col span={4}>
+          <Select
+            placeholder="Trạng thái thanh toán"
+            onChange={e => setPagination(pre => ({ ...pre, PaymentStatus: e }))}
+          >
+            {PaymentStatuskey.map(PaymentType => (
+              <Select.Option key={PaymentType._id} value={PaymentType.ParentID}>
+                {PaymentType?.ParentName}
+              </Select.Option>
+            ))}
+          </Select>
+        </Col>
+        <Col span={24} className="mt-16">
+          <TableCustom
+            isPrimary
+            bordered
+            noMrb
+            showPagination
+            dataSource={listData}
+            columns={columns}
+            editableCell
+            sticky={{ offsetHeader: -12 }}
+            textEmpty="Không có dữ liệu"
+            rowKey="key"
+            pagination={
+              !!pagination?.PageSize
+                ? {
+                  hideOnSinglePage: total <= 10,
+                  current: pagination?.CurrentPage,
+                  pageSize: pagination?.PageSize,
+                  responsive: true,
+                  total,
+                  showSizeChanger: total > 10,
+                  locale: { items_per_page: "" },
+                  onChange: (CurrentPage, PageSize) =>
+                    setPagination(pre => ({
+                      ...pre,
+                      CurrentPage,
+                      PageSize,
+                    })),
+                }
+                : false
+            }
+          />
+        </Col>
+      </Row>
+    </SpinCustom>
   )
 }
 

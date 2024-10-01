@@ -1,5 +1,6 @@
 import { Badge } from "antd"
 import styled from "styled-components"
+import BackGroundImage from "/background.jpg"
 
 export const LayoutStyled = styled.div`
 height: 100vh;
@@ -10,6 +11,7 @@ justify-content: space-between;
 
 export const ContentContainerStyled = styled.div`
  /* background-color: #dff3fe; */
+ flex-grow: 1;
 `
 
 export const ContentStyled = styled.div`
@@ -17,15 +19,12 @@ export const ContentStyled = styled.div`
   margin: auto;
 `
 
-export const FooterStyled = styled.div`
-  /* width: 80%;
-  margin: auto; */
-  /* box-shadow: rgba(0, 0, 0, 0.45) -20px 25px 20px 0px; */
-  background-image: linear-gradient(90deg,rgba(27,177,148,.036),rgba(29,183,194,.036) 101.24%);
-`
 export const HeaderContainerStyled = styled.div`
-  min-height: 64px;
-  box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+  box-shadow: rgba(183, 189, 195, 0.2) 0px 8px 24px;
+  background-image: ${props => props.isHome ? `url(${BackGroundImage})` : "none"};
+  background-size: cover;
+  height: ${props => props.isHome ? "850px" : "auto"};
+  margin-bottom: 30px;
 `
 
 export const HeaderStyled = styled.div`
@@ -35,7 +34,6 @@ export const HeaderStyled = styled.div`
     border-bottom: none !important;
   }
 `
-
 export const BadgeStyled = styled(Badge)`
   .ant-badge,
   .ant-badge-count {
@@ -48,11 +46,15 @@ export const BadgeStyled = styled(Badge)`
 `
 
 export const FooterContainer = styled.div`
- width: 80%;
-  margin: auto;
-  padding: 50px 20px;
-  background-color: #ffffff;
+  background-color: #13253F;
+  margin-top: 45px;
 `
+export const FooterStyled = styled.div`
+  width: 80%;
+  margin: auto;
+  padding: 30px 20px;
+`
+
 export const ChatBoxContainerStyled = styled.div`
   border-top-right-radius: 8px;
   background-color: white;

@@ -40,6 +40,14 @@
   @include className(#EB5757, transparent, white, #EB5757, transparent, white)
 }
 
+.yellow-btn {
+  @include className(var(--color-yellow), transparent, black, var(--color-yellow-hover), transparent, black)
+}
+
+.transparent-btn {
+  @include className(transparent, transparent, black, transparent, transparent, black)
+}
+
 .submit-btn {
   font-weight: 600 !important;
   border-radius: 40px !important;
@@ -49,16 +57,14 @@
 
 .medium-size {
   font-size: 17px !important;
-  width: 135px !important;
   height: 40px !important;
-  padding: 0 0 1px 0 !important;
+  padding: 0 12px 1px 12px !important;
   border-radius: 25px !important;
 }
 
 .big-size {
   font-size: 17px !important;
-  width: 150px !important;
   height: 45px !important;
-  padding: 0 0 1px 0 !important;
+  padding: 0 12px 1px 12px !important;
   border-radius: 25px !important;
 }
