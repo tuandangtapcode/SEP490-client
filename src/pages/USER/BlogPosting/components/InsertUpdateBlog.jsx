@@ -7,6 +7,7 @@ import ButtonCustom from "src/components/MyButton/ButtonCustom"
 import SpinCustom from "src/components/SpinCustom"
 import { RenderTiny } from "src/components/TinyEditer"
 import BlogService from "src/services/BlogService"
+import FileService from "src/services/FileService"
 import styled from "styled-components"
 
 const StyleModal = styled.div`
@@ -17,6 +18,7 @@ const StyleModal = styled.div`
 `
 
 const InsertUpdateBlog = ({ open, onCancel, onOk }) => {
+
   const [form] = Form.useForm()
   const [preview, setPreview] = useState()
   const [loading, setLoading] = useState(false)
@@ -42,17 +44,21 @@ const InsertUpdateBlog = ({ open, onCancel, onOk }) => {
     try {
       setLoading(true)
       const values = await form.validateFields()
+      const resFile = await FileService.uploadFileSingle({
+        FileSingle: values?.image?.file
+      })
+      if (resFile?.isError) return
       const body = {
         BlogID: !!open?._id ? open?._id : undefined,
         Title: values?.Title,
         Description: values?.Description,
-        Avatar: values?.image?.file,
+        Avatar: resFile?.data,
         Content: values?.Content,
       }
       const res = !!open?._id
         ? await BlogService.updateBlog(body)
         : await BlogService.createBlog(body)
-      if (res?.isError) return toast.error(res?.msg)
+      if (!!res?.isError) return toast.error(res?.msg)
       onCancel()
       toast.success(res?.msg)
       onOk()

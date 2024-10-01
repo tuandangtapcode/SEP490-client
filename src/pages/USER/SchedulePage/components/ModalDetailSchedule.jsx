@@ -17,7 +17,13 @@ import ModalReportMentor from "./ModalReportMentor"
 import ModalChangeTimetable from "./ModalChangeTimetable"
 import { saveAs } from "file-saver"
 
-const ModalDetailSchedule = ({ open, onCancel, buttonShow, getTimeTable }) => {
+const ModalDetailSchedule = ({
+  open,
+  onCancel,
+  buttonShow,
+  getTimeTable,
+  setOpenModalDetailSchedule
+}) => {
 
   const navigate = useNavigate()
   const { listSystemKey } = useSelector(globalSelector)
@@ -29,7 +35,7 @@ const ModalDetailSchedule = ({ open, onCancel, buttonShow, getTimeTable }) => {
     try {
       setLoading(true)
       const res = await TimeTableService.attendanceTimeTable(open?._id)
-      if (res?.isError) return
+      if (!!res?.isError) return toast.error(res?.msg)
       toast.success(res?.msg)
       onCancel()
     } finally {
@@ -40,6 +46,7 @@ const ModalDetailSchedule = ({ open, onCancel, buttonShow, getTimeTable }) => {
   const endTime = new Date(open?.EndTime)
   const endTimePlus24h = new Date(endTime?.getTime() + 24 * 60 * 60 * 1000)
   const currentTime = new Date()
+
 
   return (
     <ModalCustom
@@ -61,7 +68,8 @@ const ModalDetailSchedule = ({ open, onCancel, buttonShow, getTimeTable }) => {
               <ButtonCustom
                 loading={loading}
                 disabled={
-                  (dayjs(open?.StartTime).format("DD/MM/YYYY HH: ss") !== dayjs(Date.now).format("DD/MM/YYYY HH: ss") ||
+                  (new Date() < new Date(open?.StartTime) ||
+                    new Date() > new Date(open?.EndTime) ||
                     !!open?.Status)
                     ? true : false
                 }
@@ -92,7 +100,7 @@ const ModalDetailSchedule = ({ open, onCancel, buttonShow, getTimeTable }) => {
             <div>Ngày học:</div>
           </Col>
           <Col span={17}>
-            <div>{dayjs(open?.DateAt).format("dddd DD/MM/YYYY")}</div>
+            <div>{dayjs(open?.DateAt).startOf("day").format("dddd DD/MM/YYYY")}</div>
           </Col>
           <Col span={2} className="d-flex-end">
             {currentTime < endTimePlus24h &&
@@ -119,7 +127,7 @@ const ModalDetailSchedule = ({ open, onCancel, buttonShow, getTimeTable }) => {
                   navigate(`${Router.GIAO_VIEN}/${open?.Teacher?._id}${Router.MON_HOC}/${open?.Subject?._id}`)
                 }
               }}
-              className={!buttonShow?.isAttendance ? "blue-text cursor-pointer" : ""}
+              className={!buttonShow?.isAttendance ? "primary-text cursor-pointer" : ""}
             >
               {open[!buttonShow?.isAttendance ? "Teacher" : "Student"]?.FullName}
             </div>
@@ -142,21 +150,25 @@ const ModalDetailSchedule = ({ open, onCancel, buttonShow, getTimeTable }) => {
             </div>
           </Col>
           {
-            !!open?.Document &&
+            !!open?.Documents?.length &&
             <>
-              <Col span={5}>
+              <Col span={25}>
                 <div>Tài liệu:</div>
               </Col>
-              <Col span={19}>
-                <div
-                  className="blue-text cursor-pointer"
-                  onClick={() => {
-                    saveAs(open?.Document?.DocPath, open?.Document?.DocName)
-                  }}
-                >
-                  {open?.Document?.DocName}
-                </div>
-              </Col>
+              {
+                open?.Documents?.map((i, idx) =>
+                  <Col key={idx} span={24}>
+                    <div
+                      className="primary-text cursor-pointer"
+                      onClick={() => {
+                        saveAs(i?.DocPath, i?.DocName)
+                      }}
+                    >
+                      {i?.DocName}
+                    </div>
+                  </Col>
+                )
+              }
             </>
           }
         </Row>
@@ -177,6 +189,7 @@ const ModalDetailSchedule = ({ open, onCancel, buttonShow, getTimeTable }) => {
           onCancel={() => setOpenModalChangeTimetable(false)}
           onCancelModalDetail={() => onCancel()}
           getTimeTable={getTimeTable}
+          setOpenModalDetailSchedule={setOpenModalDetailSchedule}
         />
       }
 

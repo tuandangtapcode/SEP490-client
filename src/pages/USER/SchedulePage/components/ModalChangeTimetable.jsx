@@ -6,23 +6,22 @@ import ButtonCustom from "src/components/MyButton/ButtonCustom"
 import dayjs from "dayjs"
 import TimeTableService from "src/services/TimeTableService"
 import Notice from "src/components/Notice"
-
-const normFile = e => {
-  if (Array.isArray(e)) {
-    return e
-  }
-  return e?.fileList
-}
+import { normFile } from "src/lib/fileUtils"
+import { toast } from "react-toastify"
+import FileService from "src/services/FileService"
+import { disabledBeforeDate } from "src/lib/dateUtils"
 
 const ModalChangeTimetable = ({
   open,
   onCancel,
   getTimeTable,
-  onCancelModalDetail
+  onCancelModalDetail,
+  setOpenModalDetailSchedule
 }) => {
 
   const [form] = Form.useForm()
   const [loading, setLoading] = useState(false)
+  const [documents, setDocuments] = useState([])
 
   useEffect(() => {
     if (!!open?._id) {
@@ -30,15 +29,16 @@ const ModalChangeTimetable = ({
         ...open,
         DateAt: dayjs(open?.DateAt),
         Time: [dayjs(open?.StartTime), dayjs(open?.EndTime)],
-        File: !!open?.Document
-          ? [{
-            url: open?.Document?.DocPath,
-            name: open?.Document?.DocName,
-          }]
-          : []
+        Files: open?.Documents?.map(i => ({
+          url: i?.DocPath,
+          name: i?.DocName,
+          _id: i?._id
+        }))
       })
+      setDocuments(open?.Documents)
     }
   }, [open])
+
 
   const handleBeforeUpload = async (file) => {
     const isAllowedType = file.type.includes("application")
@@ -51,13 +51,20 @@ const ModalChangeTimetable = ({
   const handleUpdateTimetable = async () => {
     try {
       setLoading(true)
+      let documentResponse = []
       const values = await form.validateFields()
-      console.log(values);
       if (dayjs(values?.Time[1]).diff(dayjs(values?.Time[0]), "minutes") < 90) {
         return Notice({
           msg: "Thời gian 1 buổi học không được dưới 90 phút",
           isSuccess: false
         })
+      }
+      if (!!values?.Files?.length) {
+        const resFile = await FileService.uploadDocumentist({
+          DocumentList: values?.Files?.map(i => i?.originFileObj)
+        })
+        if (resFile?.isError) return toast.error(resFile?.msg)
+        documentResponse = resFile?.data
       }
       const dayGap = dayjs(values?.DateAt).startOf("days").diff(dayjs(values?.Time[0]).startOf("days"), "days")
       const res = await TimeTableService.updateTimeTable({
@@ -65,12 +72,15 @@ const ModalChangeTimetable = ({
         DateAt: values?.DateAt,
         StartTime: dayjs(values?.Time[0]).add(dayGap, "days"),
         EndTime: dayjs(values?.Time[1]).add(dayGap, "days"),
-        Document: values?.File[0]?.originFileObj
+        Documents: [
+          ...documents,
+          ...documentResponse
+        ]
       })
-      if (res?.isError) return
+      if (!!res?.isError) return toast.warning(res?.msg)
+      toast.success(res?.msg)
       getTimeTable()
       onCancel()
-      onCancelModalDetail()
     } finally {
       setLoading(false)
     }
@@ -117,9 +127,7 @@ const ModalChangeTimetable = ({
                 style={{ width: "100%" }}
                 placeholder="Chọn ngày học"
                 format="dddd DD/MM/YYYY"
-                disabledDate={current =>
-                  current && current < dayjs().startOf("day")
-                }
+                disabledDate={current => { disabledBeforeDate(current) }}
               />
             </Form.Item>
           </Col>
@@ -145,17 +153,23 @@ const ModalChangeTimetable = ({
           </Col>
           <Col span={17}>
             <Form.Item
-              name="File"
+              name="Files"
               valuePropName="fileList"
               getValueFromEvent={normFile}
             >
               <Upload
                 style={{ width: '100%' }}
                 accept=".doc, .docx, .pdf, .xls, .xlsx"
+                className="pointer"
                 beforeUpload={file => handleBeforeUpload(file)}
-                maxCount={1}
-                multiple={false}
-                fileList={[]}
+                multiple={true}
+                onRemove={file => {
+                  if (!!file?._id) {
+                    const copyFile = [...documents]
+                    const newData = copyFile.filter(i => i?._id !== file?._id)
+                    setDocuments(newData)
+                  }
+                }}
               >
                 <div className="d-flex-center">
                   <div className="mr-8">

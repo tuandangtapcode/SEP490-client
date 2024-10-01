@@ -19,7 +19,7 @@ const FindSubject = () => {
     try {
       setLoading(true)
       const res = await SubjectCateService.getListSubjectCateAndSubject()
-      if (res?.isError) return toast.error(res?.msg)
+      if (!!res?.isError) return toast.error(res?.msg)
       setListSubjectCate(res?.data)
     } finally {
       setLoading(false)
@@ -37,7 +37,7 @@ const FindSubject = () => {
             type="isSearch"
           />
           <div className="d-flex mt-20 g-10">
-            <p className=" blue-text fs-20">Môn học phổ biến: </p>
+            <p className=" primary-text fs-20">Môn học phổ biến: </p>
             <Button>Piano</Button>
             <Button>Violin</Button>
             <Button>Guitar</Button>
@@ -48,7 +48,7 @@ const FindSubject = () => {
             <></>
             :
             <>
-              <Col span={24} className="mt-60">
+              <Col span={24}>
                 <Title level={2}>{subject?.SubjectCateName}</Title>
                 <Paragraph>
                   {subject?.Description}

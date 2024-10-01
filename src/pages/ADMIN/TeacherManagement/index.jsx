@@ -13,6 +13,8 @@ import ViewProfileTeacher from "./modal/ViewProfileTeacher"
 import InputCustom from "src/components/InputCustom"
 import socket from "src/utils/socket"
 import SpinCustom from "src/components/SpinCustom"
+import { toast } from "react-toastify"
+import SubjectService from "src/services/SubjectService"
 
 const { Option } = Select
 
@@ -30,19 +32,39 @@ const TeacherManagement = () => {
     Level: [],
     RegisterStatus: 0
   })
-  const { listSystemKey, subjects } = useSelector(globalSelector)
+  const { listSystemKey } = useSelector(globalSelector)
+  const [subjects, setSubjects] = useState([])
+
+  const getListSubject = async () => {
+    try {
+      setLoading(true)
+      const res = await SubjectService.getListSubject({
+        TextSearch: "",
+        CurrentPage: 0,
+        PageSize: 0
+      })
+      if (!!res?.isError) return toast.error(res?.msg)
+      setSubjects(res?.data?.List)
+    } finally {
+      setLoading(false)
+    }
+  }
 
   const getListTeacher = async () => {
     try {
       setLoading(true)
       const res = await UserService.getListTeacher(pagination)
-      if (res?.isError) return
+      if (!!res?.isError) return toast.error(res?.msg)
       setTeachers(res?.data?.List)
       setTotal(res?.data?.Total)
     } finally {
       setLoading(false)
     }
   }
+
+  useEffect(() => {
+    getListSubject()
+  }, [])
 
   useEffect(() => {
     getListTeacher()
@@ -54,9 +76,10 @@ const TeacherManagement = () => {
       const res = await UserService.responseConfirmRegister({
         FullName: record?.FullName,
         TeacherID: record?._id,
-        RegisterStatus
+        RegisterStatus,
+        Email: record?.Account?.Email
       })
-      if (res?.isError) return
+      if (!!res?.isError) return toast.error(res?.msg)
       getListTeacher()
     } finally {
       setLoading(false)
@@ -141,12 +164,11 @@ const TeacherManagement = () => {
     {
       title: "Môn học",
       width: 80,
-      dataIndex: "Subjects",
       align: "center",
       key: "Subjects",
       render: (val, record) => (
-        val?.map(i =>
-          <div key={i?.SubjectID}>{i?.SubjectName}</div>
+        record?.SubjectSettings?.map(i =>
+          <div key={i?._id}>{i?.Subject?.SubjectName}</div>
         )
       )
     },
@@ -290,7 +312,6 @@ const TeacherManagement = () => {
             bordered
             noMrb
             showPagination
-            loading={loading}
             dataSource={teachers}
             columns={column}
             editableCell

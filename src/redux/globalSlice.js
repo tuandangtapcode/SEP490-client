@@ -4,7 +4,8 @@ const globalSlice = createSlice({
   name: 'global',
   initialState: {
     user: {},
-    listSystemKey: []
+    listSystemKey: [],
+    profitPercent: 0
   },
   reducers: {
     setUser: (state, action) => {
@@ -12,6 +13,9 @@ const globalSlice = createSlice({
     },
     setListSystemKey: (state, action) => {
       state.listSystemKey = action.payload
+    },
+    setProfitPercent: (state, action) => {
+      state.profitPercent = action.payload
     }
   }
 })

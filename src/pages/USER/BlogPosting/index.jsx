@@ -13,6 +13,7 @@ import { useNavigate } from "react-router-dom"
 
 
 const BlogPosting = () => {
+
   const navigate = useNavigate()
   const [loading, setLoading] = useState(false)
   const [modalBlog, setModalBlog] = useState(false)
@@ -28,7 +29,7 @@ const BlogPosting = () => {
     try {
       setLoading(true)
       const res = await BlogService.getListBlogOfTeacher(pagination)
-      if (res?.isError) return toast.error(res?.msg)
+      if (!!res?.isError) return toast.error(res?.msg)
       setListData(res?.data?.List)
       setTotal(res?.data?.Total)
     } finally {
@@ -40,7 +41,7 @@ const BlogPosting = () => {
     try {
       setLoading(true)
       const res = await BlogService.deleteBlog(id)
-      if (res?.isError) return toast.error(res?.msg)
+      if (!!res?.isError) return toast.error(res?.msg)
       toast.success(res?.msg)
     } catch (error) {
       console.log("Error:", error)

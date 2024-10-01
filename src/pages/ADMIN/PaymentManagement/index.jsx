@@ -34,7 +34,7 @@ const PaymentManagement = () => {
     try {
       setLoading(true)
       const res = await PaymentService.getListPayment(pagination)
-      if (res?.isError) return toast.error(res?.msg)
+      if (!!res?.isError) return toast.error(res?.msg)
       setListData(res?.data?.List)
       setTotal(res?.data?.Total)
     } finally {
@@ -50,7 +50,7 @@ const PaymentManagement = () => {
     try {
       setLoading(true)
       const res = await PaymentService.exportExcel()
-      if (res?.isError) return toast.error(res?.msg)
+      if (!!res?.isError) return toast.error(res?.msg)
       saveAs(res, "payment.xlsx")
     } finally {
       setLoading(false)

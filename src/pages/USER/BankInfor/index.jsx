@@ -8,6 +8,7 @@ import { useSelector } from "react-redux"
 import { globalSelector } from "src/redux/selector"
 
 const BankInfor = () => {
+
   const [form] = Form.useForm()
   const [loading, setLoading] = useState(false)
   const [listBank, setListBank] = useState([])
@@ -53,7 +54,7 @@ const BankInfor = () => {
     try {
       setLoading(true)
       const res = await BankingService.getDetailBankingInfor()
-      if (res?.isError) return
+      if (!!res?.isError) return toast.error(res?.msg)
       setBankingInfoAccount(res?.data)
       setDisableInput(true)
       form.setFieldsValue({
@@ -79,7 +80,7 @@ const BankInfor = () => {
       const res = !!bankingInfoAccount?._id
         ? await BankingService.updateBankingInfor(body)
         : await BankingService.createBankingInfor(body)
-      if (res?.isError) return toast.error(res?.msg)
+      if (!!res?.isError) return toast.error(res?.msg)
       toast.success(res?.msg)
       setDisableInput(true)
     } finally {

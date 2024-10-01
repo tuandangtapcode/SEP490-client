@@ -7,7 +7,7 @@ import ListIcons from "src/components/ListIcons"
 import ButtonCircle from "src/components/MyButton/ButtonCircle"
 import SpinCustom from "src/components/SpinCustom"
 import TableCustom from "src/components/TableCustom"
-import { getCurrentWeekRange, getListComboKey } from "src/lib/commonFunction"
+import { getListComboKey } from "src/lib/commonFunction"
 import { SYSTEM_KEY } from "src/lib/constant"
 import { formatMoney } from "src/lib/stringUtils"
 import { globalSelector } from "src/redux/selector"
@@ -16,6 +16,7 @@ import PaymentService from "src/services/PaymentService"
 import ModalViewReport from "./components/ModalViewReport"
 import ModalPaymentTransfer from "./components/ModalPaymentTransfer"
 import dayjs from "dayjs"
+import { getCurrentWeekRange } from "src/lib/dateUtils"
 
 
 const PaymentTransfer = () => {
@@ -72,7 +73,7 @@ const PaymentTransfer = () => {
           Content: i?.Content
         }))
       })
-      if (!!res?.isError) return
+      if (!!res?.isError) return toast.error(res?.msg)
       toast.success(res?.msg)
       getListPaymentTransfer()
     } finally {

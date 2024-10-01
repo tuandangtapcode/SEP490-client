@@ -1,8 +1,7 @@
 import styled from "styled-components"
 
 export const FindTeacherContainer = styled.div`
-  /* text-align: center; */
-  padding: 50px 20px;
+  text-align: center;
 `
 
 export const ListSubjectContainer = styled.div`

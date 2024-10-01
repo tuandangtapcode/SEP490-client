@@ -1,6 +1,7 @@
 import { Col, Form, Rate, Row, Space } from "antd"
 import { useState } from "react"
 import { useSelector } from "react-redux"
+import { toast } from "react-toastify"
 import InputCustom from "src/components/InputCustom"
 import ModalCustom from "src/components/ModalCustom"
 import ButtonCustom from "src/components/MyButton/ButtonCustom"
@@ -22,7 +23,7 @@ const ModalSendFeedback = ({ open, onCancel }) => {
         ...values,
         Teacher: !!open?.Teacher?._id ? open?.Teacher?._id : open?._id
       })
-      if (res?.isError) return
+      if (!!res?.isError) return toast.error(res?.msg)
       socket.emit("send-comment", {
         ...values,
         User: {

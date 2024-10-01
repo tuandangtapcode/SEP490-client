@@ -1,8 +1,6 @@
-import { Button, Col, Row, Typography } from "antd"
+import { Col, Row, Typography } from "antd"
 import { FindTeacherContainer } from "./styled"
-import InputCustom from "src/components/InputCustom"
 import ListSubject from "./components/ListSubject"
-import PrivateLearning from "../HomePage/components/PrivateLearning/PrivateLearning"
 import { useParams } from "react-router-dom"
 import SubjectCateService from "src/services/SubjectCateService"
 import { useEffect, useState } from "react"
@@ -29,7 +27,7 @@ const FindTeacher = () => {
     try {
       setLoading(true)
       const res = await SubjectCateService.getDetailSubjectCate(pagination)
-      if (res?.isError) return toast.error(res?.msg)
+      if (!!res?.isError) return toast.error(res?.msg)
       setListSubject(res?.data?.ListSubject)
       setSubjectCate(res?.data?.SubjectCate)
     } finally {
@@ -55,7 +53,7 @@ const FindTeacher = () => {
               onSearch={e => setPagination(pre => ({ ...pre, TextSearch: e }))}
             />
             <div className="d-flex mt-20 g-10">
-              <p className=" blue-text fs-20">Môn học phổ biến: </p>
+              <p className=" primary-text fs-20">Môn học phổ biến: </p>
               <Button>Piano</Button>
               <Button>Violin</Button>
               <Button>Guitar</Button>

@@ -9,11 +9,7 @@ import {
 const createTimeTable = body => http.post(apiCreateTimeTable, body)
 const getTimeTableByUser = () => http.get(apiGetTimeTableByUser)
 const attendanceTimeTable = TimeTableID => http.get(`${apiAttendanceTimeTable}/${TimeTableID}`)
-const updateTimeTable = body => http.post(apiUpdateTimeTable, body, {
-  headers: {
-    'Content-Type': 'multipart/form-data'
-  }
-})
+const updateTimeTable = body => http.post(apiUpdateTimeTable, body)
 
 const TimeTableService = {
   createTimeTable,

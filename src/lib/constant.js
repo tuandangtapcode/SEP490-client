@@ -5,12 +5,15 @@ export const SYSTEM_KEY = {
   LEARN_TYPE: "LearnType",
   PAYMENT_TYPE: "PaymentType",
   PAYMENT_STATUS: "PaymentStatus",
-  LEARNED_STATUS: "LearnedStatus"
+  LEARNED_STATUS: "LearnedStatus",
+  PROFIT_PERCENT: "ProfitPercent"
 }
 
 export const Roles = {
   ROLE_ADMIN: 1,
-  ROLE_STAFF: 2,
+  ROLE_STAFF: 5,
+  ROLE_SUBJECT: 6,
+  ROLE_INBOX: 7,
   ROLE_TEACHER: 3,
   ROLE_STUDENT: 4,
 }

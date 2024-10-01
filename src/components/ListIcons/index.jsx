@@ -12,7 +12,9 @@ import {
   BsCameraVideo,
   BsCameraVideoOff,
   BsSend,
-  BsTelephone
+  BsTelephone,
+  BsFillPlayFill,
+  BsCake2
 } from "react-icons/bs"
 
 import {
@@ -60,7 +62,8 @@ import {
   FaMoneyCheckAlt,
   FaRegFile,
   FaUserCog,
-  FaUserGraduate
+  FaUserGraduate,
+  FaPercent
 } from "react-icons/fa"
 
 import { MdReportProblem } from "react-icons/md"
@@ -74,8 +77,10 @@ import {
 
 import { CgArrowUpR } from "react-icons/cg"
 
+import { HiLocationMarker } from "react-icons/hi"
+
 const ListIcons = {
-  ICON_SEARCH: <SearchOutlined className="blue-text fs-20" />,
+  ICON_SEARCH: <SearchOutlined className="primary-text fs-20" />,
   ICON_LOADING: <LoadingOutlined
     style={{
       color: "#0078d4"
@@ -97,6 +102,7 @@ const ListIcons = {
   ICON_STUDENT: <FaUserGraduate className="fs-18" />,
   ICON_REPORT: <MdReportProblem className="fs-18" />,
   ICON_SUBJECT_CATE: <ImBooks className="fs-18" />,
+  ICON_SUBJECT_CATE_PRIMARY_COLOR: <ImBooks className="fs-18 primary-text" />,
   ICON_CAMERA: <AiOutlineCamera className="fs-18" />,
   ICON_DELETE: <BsFillTrash3Fill className="red-text fs-18" />,
   ICON_WARNING: <AiOutlineWarning className="burlywood-text fs-20" />,
@@ -118,14 +124,14 @@ const ListIcons = {
   ICON_LIST: <AiOutlineUnorderedList className="fs-18" />,
   ICON_NEXT: <AiOutlineArrowRight className="fs-18" />,
   ICON_EDIT: <AiFillEdit className="green-text fs-18" />,
-  ICON_VIEW: <AiFillEye className="blue-text fs-18" />,
+  ICON_VIEW: <AiFillEye className="primary-text fs-18" />,
   ICON_CONFIRM: <AiFillCheckCircle className="fs-18 green-text" />,
   ICON_CLOSE: <AiFillCloseCircle className="fs-18 red-text" />,
   ICON_BELL: <AiFillBell className="fs-20" style={{ color: "#404040" }} />,
   ICON_PINNOTE: <BiUserPin className="fs-45" />,
-  ICON_FACEBOOK: <BsFacebook className="blue-text fs-18" />,
-  ICON_INSTAGRAM: <BsInstagram className="blue-text fs-18" />,
-  ICON_TWITTER: <BsTwitterX className="blue-text fs-18" />,
+  ICON_FACEBOOK: <BsFacebook className="white-text fs-18" />,
+  ICON_INSTAGRAM: <BsInstagram className="white-text fs-18" />,
+  ICON_TWITTER: <BsTwitterX className="white-text fs-18" />,
   ICON_HOME: <FaHome className="fs-18" />,
   ICON_CHAT_DOT: <BsChatDots className="white-text" />,
   ICON_MESSAGE: <AiFillMessage className="fs-18" />,
@@ -145,6 +151,10 @@ const ListIcons = {
   ICON_SHARE_SCREEN: <CgArrowUpR className="white-text fs-17" />,
   ICON_MIC_BLACK: <BsMic className="black-text fs-18" />,
   ICON_MIC_MUTE_BLACK: <BsMicMute className="black-text fs-18" />,
+  ICON_PLAY_FS_30: <BsFillPlayFill className='fs-23 ml-2' />,
+  ICON_LOCATION: <HiLocationMarker />,
+  ICON_DATE_OF_BIRTH: <BsCake2 />,
+  ICON_PERCENT: <FaPercent className="fs-18" />
 }
 
 export default ListIcons

@@ -1,4 +1,3 @@
-/* eslint-disable react/no-danger */
 import { notification } from 'antd'
 import { words } from 'lodash'
 import ListIcons from '../ListIcons'

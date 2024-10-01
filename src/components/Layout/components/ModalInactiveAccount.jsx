@@ -16,7 +16,7 @@ const InactiveModal = ({ open, onCancel }) => {
         handleLogout(open, dispatch, navigate)
         onCancel()
       }}
-      title={<div className="text-center" > THÔNG BÁO</div>}
+      title={<div className="text-center">THÔNG BÁO</div>}
       width="40vw"
       footer={
         <div className="d-flex-end" >

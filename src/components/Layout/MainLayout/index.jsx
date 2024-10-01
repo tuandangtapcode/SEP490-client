@@ -23,9 +23,7 @@ const MainLayout = ({ children }) => {
       </ContentContainerStyled>
       {
         !location.pathname.includes("meeting-room") &&
-        <FooterStyled>
-          <Footer />
-        </FooterStyled>
+        <Footer />
       }
       {
         (!!user?._id && !location.pathname.includes("meeting-room")) &&

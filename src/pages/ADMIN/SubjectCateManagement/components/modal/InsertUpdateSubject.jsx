@@ -8,6 +8,7 @@ import ButtonCustom from "src/components/MyButton/ButtonCustom"
 import Notice from "src/components/Notice"
 import SpinCustom from "src/components/SpinCustom"
 import { globalSelector } from "src/redux/selector"
+import FileService from "src/services/FileService"
 import SubjectService from "src/services/SubjectService"
 import styled from "styled-components"
 
@@ -47,16 +48,20 @@ const InsertUpdateSubject = ({ open, onCancel, onOk }) => {
     try {
       setLoading(true)
       const values = await form.validateFields()
+      const resFile = await FileService.uploadFileSingle({
+        FileSingle: values?.image?.file
+      })
+      if (resFile?.isError) return
       const body = {
         SubjectID: !!open?._id ? open?._id : undefined,
         SubjectCateID: open?.SubjectCateID,
-        Avatar: values?.image?.file,
+        Avatar: resFile?.data,
         SubjectName: values?.SubjectName,
       }
       const res = !!open?._id
         ? await SubjectService.updateSubject(body)
         : await SubjectService.createSubject(body)
-      if (res?.isError) return toast.error(res?.msg)
+      if (!!res?.isError) return toast.error(res?.msg) 
       onCancel()
       toast.success(res?.msg)
       onOk()

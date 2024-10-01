@@ -23,6 +23,7 @@ import CB1 from "src/components/Modal/CB1"
 
 
 const BlogPage = () => {
+
   const navigate = useNavigate()
   const [loading, setLoading] = useState(false)
   const [modalBlog, setModalBlog] = useState(false)
@@ -39,7 +40,7 @@ const BlogPage = () => {
     try {
       setLoading(true)
       const res = await BlogService.getListBlog(pagination)
-      if (res?.isError) return toast.error(res?.msg)
+      if (!!res?.isError) return toast.error(res?.msg)
       setListBlog(res?.data?.List)
     } finally {
       setLoading(false)
@@ -50,7 +51,7 @@ const BlogPage = () => {
     try {
       setLoading(true)
       const res = await BlogService.deleteBlog(id)
-      if (res?.isError) return toast.error(res?.msg)
+      if (!!res?.isError) return toast.error(res?.msg)
       toast.success(res?.msg)
     } catch (error) {
       console.log("Error:", error)

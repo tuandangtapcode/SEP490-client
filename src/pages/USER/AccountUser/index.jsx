@@ -42,7 +42,7 @@ const AccountUser = () => {
         OldPassword: values?.OldPassword,
         NewPassword: values?.NewPassword
       })
-      if (res?.isError) return toast.error(res?.msg)
+      if (!!res?.isError) return toast.error(res?.msg) 
       toast.success(res?.msg)
       navigate("/")
     } finally {

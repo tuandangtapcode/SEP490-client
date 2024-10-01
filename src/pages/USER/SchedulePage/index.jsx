@@ -9,6 +9,7 @@ import {
 import "react-big-calendar/lib/css/react-big-calendar.css"
 import SpinCustom from "src/components/SpinCustom"
 import ModalDetailSchedule from "./components/ModalDetailSchedule"
+import { toast } from "react-toastify"
 
 const localizer = momentLocalizer(moment)
 const messages = {
@@ -49,7 +50,7 @@ const SchedulePage = () => {
     try {
       setLoading(true)
       const res = await TimeTableService.getTimeTableByUser()
-      if (res?.isError) return
+      if (!!res?.isError) return toast.error(res?.msg)
       setTimeTables(
         res?.data?.List?.map(i => (
           {
@@ -96,6 +97,7 @@ const SchedulePage = () => {
         <ModalDetailSchedule
           open={openModalDetailSchedule}
           onCancel={() => setOpenModalDetailSchedule(false)}
+          setOpenModalDetailSchedule={setOpenModalDetailSchedule}
           buttonShow={buttonShow}
           getTimeTable={getTimeTable}
         />

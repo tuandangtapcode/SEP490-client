@@ -8,7 +8,6 @@ import InsertUpdateSubjectCate from "./components/modal/InsertUpdateSubjectCate"
 import ListIcons from "src/components/ListIcons"
 import CB1 from "src/components/Modal/CB1"
 import ModalSubject from "./components/Subject"
-import Notice from "src/components/Notice"
 import { toast } from "react-toastify"
 import SpinCustom from "src/components/SpinCustom"
 
@@ -29,7 +28,7 @@ const SubjectCateManagement = () => {
     try {
       setLoading(true)
       const res = await SubjectCateService.getListSubjectCate(pagination)
-      if (res?.isError) return toast.error(res?.msg)
+      if (!!res?.isError) return toast.error(res?.msg)
       setListData(res?.data?.List)
       setTotal(res?.data?.Total)
     } finally {
@@ -44,7 +43,7 @@ const SubjectCateManagement = () => {
     try {
       setLoading(true)
       const res = await SubjectCateService.deleteSubjectCate(id)
-      if (res?.isError) return toast.error(res?.msg)
+      if (!!res?.isError) return toast.error(res?.msg)
       toast.success(res?.msg)
     } finally {
       setLoading(false)
@@ -146,7 +145,6 @@ const SubjectCateManagement = () => {
             bordered
             noMrb
             showPagination
-            loading={loading}
             dataSource={listData}
             columns={columns}
             editableCell

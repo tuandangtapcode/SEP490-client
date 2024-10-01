@@ -4,6 +4,7 @@ import { toast } from "react-toastify"
 import ModalCustom from "src/components/ModalCustom"
 import ButtonCustom from "src/components/MyButton/ButtonCustom"
 import { formatMoney } from "src/lib/stringUtils"
+import FileService from "src/services/FileService"
 import PaymentService from "src/services/PaymentService"
 
 const ModalPaymentTransfer = ({ open, onCancel, onOk }) => {
@@ -28,6 +29,10 @@ const ModalPaymentTransfer = ({ open, onCancel, onOk }) => {
       setLoading(true)
       const values = await form.validateFields()
       console.log(values);
+      const resFile = await FileService.uploadFileSingle({
+        FileSingle: values?.image?.file
+      })
+      if (!!resFile?.isError) return toast.error(res?.msg)
       const res = await PaymentService.changePaymentStatus({
         PaymentID: open?.PaymentID,
         PaymentStatus: 2,
@@ -35,9 +40,9 @@ const ModalPaymentTransfer = ({ open, onCancel, onOk }) => {
         FullName: open?.FullName,
         Email: open?.Email,
         RoleID: open?.RoleID,
-        Image: values?.image?.file
+        Image: resFile?.data
       })
-      if (!!res?.isError) return
+      if (!!res?.isError) return toast.error(res?.msg)
       toast.success(res?.msg)
       onCancel()
       onOk()

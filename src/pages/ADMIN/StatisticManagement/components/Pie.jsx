@@ -5,7 +5,6 @@ import ReactECharts from 'echarts-for-react'
 
 const Pie = ({ newRegister }) => {
 
-
   const chartOptions = {
     title: {
       text: `Tài khoản mới đăng ký (${newRegister?.Total})`,

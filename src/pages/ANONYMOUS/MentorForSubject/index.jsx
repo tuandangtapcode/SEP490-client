@@ -97,7 +97,7 @@ const MentorForSubject = () => {
     try {
       setLoading(true)
       const res = await UserService.getListTeacherByUser(pagination)
-      if (res?.isError) return toast.error(res?.msg)
+      if (!!res?.isError) return toast.error(res?.msg) 
       setListMentor(res?.data?.List)
     } finally {
       setLoading(false)
@@ -125,7 +125,7 @@ const MentorForSubject = () => {
                 placeholder="Nhập tên giáo viên cần tìm..."
               />
               {/* <div className="d-flex mt-20 g-10">
-                <p className=" blue-text fs-20">Môn học phổ biến: </p>
+                <p className=" primary-text fs-20">Môn học phổ biến: </p>
                 <Button>Piano</Button>
                 <Button>Violin</Button>
                 <Button>Guitar</Button>
