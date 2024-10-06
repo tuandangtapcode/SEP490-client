@@ -48,7 +48,7 @@ const Footer = () => {
           </Col>
         </Row>
       </FooterStyled>
-      <div className="p-10 center-text white-text">Copryright © TatuBoo. All Right Reserved. </div>
+      <div className="p-10 center-text white-text">Copryright © Talent LearningHub. All Right Reserved. </div>
     </FooterContainer>
   )
 }

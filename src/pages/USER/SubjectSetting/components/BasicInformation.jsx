@@ -58,9 +58,11 @@ const BasicInformation = () => {
             <Checkbox.Group
               mode='multiple'
             >
-              {getListComboKey(SYSTEM_KEY.LEARN_TYPE, listSystemKey)?.map((i, idx) =>
-                <Checkbox key={idx} value={i?.ParentID}>{i?.ParentName}</Checkbox>
-              )}
+              {
+                getListComboKey(SYSTEM_KEY.LEARN_TYPE, listSystemKey)?.map((i, idx) =>
+                  <Checkbox key={idx} value={i?.ParentID}>{i?.ParentName}</Checkbox>
+                )
+              }
             </Checkbox.Group>
           </Form.Item>
         </Col>

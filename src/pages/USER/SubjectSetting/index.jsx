@@ -13,6 +13,12 @@ import Certificates from "./components/Certificates"
 import IntroVideo from "./components/IntroVideo"
 import dayjs from "dayjs"
 import ModalSubject from "./modal/ModalSubject"
+import FileService from "src/services/FileService"
+import NotificationService from "src/services/NotificationService"
+import { ADMIN_ID } from "src/lib/constant"
+import { useSelector } from "react-redux"
+import { globalSelector } from "src/redux/selector"
+import socket from "src/utils/socket"
 
 const SubjectSetting = () => {
 
@@ -20,11 +26,11 @@ const SubjectSetting = () => {
   const [openModalSubject, setOpenModalSubject] = useState(false)
   const [subjectSettings, setSubjectSettings] = useState([])
   const [subjectSetting, setSubjectSetting] = useState()
-  const [subjectID, setSubjectID] = useState("")
   const [form] = Form.useForm()
   const [filesCertificate, setFilesCertificate] = useState([])
   const [filesIntroVideo, setFilesIntroVideo] = useState([])
   const [schedules, setSchedules] = useState([])
+  const { user } = useSelector(globalSelector)
 
   const getListSubjectSetting = async () => {
     try {
@@ -41,11 +47,72 @@ const SubjectSetting = () => {
     try {
       setLoading(true)
       const values = await form.validateFields()
-      console.log("values", values);
-
-      // const resSubjectSetting = await UserService.updateSubjectSetting({
-      //   ...va
-      // })
+      const resCertificate = FileService.uploadFileList({
+        FileList: values?.Certificates?.map(i => i?.originFileObj)
+      })
+      const resIntroVideo = FileService.uploadFileList({
+        FileList: values?.IntroVideos?.map(i => i?.originFileObj)
+      })
+      const resultFile = await Promise.all([resCertificate, resIntroVideo])
+      if (!!resultFile[0]?.isError || !!resultFile[1]?.isError) return
+      const resSubjectSetting = await UserService.updateSubjectSetting({
+        SubjectSettingID: subjectSetting?._id,
+        SubjectID: subjectSetting?.Subject?._id,
+        Quote: {
+          Title: values?.TitleQuote,
+          Content: values?.ContentQuote
+        },
+        Certificates: resultFile[0]?.data,
+        IntroVideos: resultFile[1]?.data,
+        Levels: values?.Levels,
+        Schedules: !!schedules?.length
+          ? schedules?.map(i => ({
+            DateAt: dayjs(i?.start).format("dddd"),
+            StartTime: dayjs(i?.start),
+            EndTime: dayjs(i?.end),
+          }))
+          : undefined,
+        Experiences: !!values?.experiences
+          ? values?.experiences?.map(i => ({
+            Content: i?.Content,
+            StartDate: i?.Date[0],
+            EndDate: i?.Date[1]
+          }))
+          : undefined,
+        Educations: !!values?.educations
+          ? values?.educations?.map(i => ({
+            Content: i?.Content,
+            StartDate: i?.Date[0],
+            EndDate: i?.Date[1]
+          }))
+          : undefined,
+        Price: values?.Price,
+        LearnTypes: values?.LearnTypes
+      })
+      if (!!resSubjectSetting?.isError) return toast.error(resSubjectSetting?.msg)
+      let resChangeRegisterStatus
+      if (user?.RegisterStatus === 1) {
+        resChangeRegisterStatus = UserService.requestConfirmRegister()
+      }
+      const resNotification = NotificationService.createNotification({
+        Content: `${user?.FullName} đã gửi yêu cầu duyệt profile cho bạn`,
+        Type: "teacher",
+        Receiver: ADMIN_ID
+      })
+      const result = await Promise.all([resChangeRegisterStatus, resNotification])
+      if (!!result[0]?.isError || !!result[1]?.isError) return
+      socket.emit('send-notification',
+        {
+          Content: result[1]?.data?.Content,
+          IsSeen: result[1]?.IsSeen,
+          _id: result[1]?.data?._id,
+          Type: result[1]?.data?.Type,
+          IsNew: result[1]?.data?.IsNew,
+          Receiver: ADMIN_ID,
+          createdAt: result[1]?.data?.createdAt
+        })
+      toast.success("Yêu cầu kiểm duyệt đã được gửi")
+      setSubjectSetting(resSubjectSetting?.data)
     } finally {
       setLoading(false)
     }
@@ -56,7 +123,7 @@ const SubjectSetting = () => {
   }, [])
 
   useEffect(() => {
-    if (!!subjectID) {
+    if (!!subjectSetting) {
       form.setFieldsValue({
         TitleQuote: subjectSetting?.Quote?.Title,
         ContentQuote: subjectSetting?.Quote?.Content,
@@ -64,10 +131,16 @@ const SubjectSetting = () => {
         Price: subjectSetting?.Price,
         Levels: subjectSetting?.Levels,
         experiences: !!subjectSetting?.Experiences?.length
-          ? subjectSetting?.Experiences
+          ? subjectSetting?.Experiences?.map(i => ({
+            ...i,
+            Date: [dayjs(i?.StartDate), dayjs(i?.EndDate)]
+          }))
           : [{}],
         educations: !!subjectSetting?.Educations?.length
-          ? subjectSetting?.Experiences
+          ? subjectSetting?.Educations?.map(i => ({
+            ...i,
+            Date: [dayjs(i?.StartDate), dayjs(i?.EndDate)]
+          }))
           : [{}],
         Certificates: subjectSetting?.Certificates?.map((i, idx) => ({
           url: i,
@@ -96,7 +169,7 @@ const SubjectSetting = () => {
         )
       }
     }
-  }, [subjectID])
+  }, [subjectSetting?.Subject?._id])
 
   return (
     <SpinCustom spinning={loading}>
@@ -115,15 +188,13 @@ const SubjectSetting = () => {
             {
               subjectSettings?.map((i, idx) =>
                 <SubjectItemStyled
-                  className={subjectID === i?.Subject?._id ? "active" : ""}
+                  className={subjectSetting?.Subject?._id === i?.Subject?._id ? "active" : ""}
                   key={idx}
                   onClick={() => {
-                    if (!subjectID) {
-                      const subjectSetting = subjectSettings?.find(i => i?.Subject?._id === subjectID)
-                      setSubjectSetting(subjectSetting)
-                      setSubjectID(i?.Subject?._id)
+                    if (i?.Subject?._id !== subjectSetting?.Subject?._id) {
+                      setSubjectSetting(i)
                     } else {
-                      setSubjectID("")
+                      setSubjectSetting()
                     }
                   }}
                 >
@@ -133,7 +204,7 @@ const SubjectSetting = () => {
             }
           </Col>
           {
-            !!subjectID &&
+            !!subjectSetting &&
             <>
               <BasicInformation />
               <TimeTable
@@ -156,10 +227,9 @@ const SubjectSetting = () => {
                 <ButtonCustom
                   className="big-size primary fw-700"
                   onClick={() => {
-                    handleSubmit()
-                    // if (user?.RegisterStatus === 3 || !user?.IntroVideos?.length) {
-                    //   handleSubmit()
-                    // }
+                    if (user?.RegisterStatus === 1) {
+                      handleSubmit()
+                    }
                   }}
                 >
                   {/* {
