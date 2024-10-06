@@ -67,7 +67,7 @@ const BlogPage = () => {
   return (
     <SpinCustom spinning={loading}>
       <Container>
-        <Title>TatuBoo Blog</Title>
+        <Title>Talent LearningHub Blog</Title>
         <Description>
           Tại đây, bạn sẽ tìm thấy nhiều tài nguyên hữu ích để tham khảo khi học điều gì đó mới - từ hướng dẫn toàn diện đến hướng dẫn từng bước.
         </Description>

@@ -3,8 +3,6 @@ import { Col, Form, Row } from 'antd'
 import moment from 'moment'
 import { Calendar, Views, momentLocalizer } from 'react-big-calendar'
 import "react-big-calendar/lib/css/react-big-calendar.css"
-import { useSelector } from 'react-redux'
-import { globalSelector } from 'src/redux/selector'
 
 
 const localizer = momentLocalizer(moment)
@@ -18,8 +16,6 @@ const formats = {
 }
 
 const TimeTable = ({ schedules, setSchedules, }) => {
-
-  const { user } = useSelector(globalSelector)
 
   const handleSelectSlot = ({ start, end }) => {
     // if (user?.RegisterStatus !== 3 && !!schedules.length) return

@@ -42,7 +42,7 @@ const Experiences = () => {
                     </Col>
                     <Col span={10}>
                       <Form.Item
-                        name={[name, 'StartDate']}
+                        name={[name, 'Date']}
                         {...restField}
                         label={<div className="fw-600">Thời gian bắt đầu - Thời gian kết thúc</div>}
                         rules={[

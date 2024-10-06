@@ -1,12 +1,9 @@
 import { Form, Select, Space } from "antd"
 import { useEffect, useState } from "react"
-import { useDispatch, useSelector } from "react-redux"
 import { toast } from "react-toastify"
 import ModalCustom from "src/components/ModalCustom"
 import ButtonCustom from "src/components/MyButton/ButtonCustom"
 import SpinCustom from "src/components/SpinCustom"
-import globalSlice from "src/redux/globalSlice"
-import { globalSelector } from "src/redux/selector"
 import SubjectService from "src/services/SubjectService"
 import UserService from "src/services/UserService"
 
@@ -19,22 +16,18 @@ const ModalSubject = ({
   onOk
 }) => {
 
-  const { user } = useSelector(globalSelector)
   const [form] = Form.useForm()
   const [loading, setLoading] = useState(false)
-  const dispatch = useDispatch()
   const [subjects, setSubjects] = useState([])
 
   const handleCreateSubjectSetting = async () => {
     try {
       setLoading(true)
       const values = await form.validateFields()
-      const res = await UserService.pushOrPullSubjectForTeacher({
-        SubjectID: values?.SubjectID,
-        Email: user?.Email
-      })
+      const res = await UserService.createSubjectSetting(values?.SubjectID)
       if (!!res?.isError) return
-      dispatch(globalSlice.actions.setUser(res?.data))
+      toast.success(res?.msg)
+      onOk()
       onCancel()
     } finally {
       setLoading(false)

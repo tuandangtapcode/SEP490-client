@@ -181,7 +181,6 @@ const PaymentManagement = () => {
             bordered
             noMrb
             showPagination
-            loading={loading}
             dataSource={listData}
             columns={columns}
             editableCell

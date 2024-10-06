@@ -12,7 +12,7 @@ const VideoItem = ({ videoUrl }) => {
         <ButtonCicleStyled
           style={{
             position: 'absolute',
-            right: '40%',
+            right: '45%',
             bottom: '50%'
           }}
           className='mediumCircle greendBackgroundColor icon-play'

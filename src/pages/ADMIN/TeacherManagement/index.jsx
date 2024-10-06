@@ -344,6 +344,7 @@ const TeacherManagement = () => {
           <ViewProfileTeacher
             open={openViewProfile}
             onCancel={() => setOpenViewProfile(false)}
+            getListTeacher={getListTeacher}
           />
         }
       </Row>

@@ -18,7 +18,7 @@ export const Roles = {
   ROLE_STUDENT: 4,
 }
 
-export const ADMIN_ID = "664a5251b0563919ce2eba19"
+export const ADMIN_ID = "66f682358a03bbcf9bf04c03"
 
 export const MONGODB_DATE_FORMATER = "YYYY-MM-DDTHH:mm:ss.SSSZ"
 export const CALENDAR_DATE_FORMATER = "ddd MMM DD YYYY HH:mm:ss [GMT]ZZ"
