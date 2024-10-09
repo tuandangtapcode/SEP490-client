@@ -15,7 +15,7 @@ const TeachWithUsPage = () => {
         </ContentContainer>
       </Container>
       <SectionContainer>
-        <Title>Tại sao nên chọn dạy học qua TatuBoo?</Title>
+        <Title>Tại sao nên chọn dạy học qua Talent LearningHub?</Title>
         <ItemsContainer>
           <Item>
             <IconContainer>
@@ -28,7 +28,7 @@ const TeachWithUsPage = () => {
             <IconContainer>
               {/* <UserOutlined /> */}
             </IconContainer>
-            <ItemTitle>Trở thành một phần của cộng đồng gia sư TatuBoo</ItemTitle>
+            <ItemTitle>Trở thành một phần của cộng đồng gia sư Talent LearningHub</ItemTitle>
             <ItemText>Chia sẻ ý tưởng và các phương pháp hay nhất với hàng nghìn gia sư khác trên khắp Việt Nam!</ItemText>
           </Item>
           <Item>

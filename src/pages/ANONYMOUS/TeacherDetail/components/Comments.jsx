@@ -25,7 +25,7 @@ const Comments = ({ comments, teacher }) => {
       <div className="mb-30 d-flex-sb">
         <div className="fs-20 fw-600">Đánh giá</div>
         <div
-          className="blue-text cursor-pointer"
+          className="primary-text cursor-pointer"
           onClick={() => {
             if (!!user?._id) {
               setOpenModalSendFeedback(teacher)

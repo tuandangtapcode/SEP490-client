@@ -8,16 +8,8 @@ import {
   apiUpdateBlog
 } from "./urls"
 
-const createBlog = body => http.post(apiCreateBlog, body, {
-  headers: {
-    'Content-Type': 'multipart/form-data',
-  }
-})
-const updateBlog = body => http.post(apiUpdateBlog, body, {
-  headers: {
-    'Content-Type': 'multipart/form-data',
-  }
-})
+const createBlog = body => http.post(apiCreateBlog, body)
+const updateBlog = body => http.post(apiUpdateBlog, body)
 const getListBlog = body => http.post(apiGetListBlog, body)
 const getDetailBlog = params => http.get(`${apiGetBlogDetail}/${params}`)
 const deleteBlog = params => http.get(`${apiDeleteBlog}/${params}`)

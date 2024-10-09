@@ -1,4 +1,4 @@
-import { Col, Dropdown, Empty, Menu, Row, Tooltip } from "antd"
+import { Col, Dropdown, Empty, Menu, Row } from "antd"
 import { BadgeStyled, HeaderContainerStyled, HeaderStyled } from "../styled"
 import logo from '/logo.png'
 import tatuboo from '/tatuboo.png'
@@ -8,7 +8,6 @@ import { useDispatch, useSelector } from "react-redux"
 import { globalSelector } from "src/redux/selector"
 import Router from "src/routers"
 import ListIcons from "src/components/ListIcons"
-import InputCustom from "src/components/InputCustom"
 import { handleLogout } from "src/lib/commonFunction"
 import moment from "moment"
 import { useEffect, useState } from "react"
@@ -16,6 +15,8 @@ import NotificationService from "src/services/NotificationService"
 import ButtonCircle from "src/components/MyButton/ButtonCircle"
 import socket from "src/utils/socket"
 import { Roles } from "src/lib/constant"
+import { toast } from "react-toastify"
+import ButtonCustom from "src/components/MyButton/ButtonCustom"
 
 const NotificationItem = ({
   data,
@@ -48,7 +49,7 @@ const NotificationItem = ({
 
 const Header = () => {
 
-  const global = useSelector(globalSelector)
+  const { user } = useSelector(globalSelector)
   const dispatch = useDispatch()
   const navigate = useNavigate()
   const [notifications, setNotifications] = useState([])
@@ -56,14 +57,14 @@ const Header = () => {
   const location = useLocation()
 
   const handleChangeStatusNotification = async () => {
-    const res = await NotificationService.changeStatusNotification(global?.user?._id)
-    if (res?.isError) return
+    const res = await NotificationService.changeStatusNotification(user?._id)
+    if (!!res?.isError) return toast.error(res?.msg)
     getNotifications()
   }
 
   const getNotifications = async () => {
-    const res = await NotificationService.getListNotification(global?.user?._id)
-    if (res?.isError) return
+    const res = await NotificationService.getListNotification(user?._id)
+    if (!!res?.isError) return toast.error(res?.msg)
     setNotifications(res?.data?.List)
     setNewNotification(res?.data?.IsNew)
   }
@@ -71,17 +72,17 @@ const Header = () => {
   const seenNotification = async (NotificationID) => {
     const res = await NotificationService.seenNotification({
       NotificationID,
-      ReceiverID: global?.user?._id
+      ReceiverID: user?._id
     })
-    if (res?.isError) return
+    if (!!res?.isError) return toast.error(res?.msg)
     getNotifications()
   }
 
   useEffect(() => {
-    if (!!global?.user?._id) {
+    if (!!user?._id) {
       getNotifications()
     }
-  }, [global?.user])
+  }, [user])
 
   const menuAccoutUser = [
     {
@@ -96,7 +97,7 @@ const Header = () => {
       label: (
         <div>Đăng xuất</div>
       ),
-      onClick: () => handleLogout(global?.user?._id, dispatch, navigate)
+      onClick: () => handleLogout(user?._id, dispatch, navigate)
     },
   ]
 
@@ -113,7 +114,7 @@ const Header = () => {
                   data={i}
                   navigate={navigate}
                   seenNotification={seenNotification}
-                  user={global?.user}
+                  user={user}
                 />
               )
             }
@@ -132,9 +133,9 @@ const Header = () => {
   }, [])
 
   return (
-    <HeaderContainerStyled>
+    <HeaderContainerStyled isHome={location.pathname === "/"}>
       <HeaderStyled>
-        <Row>
+        <Row gutter={[8]} className="d-flex-sb">
           <Col span={3} className="d-flex-center">
             <img
               className="cursor-pointer"
@@ -151,13 +152,15 @@ const Header = () => {
               style={{ width: '115px', height: "25px", marginTop: '5px' }}
             />
           </Col>
-          <Col span={18} className="d-flex-center">
+          <Col span={18} className="d-flex-end">
             {
-              ![Roles.ROLE_ADMIN, Roles.ROLE_STAFF].includes(global?.user?.RoleID) &&
-              <div
-              // style={{ flex: 1 }}
-              >
+              ![Roles.ROLE_ADMIN, Roles.ROLE_STAFF].includes(user?.RoleID) &&
+              <div>
                 <Menu
+                  style={{
+                    backgroundColor: "transparent",
+                    color: "white"
+                  }}
                   mode="horizontal"
                   items={MenuCommon()}
                   selectedKeys={location?.pathname}
@@ -166,29 +169,9 @@ const Header = () => {
               </div>
             }
           </Col>
-          <Col span={3} className="d-flex-end mt-16">
+          <Col span={3} className="d-flex-end">
             {
-              global?.user?.RoleID !== Roles.ROLE_ADMIN &&
-              <Dropdown
-                trigger={["click"]}
-                placement="bottomRight"
-                arrow
-                overlay={
-                  <>
-                    <InputCustom
-                      type="isSearch"
-                      placeholder="Nhập vào mã phòng"
-                      style={{ width: "500px" }}
-                      onSearch={e => navigate(`/meeting-room/${e}`)}
-                    />
-                  </>
-                }
-              >
-                <div>{ListIcons.ICON_SEARCH}</div>
-              </Dropdown>
-            }
-            {
-              !!global?.user?._id &&
+              !!user?._id &&
               <Dropdown
                 menu={{ items: itemsNotification }}
                 trigger={['click']}
@@ -202,41 +185,35 @@ const Header = () => {
                   style={{ fontSize: '10px' }}
                 >
                   <ButtonCircle
+                    className="transparent-btn"
                     icon={ListIcons.ICON_BELL}
                   />
                 </BadgeStyled>
               </Dropdown>
             }
-            <div className="ml-12 mb-10">
+            <div className="ml-12">
               {
-                global?.user?._id ?
-                  <Dropdown menu={{ items: global?.user?.RoleID !== Roles.ROLE_ADMIN ? menuAccoutUser : [] }} trigger={['click']}>
+                user?._id ?
+                  <Dropdown menu={{ items: user?.RoleID !== Roles.ROLE_ADMIN ? menuAccoutUser : [] }} trigger={['click']}>
                     <img
                       style={{
                         display: "block",
-                        width: "30px",
-                        height: "30px",
-                        borderRadius: "50%"
+                        width: "25px",
+                        height: "25px",
+                        borderRadius: "50%",
+                        marginBottom: "2px"
                       }}
-                      src={global?.user?.AvatarPath}
+                      src={user?.AvatarPath}
                       alt=""
                     />
                   </Dropdown>
                   :
-                  <div
-                    className="d-flex-end cursor-pointer"
+                  <ButtonCustom
+                    className="yellow-btn medium-size"
                     onClick={() => navigate("/dang-nhap")}
                   >
-                    <img
-                      src="https://takelessons.com/_next/image?url=%2F_next%2Fstatic%2Fmedia%2Ficon-avatar.95340bc0.png&w=1920&q=75"
-                      alt=""
-                      style={{
-                        // width: '32px',
-                        height: "35px"
-                      }}
-                    />
-                    <span className="ml-12 fs-16">Đăng nhập</span>
-                  </div>
+                    Đăng nhập
+                  </ButtonCustom>
               }
             </div>
           </Col>

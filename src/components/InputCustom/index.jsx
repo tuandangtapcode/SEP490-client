@@ -1,4 +1,4 @@
-import { Input } from 'antd'
+import { Input, InputNumber } from 'antd'
 import { InputWrapper } from './styled'
 
 const typeInput = (props) => {
@@ -9,6 +9,8 @@ const typeInput = (props) => {
       return <Input.TextArea {...props} />
     case 'isSearch':
       return <Input.Search {...props} />
+    case 'isNumber':
+      return <InputNumber {...props} />
     default:
       return <Input {...props} />
   }

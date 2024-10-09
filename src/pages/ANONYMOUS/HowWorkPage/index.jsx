@@ -15,6 +15,7 @@ import {
 } from "./styled"
 
 const HowWorkPage = () => {
+
   const navigate = useNavigate()
 
   return (

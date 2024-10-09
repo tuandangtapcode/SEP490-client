@@ -24,7 +24,7 @@ const LineRace = () => {
     try {
       setLoading(true)
       const res = await StatisticService.statisticBooking()
-      if (res?.isError) return toast.error(res?.msg)
+      if (!!res?.isError) return toast.error(res?.msg) 
       setBooking(res?.data)
     } finally {
       setLoading(false)

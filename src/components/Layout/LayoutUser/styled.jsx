@@ -14,7 +14,7 @@ overflow: hidden;
   justify-content: space-between;
 }
 .content-container {
-  padding: 12px;
+  padding: 40px;
   overflow-y: auto; 
   height: calc(100vh - 64px);
   &::-webkit-scrollbar {

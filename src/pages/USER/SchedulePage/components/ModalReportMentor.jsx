@@ -8,6 +8,7 @@ import SpinCustom from "src/components/SpinCustom"
 import ReportService from "src/services/ReportService"
 
 const ModalReportMentor = ({ open, onCancel }) => {
+
   const [form] = Form.useForm()
   const [loading, setLoading] = useState(false)
   console.log(open);
@@ -22,7 +23,7 @@ const ModalReportMentor = ({ open, onCancel }) => {
         Teacher: open?.Teacher
       }
       const res = await ReportService.createReport(body)
-      if (res?.isError) return toast.error(res?.msg)
+      if (!!res?.isError) return toast.error(res?.msg)
       toast.success(res?.msg)
       onCancel()
     } catch (error) {

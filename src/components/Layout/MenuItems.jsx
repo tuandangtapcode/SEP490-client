@@ -1,5 +1,6 @@
 import Router from "src/routers"
 import ListIcons from "../ListIcons"
+import { Roles } from "src/lib/constant"
 
 
 export const MenuCommon = () => [
@@ -32,6 +33,11 @@ export const MenuUser = (user) => [
     label: "Profile",
   },
   {
+    isview: user?.RoleID === Roles.ROLE_TEACHER,
+    key: Router.SUBJECT_SETTING,
+    label: "Cài đặt môn học",
+  },
+  {
     isview: !user?.IsByGoogle,
     key: Router.CAI_DAT_MAT_KHAU,
     label: "Cài đặt mật khẩu"
@@ -42,7 +48,7 @@ export const MenuUser = (user) => [
     label: "Lịch học",
   },
   {
-    isview: !!(user?.RoleID === 3),
+    isview: !!(user?.RoleID === Roles.ROLE_TEACHER),
     key: Router.DANG_BAI_VIET,
     label: "Đăng bài",
   },
@@ -59,7 +65,7 @@ export const MenuUser = (user) => [
   {
     isview: true,
     key: Router.DANH_SACH_MON_DA_HOC,
-    label: user?.RoleID === 3 ?
+    label: user?.RoleID === Roles.ROLE_TEACHER ?
       "Danh sách các môn đã dạy"
       :
       "Danh sách các môn đã tham gia"

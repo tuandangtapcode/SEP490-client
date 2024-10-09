@@ -4,28 +4,32 @@ import ButtonCustom from "src/components/MyButton/ButtonCustom"
 import dayjs from "dayjs"
 import React, { useState } from "react"
 import PaymentService from "src/services/PaymentService"
-import { getCurrentWeekRange, getRealFee, randomNumber } from "src/lib/commonFunction"
+import { randomNumber } from "src/lib/commonFunction"
 import ReportService from "src/services/ReportService"
 import { toast } from "react-toastify"
+import { useSelector } from "react-redux"
+import { globalSelector } from "src/redux/selector"
+import { getCurrentWeekRange } from "src/lib/dateUtils"
 
 const ModalViewReport = ({ open, onCancel, setPagination }) => {
 
   const [loading, setLoading] = useState(false)
+  const { profitPercent } = useSelector(globalSelector)
 
   const handleReport = async (record) => {
     try {
       setLoading(true)
       const resReport = await ReportService.handleReport(record?._id)
-      if (!!resReport?.isError) return
+      if (!!resReport?.isError) return toast.error(res?.msg)
       const res = await PaymentService.createPayment({
         PaymentType: 2,
         PaymentStatus: 1,
         Description: `Hoàn tiền cho học sinh ${record?.Sender?.FullName}`,
-        TotalFee: getRealFee(+record?.Teacher?.Price * 1000) * 80 / 100,
+        TotalFee: +record?.Teacher?.Price * 1000 * (1 - profitPercent),
         TraddingCode: randomNumber(),
         Receiver: record?.Sender?._id
       })
-      if (!!res?.isError) return
+      if (!!res?.isError) return toast.error(res?.msg)
       toast.success("Report đã được xử lý. Đã tạo thanh toán hoàn tiền cho học sinh")
       onCancel()
       setPagination(pre => ({

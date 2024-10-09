@@ -8,13 +8,13 @@ overflow: hidden;
 .menu-container {
   border: 1px solid #ddd;
   margin-right: 12px;
-  height: calc(100vh - 64px);
+  height: calc(100vh - 75px);
   display: flex;
   flex-direction: column;
   justify-content: space-between;
 }
 .content-container {
-  padding: 12px;
+  padding: 0px 16px;
   overflow-y: auto; 
   height: calc(100vh - 64px);
   &::-webkit-scrollbar {

@@ -23,6 +23,7 @@ import CB1 from "src/components/Modal/CB1"
 
 
 const BlogPage = () => {
+
   const navigate = useNavigate()
   const [loading, setLoading] = useState(false)
   const [modalBlog, setModalBlog] = useState(false)
@@ -39,7 +40,7 @@ const BlogPage = () => {
     try {
       setLoading(true)
       const res = await BlogService.getListBlog(pagination)
-      if (res?.isError) return toast.error(res?.msg)
+      if (!!res?.isError) return toast.error(res?.msg)
       setListBlog(res?.data?.List)
     } finally {
       setLoading(false)
@@ -50,7 +51,7 @@ const BlogPage = () => {
     try {
       setLoading(true)
       const res = await BlogService.deleteBlog(id)
-      if (res?.isError) return toast.error(res?.msg)
+      if (!!res?.isError) return toast.error(res?.msg)
       toast.success(res?.msg)
     } catch (error) {
       console.log("Error:", error)
@@ -66,7 +67,7 @@ const BlogPage = () => {
   return (
     <SpinCustom spinning={loading}>
       <Container>
-        <Title>TatuBoo Blog</Title>
+        <Title>Talent LearningHub Blog</Title>
         <Description>
           Tại đây, bạn sẽ tìm thấy nhiều tài nguyên hữu ích để tham khảo khi học điều gì đó mới - từ hướng dẫn toàn diện đến hướng dẫn từng bước.
         </Description>

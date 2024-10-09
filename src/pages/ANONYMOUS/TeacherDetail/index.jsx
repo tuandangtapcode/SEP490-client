@@ -8,7 +8,6 @@ import ButtonCustom from "src/components/MyButton/ButtonCustom"
 import Description from "./components/Description"
 import ExperiencesOrEducations from "./components/ExperiencesOrEducations"
 import Router from "src/routers"
-import { convertSchedules, getRealFee } from "src/lib/commonFunction"
 import { PatentChildBorder, TabStyled } from "src/pages/ADMIN/TeacherManagement/styled"
 import moment from "moment"
 import { formatMoney } from "src/lib/stringUtils"
@@ -20,6 +19,9 @@ import ModalSendFeedback from "./modal/ModalSendFeedback"
 import CommentService from "src/services/CommentService"
 import Comments from "./components/Comments"
 import ModalSendMessage from "./modal/ModalSendMessage"
+import IntroVideos from "./components/IntroVideos"
+import 'swiper/css'
+import { convertSchedules } from "src/lib/dateUtils"
 
 const { Option } = Select
 
@@ -32,7 +34,7 @@ const TeacherDetail = () => {
   const [quote, setQuote] = useState()
   const [comments, setComments] = useState([])
   const [totalComment, setTotalComment] = useState(0)
-  const { user } = useSelector(globalSelector)
+  const { user, profitPercent } = useSelector(globalSelector)
   const [openModalSendFeedback, setOpenModalSendFeedback] = useState(false)
   const [openModalSendMessage, setOpenModalSendMessage] = useState(false)
 
@@ -40,7 +42,7 @@ const TeacherDetail = () => {
     try {
       setLoading(true)
       const res = await UserService.getDetailTeacher({ TeacherID, SubjectID })
-      if (res?.isError) return navigate("/not-found")
+      if (!!res?.isError) return navigate("/not-found")
       setTeacher(res?.data)
       setQuote(
         res?.data?.Quotes?.find(i => i?.SubjectID === SubjectID)
@@ -58,7 +60,7 @@ const TeacherDetail = () => {
         CurrentPage: 1,
         TeacherID
       })
-      if (res?.isError) return
+      if (!!res?.isError) return toast.error(res?.msg)
       setComments(res?.data?.List)
       setTotalComment(res?.data?.Total)
     } finally {
@@ -102,12 +104,16 @@ const TeacherDetail = () => {
       label: <a href="#review">Đánh giá</a>
     },
     {
-      key: "experiences",
-      label: <a href="#experiences">Kinh nghiệm</a>
+      key: "experience",
+      label: <a href="#experience">Kinh nghiệm</a>
     },
     {
-      key: "educations",
-      label: <a href="#educations">Học vấn</a>
+      key: "education",
+      label: <a href="#education">Học vấn</a>
+    },
+    {
+      key: "introvideo",
+      label: <a href="#introvideo">Video giới thiệu</a>
     },
   ]
 
@@ -218,7 +224,7 @@ const TeacherDetail = () => {
               </MainProfileWrapper>
             </Col>
             <Col span={24} className="mb-16">
-              <MainProfileWrapper id="experiences" className="p-12">
+              <MainProfileWrapper id="experience" className="p-12">
                 <Collapse
                   ghost
                   size="large"
@@ -237,7 +243,7 @@ const TeacherDetail = () => {
               </MainProfileWrapper>
             </Col>
             <Col span={24} className="mb-16">
-              <MainProfileWrapper id="educations" className="p-12">
+              <MainProfileWrapper id="education" className="p-12">
                 <Collapse
                   ghost
                   size="large"
@@ -250,6 +256,26 @@ const TeacherDetail = () => {
                       ),
                       children: (
                         <ExperiencesOrEducations teacher={teacher} isExperience={false} />
+                      )
+                    }
+                  ]}
+                />
+              </MainProfileWrapper>
+            </Col>
+            <Col span={24} className="mb-16">
+              <MainProfileWrapper id="introvideo" className="p-12">
+                <Collapse
+                  ghost
+                  size="large"
+                  expandIconPosition="end"
+                  items={[
+                    {
+                      key: "1",
+                      label: (
+                        <div className="fs-20 fw-600">Video giới thiệu</div>
+                      ),
+                      children: (
+                        <IntroVideos teacher={teacher} />
                       )
                     }
                   ]}
@@ -297,7 +323,7 @@ const TeacherDetail = () => {
               </div>
               <div className="mb-12">
                 <span className="fs-17 fw-600 mr-4">Giá: </span>
-                <span>{formatMoney(getRealFee(teacher?.Price) * 1000)} VNĐ</span>
+                <span>{formatMoney(teacher?.Price) * 1000 * (1 + profitPercent)} VNĐ</span>
               </div>
               {
                 user?._id !== TeacherID &&

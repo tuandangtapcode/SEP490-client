@@ -4,12 +4,12 @@ import { useLocation, useNavigate, useParams } from "react-router-dom"
 import SpinCustom from "src/components/SpinCustom"
 import UserService from "src/services/UserService"
 import { MainProfileWrapper } from "../TeacherDetail/styled"
-import { TimeItemStyled } from "./styled"
+import { PaymentMethodStyled, TimeItemStyled } from "./styled"
 import dayjs from "dayjs"
 import { SYSTEM_KEY } from "src/lib/constant"
 import { useSelector } from "react-redux"
 import { globalSelector } from "src/redux/selector"
-import { generateSignature, getListComboKey, getRealFee, randomNumber } from "src/lib/commonFunction"
+import { generateSignature, getListComboKey, randomNumber } from "src/lib/commonFunction"
 import InputCustom from "src/components/InputCustom"
 import ButtonCustom from "src/components/MyButton/ButtonCustom"
 import { formatMoney } from "src/lib/stringUtils"
@@ -20,13 +20,17 @@ import LearnHistoryService from "src/services/LearnHistoryService"
 import ModalPaymentBooking from "./components/ModalPaymentBooking"
 import { toast } from "react-toastify"
 import Notice from "src/components/Notice"
+import logoVietQR from '/vietqr.png'
+import logoVNPay from '/Icon-VNPAY-QR.png'
+import handleCreatePaymentVNPay from "src/lib/getUrlVNPay"
+import { disabledBeforeDate } from "src/lib/dateUtils"
 
 const RootURLWebsite = import.meta.env.VITE_ROOT_URL_WEBSITE
 
 const BookingPage = () => {
 
   const { TeacherID, SubjectID } = useParams()
-  const { listSystemKey, user } = useSelector(globalSelector)
+  const { listSystemKey, user, profitPercent } = useSelector(globalSelector)
   const navigate = useNavigate()
   const [loading, setLoading] = useState(false)
   const [teacher, setTeacher] = useState()
@@ -39,12 +43,14 @@ const BookingPage = () => {
   const location = useLocation()
   const [openModalSuccessBooking, setOpenModalSuccessBooking] = useState(false)
   const [openModalPaymentBooking, setOpenModalPaymentBooking] = useState(false)
+  const queryParams = new URLSearchParams(location.search)
+  const [paymentMethod, setPaymentMethod] = useState("")
 
   const getDetailTeacher = async () => {
     try {
       setLoading(true)
       const res = await UserService.getDetailTeacher({ TeacherID, SubjectID })
-      if (res?.isError) return navigate("/not-found")
+      if (!!res?.isError) return navigate("/not-found")
       setTeacher(res?.data)
       setSubject(
         res?.data?.Subjects?.find(i => i?._id === SubjectID)
@@ -58,7 +64,7 @@ const BookingPage = () => {
     try {
       setLoading(true)
       const res = await TimeTableService.getTimeTableByUser()
-      if (res?.isError) return
+      if (!!res?.isError) return toast.error(res?.msg)
       SetTimeTables(res?.data?.List)
     } finally {
       setLoading(false)
@@ -112,20 +118,29 @@ const BookingPage = () => {
           msg: "Hãy nhập địa chỉ"
         })
       }
-      const body = {
-        orderCode: randomNumber(),
-        amount: getRealFee(+teacher?.Price * selectedTimes.length * 1000),
-        description: "Thanh toán book giáo viên",
-        cancelUrl: `${RootURLWebsite}${location.pathname}`,
-        returnUrl: `${RootURLWebsite}${location.pathname}`,
+      if (paymentMethod === "vietqr") {
+        const body = {
+          orderCode: randomNumber(),
+          amount: +teacher?.Price * selectedTimes.length * 1000 * (1 + profitPercent),
+          description: "Thanh toán book giáo viên",
+          cancelUrl: `${RootURLWebsite}${location.pathname}`,
+          returnUrl: `${RootURLWebsite}${location.pathname}`,
+        }
+        const data = `amount=${body.amount}&cancelUrl=${body.cancelUrl}&description=${body.description}&orderCode=${body.orderCode}&returnUrl=${body.returnUrl}`
+        const resPaymemtLink = await PaymentService.createPaymentLink({
+          ...body,
+          signature: generateSignature(data)
+        })
+        if (resPaymemtLink?.data?.code !== "00") return toast.error("Có lỗi xảy ra trong quá trình tạo thanh toán")
+        window.location.href = resPaymemtLink?.data?.data?.checkoutUrl
+      } else if (paymentMethod === "vnpay") {
+        handleCreatePaymentVNPay(
+          "Thanh toán book giáo viên",
+          +teacher?.Price * selectedTimes.length * 1000 * (1 + profitPercent),
+          `${RootURLWebsite}${location.pathname}`,
+          teacher?.ipAddress
+        )
       }
-      const data = `amount=${body.amount}&cancelUrl=${body.cancelUrl}&description=${body.description}&orderCode=${body.orderCode}&returnUrl=${body.returnUrl}`
-      const resPaymemtLink = await PaymentService.createPaymentLink({
-        ...body,
-        signature: generateSignature(data)
-      })
-      if (resPaymemtLink?.data?.code !== "00") return toast.error("Có lỗi xảy ra trong quá trình tạo thanh toán")
-      setOpenModalPaymentBooking({ ...resPaymemtLink?.data?.data })
     } finally {
       setLoading(false)
     }
@@ -137,7 +152,7 @@ const BookingPage = () => {
       const resPayment = await PaymentService.createPayment({
         PaymentType: 1,
         Description: `Thanh toán book giáo viên ${teacher?.FullName}`,
-        TotalFee: getRealFee(+teacher?.Price * selectedTimes.length * 1000),
+        TotalFee: +teacher?.Price * selectedTimes.length * 1000 * (1 + profitPercent),
         TraddingCode: randomNumber()
       })
       if (!!resPayment?.isError) return
@@ -191,6 +206,16 @@ const BookingPage = () => {
     if (!!teacher) getTimeTable()
   }, [teacher])
 
+  useEffect(() => {
+    if (
+      ((!!queryParams.get("status") && queryParams.get("status") === "PAID") ||
+        (!!queryParams.get("vnp_ResponseCode") && queryParams.get("vnp_ResponseCode") === "00")) &&
+      !!teacher
+    ) {
+      handleCompleteBooking()
+    }
+  }, [location.search, teacher])
+
 
   return (
     <SpinCustom spinning={loading}>
@@ -204,9 +229,7 @@ const BookingPage = () => {
                 <DatePicker
                   style={{ width: "100%" }}
                   format="DD/MM/YYYY"
-                  disabledDate={current =>
-                    current && current <= dayjs().startOf("day")
-                  }
+                  disabledDate={current => { disabledBeforeDate(current) }}
                   onChange={e => {
                     const daysFromTimeTable = !!timeTables?.length
                       ? timeTables
@@ -323,15 +346,51 @@ const BookingPage = () => {
               !!selectedTimes?.length &&
               <div className="mb-16">
                 <span className="fw-600 fw-16 mr-4">Tổng giá:</span>
-                <span className="fs-17 fw-600">{formatMoney(getRealFee(+teacher?.Price * selectedTimes.length * 1000))} VNĐ</span>
+                <span className="fs-17 fw-600">{formatMoney(+teacher?.Price * selectedTimes.length * 1000 * (1 + profitPercent))} VNĐ</span>
               </div>
             }
+            <Radio.Group
+              value={paymentMethod}
+              onChange={e => setPaymentMethod(e.target.value)}
+            >
+              <PaymentMethodStyled className={`${paymentMethod === "vnpay" ? "active" : ""}`}>
+                <Radio value="vnpay">
+                  <div className="d-flex-sb">
+                    <div className="mr-6 fs-16">Thanh toán bằng VNPay</div>
+                    <img
+                      src={logoVNPay}
+                      alt=""
+                      style={{
+                        width: "25px",
+                        height: "25px"
+                      }}
+                    />
+                  </div>
+                </Radio>
+              </PaymentMethodStyled>
+              <PaymentMethodStyled className={`${paymentMethod === "vietqr" ? "active" : ""}`}>
+                <Radio value="vietqr">
+                  <div className="d-flex-sb">
+                    <div className="mr-6 fs-16">Thanh toán bằng VietQR</div>
+                    <img
+                      src={logoVietQR}
+                      alt=""
+                      style={{
+                        width: "25px",
+                        height: "25px"
+                      }}
+                    />
+                  </div>
+                </Radio>
+              </PaymentMethodStyled>
+            </Radio.Group>
             {
               !!selectedTimes?.length &&
               (
                 (bookingInfor?.LearnType === 2 && !!bookingInfor?.Address) ||
                 (bookingInfor?.LearnType === 1)
               ) &&
+              !!paymentMethod &&
               <ButtonCustom
                 className="primary submit-btn"
                 loading={loading}
@@ -362,7 +421,7 @@ const BookingPage = () => {
 
       </Row>
 
-    </SpinCustom>
+    </SpinCustom >
   )
 }
 

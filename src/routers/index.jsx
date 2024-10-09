@@ -19,6 +19,7 @@ const Router = {
 
   // USER
   PROFILE: `${USER}/profile`,
+  SUBJECT_SETTING: `${USER}/cai-dat-mon-hoc`,
   HOP_THU_DEN: `${USER}/hop-thu-den`,
   LICH_HOC: `${USER}/lich-hoc`,
   DANG_BAI_VIET: `${USER}/dang-bai-viet`,
