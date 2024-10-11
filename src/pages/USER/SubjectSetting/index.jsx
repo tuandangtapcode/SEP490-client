@@ -1,4 +1,4 @@
-import { Col, Form, Row } from "antd"
+import { Col, Form, message, Row, Space } from "antd"
 import { useEffect, useState } from "react"
 import { toast } from "react-toastify"
 import ButtonCustom from "src/components/MyButton/ButtonCustom"
@@ -6,7 +6,6 @@ import SpinCustom from "src/components/SpinCustom"
 import UserService from "src/services/UserService"
 import { SubjectItemStyled } from "./styled"
 import BasicInformation from "./components/BasicInformation"
-import TimeTable from "./components/TimeTable"
 import Experiences from "./components/Experiences"
 import Educations from "./components/Educations"
 import Certificates from "./components/Certificates"
@@ -19,6 +18,7 @@ import { ADMIN_ID } from "src/lib/constant"
 import { useSelector } from "react-redux"
 import { globalSelector } from "src/redux/selector"
 import socket from "src/utils/socket"
+import ModalTimeTable from "./modal/ModalTimeTable"
 
 const SubjectSetting = () => {
 
@@ -29,8 +29,9 @@ const SubjectSetting = () => {
   const [form] = Form.useForm()
   const [filesCertificate, setFilesCertificate] = useState([])
   const [filesIntroVideo, setFilesIntroVideo] = useState([])
-  const [schedules, setSchedules] = useState([])
   const { user } = useSelector(globalSelector)
+  const [openModalTimeTable, setOpenModalTimeTable] = useState(false)
+  const [schedules, setSchedules] = useState([])
 
   const getListSubjectSetting = async () => {
     try {
@@ -47,6 +48,8 @@ const SubjectSetting = () => {
     try {
       setLoading(true)
       const values = await form.validateFields()
+      if (!schedules.length)
+        return message.error("Bạn chưa cài đặt lịch dạy")
       const resCertificate = FileService.uploadFileList({
         FileList: values?.Certificates?.map(i => i?.originFileObj)
       })
@@ -65,13 +68,6 @@ const SubjectSetting = () => {
         Certificates: resultFile[0]?.data,
         IntroVideos: resultFile[1]?.data,
         Levels: values?.Levels,
-        Schedules: !!schedules?.length
-          ? schedules?.map(i => ({
-            DateAt: dayjs(i?.start).format("dddd"),
-            StartTime: dayjs(i?.start),
-            EndTime: dayjs(i?.end),
-          }))
-          : undefined,
         Experiences: !!values?.experiences
           ? values?.experiences?.map(i => ({
             Content: i?.Content,
@@ -151,25 +147,28 @@ const SubjectSetting = () => {
           id: idx
         }))
       })
-      if (!!subjectSetting?.Schedules?.length) {
-        const getDayFormSchedule = subjectSetting?.Schedules?.find(i => i?.DateAt === dayjs().format("dddd"))
-        setSchedules(
-          subjectSetting?.Schedules?.map(i => {
-            const dayGap = dayjs().startOf("day").diff(dayjs(getDayFormSchedule?.StartTime).startOf("day"), "days")
-            return {
-              start: dayGap > 5
-                ? dayjs(i?.StartTime).add(dayGap, "days")
-                : dayjs(i?.StartTime),
-              end: dayGap > 5
-                ? dayjs(i?.EndTime).add(dayGap, "days")
-                : dayjs(i?.EndTime),
-              title: ""
-            }
-          })
-        )
-      }
     }
   }, [subjectSetting?.Subject?._id])
+
+  useEffect(() => {
+    if (!!user?.Schedules?.length) {
+      const getDayFormSchedule = user?.Schedules?.find(i => i?.DateAt === dayjs().format("dddd"))
+      setSchedules(
+        user?.Schedules?.map(i => {
+          const dayGap = dayjs().startOf("day").diff(dayjs(getDayFormSchedule?.StartTime).startOf("day"), "days")
+          return {
+            start: dayGap > 5
+              ? dayjs(i?.StartTime).add(dayGap, "days")
+              : dayjs(i?.StartTime),
+            end: dayGap > 5
+              ? dayjs(i?.EndTime).add(dayGap, "days")
+              : dayjs(i?.EndTime),
+            title: ""
+          }
+        })
+      )
+    }
+  }, [user?.Schedules])
 
   return (
     <SpinCustom spinning={loading}>
@@ -177,12 +176,20 @@ const SubjectSetting = () => {
         <Row>
           <Col span={24} className="d-flex-sb mb-10">
             <div className="fs-18 fw-600">Danh sách môn học</div>
-            <ButtonCustom
-              className="primary"
-              onClick={() => setOpenModalSubject(true)}
-            >
-              Thêm Môn học
-            </ButtonCustom>
+            <Space>
+              <ButtonCustom
+                className="primary"
+                onClick={() => setOpenModalSubject(true)}
+              >
+                Thêm Môn học
+              </ButtonCustom>
+              <ButtonCustom
+                className="primary"
+                onClick={() => setOpenModalTimeTable(true)}
+              >
+                Cài đặt lịch dạy
+              </ButtonCustom>
+            </Space>
           </Col>
           <Col span={24} className="mb-20">
             {
@@ -207,10 +214,6 @@ const SubjectSetting = () => {
             !!subjectSetting &&
             <>
               <BasicInformation />
-              <TimeTable
-                schedules={schedules}
-                setSchedules={setSchedules}
-              />
               <Experiences />
               <Educations />
               <Certificates
@@ -254,6 +257,16 @@ const SubjectSetting = () => {
           onCancel={() => setOpenModalSubject(false)}
           subjectSettings={subjectSettings}
           onOk={getListSubjectSetting}
+        />
+      }
+
+      {
+        !!openModalTimeTable &&
+        <ModalTimeTable
+          open={openModalTimeTable}
+          onCancel={() => setOpenModalTimeTable(false)}
+          schedules={schedules}
+          setSchedules={setSchedules}
         />
       }
     </SpinCustom >

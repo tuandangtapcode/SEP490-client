@@ -8,12 +8,13 @@ import ButtonCustom from "src/components/MyButton/ButtonCustom"
 import { useGoogleLogin } from "@react-oauth/google"
 import UserService from "src/services/UserService"
 import { toast } from "react-toastify"
-import { useDispatch } from "react-redux"
+import { useDispatch, useSelector } from "react-redux"
 import globalSlice from "src/redux/globalSlice"
-import { decodeData, getCookie } from "src/lib/commonFunction"
 import socket from "src/utils/socket"
 import SpinCustom from "src/components/SpinCustom"
 import { Roles } from "src/lib/constant"
+import { globalSelector } from "src/redux/selector"
+import { decodeData } from "src/lib/commonFunction"
 
 const LoginPage = () => {
 
@@ -21,7 +22,7 @@ const LoginPage = () => {
   const [loading, setLoading] = useState(false)
   const dispatch = useDispatch()
   const navigate = useNavigate()
-  const isLogin = getCookie("token")
+  const { user } = useSelector(globalSelector)
 
   const loginByGoogle = useGoogleLogin({
     onSuccess: async (tokenResponse) => {
@@ -76,7 +77,7 @@ const LoginPage = () => {
   }
 
   useEffect(() => {
-    if (!!isLogin) navigate("/")
+    if (!!user?._id) navigate("/")
   }, [])
 
   return (

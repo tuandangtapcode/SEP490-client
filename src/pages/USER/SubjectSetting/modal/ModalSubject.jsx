@@ -61,22 +61,20 @@ const ModalSubject = ({
       open={open}
       onCancel={onCancel}
       footer={
-        <div className="d-flex-end">
-          <Space direction="horizontal">
-            <ButtonCustom btnType="cancel" onClick={onCancel}>
-              Đóng
-            </ButtonCustom>
-            <ButtonCustom
-              loading={loading}
-              className="primary"
-              onClick={() => {
-                handleCreateSubjectSetting()
-              }}
-            >
-              Lưu
-            </ButtonCustom>
-          </Space>
-        </div>
+        <Space direction="horizontal" className="d-flex-end">
+          <ButtonCustom btnType="cancel" onClick={onCancel}>
+            Đóng
+          </ButtonCustom>
+          <ButtonCustom
+            loading={loading}
+            className="primary"
+            onClick={() => {
+              handleCreateSubjectSetting()
+            }}
+          >
+            Lưu
+          </ButtonCustom>
+        </Space>
       }
     >
       <SpinCustom spinning={loading}>

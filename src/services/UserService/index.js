@@ -23,6 +23,7 @@ import {
   apiResponseConfirmRegister,
   apiUpdateSubjectSetting,
   apiConfirmSubjectSetting,
+  apiCheckAuth,
 } from "./urls"
 
 const getInforByGoogleLogin = (access_token) => axios.get(apiGetInforByGoogleLogin, {
@@ -31,6 +32,7 @@ const getInforByGoogleLogin = (access_token) => axios.get(apiGetInforByGoogleLog
   }
 })
 const login = body => http.post(apiLogin, body)
+const checkAuth = () => http.get(apiCheckAuth)
 const loginByGoogle = body => http.post(apiLoginByGoogle, body)
 const register = body => http.post(apiRegister, body)
 const logout = () => http.get(apiLogout)
@@ -55,6 +57,7 @@ const confirmSubjectSetting = body => http.post(apiConfirmSubjectSetting, body)
 const UserService = {
   getInforByGoogleLogin,
   login,
+  checkAuth,
   loginByGoogle,
   register,
   logout,
