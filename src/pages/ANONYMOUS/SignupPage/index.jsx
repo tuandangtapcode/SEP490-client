@@ -4,14 +4,14 @@ import { useNavigate } from "react-router-dom"
 import { SignupContainerStyled } from "./styled"
 import UserService from "src/services/UserService"
 import { toast } from "react-toastify"
-import { getCookie } from "src/lib/commonFunction"
 import InputCustom from "src/components/InputCustom"
 import { getRegexEmail, getRegexPhoneNumber } from "src/lib/stringUtils"
 import SubjectService from "src/services/SubjectService"
 import ButtonCustom from "src/components/MyButton/ButtonCustom"
 import { useGoogleLogin } from "@react-oauth/google"
-import dayjs from "dayjs"
 import { disabledBeforeDate } from "src/lib/dateUtils"
+import { useSelector } from "react-redux"
+import { globalSelector } from "src/redux/selector"
 
 const { Option } = Select
 
@@ -20,9 +20,9 @@ const SignupPage = () => {
   const [form] = Form.useForm()
   const navigate = useNavigate()
   const [loading, setLoading] = useState(false)
-  const isLogin = getCookie("token")
   const [subjects, setSubjects] = useState([])
   const [roleID, setRoleID] = useState()
+  const { user } = useSelector(globalSelector)
 
   const handleRegister = async () => {
     try {
@@ -73,7 +73,7 @@ const SignupPage = () => {
   }, [])
 
   useEffect(() => {
-    if (!!isLogin) navigate("/")
+    if (!!user?._id) navigate("/")
   }, [])
 
   return (

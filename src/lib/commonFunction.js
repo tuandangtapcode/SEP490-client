@@ -1,5 +1,4 @@
 import CryptoJS from "crypto-js"
-import Cookies from "js-cookie"
 import globalSlice from "src/redux/globalSlice"
 import UserService from "src/services/UserService"
 import socket from "src/utils/socket"
@@ -21,10 +20,6 @@ export const getListComboKey = (key, listSystemKey) => {
   return []
 }
 
-export const getCookie = (key) => {
-  return Cookies.get(key)
-}
-
 export const decodeData = data_hashed => {
   const decryptedBytes = CryptoJS.AES.decrypt(
     data_hashed,
@@ -44,7 +39,6 @@ export const handleLogout = async (UserID, dispatch, navigate) => {
   if (!!res?.isError) return
   socket.emit("user-logout", UserID)
   socket.disconnect()
-  Cookies.remove("token")
   dispatch(globalSlice.actions.setUser({}))
   navigate('/dang-nhap')
 }
