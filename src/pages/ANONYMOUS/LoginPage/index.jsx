@@ -10,12 +10,10 @@ import UserService from "src/services/UserService"
 import { toast } from "react-toastify"
 import { useDispatch, useSelector } from "react-redux"
 import globalSlice from "src/redux/globalSlice"
-import socket from "src/utils/socket"
 import SpinCustom from "src/components/SpinCustom"
 import { decodeData } from "src/lib/commonFunction"
 import { Roles } from "src/lib/constant"
 import { globalSelector } from "src/redux/selector"
-import { decodeData } from "src/lib/commonFunction"
 
 const LoginPage = () => {
 
