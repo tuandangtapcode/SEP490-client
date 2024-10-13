@@ -7,7 +7,7 @@ import { globalSelector } from "src/redux/selector"
 import styled from "styled-components"
 import ModalSendFeedback from "../modal/ModalSendFeedback"
 
-const CommentItemStyled = styled.div`
+const FeedbackItemStyled = styled.div`
   border: 1px solid #aaa;
   border-radius: 8px;
   padding: 15px;
@@ -15,7 +15,7 @@ const CommentItemStyled = styled.div`
 `
 
 
-const Comments = ({ comments, teacher }) => {
+const Feedbacks = ({ feedbacks, teacher }) => {
 
   const [openModalSendFeedback, setOpenModalSendFeedback] = useState(false)
   const { user } = useSelector(globalSelector)
@@ -39,9 +39,9 @@ const Comments = ({ comments, teacher }) => {
       </div>
       <div>
         {
-          !!comments?.length ?
-            comments?.map((i, idx) =>
-              <CommentItemStyled key={idx}>
+          !!feedbacks?.length ?
+            feedbacks?.map((i, idx) =>
+              <FeedbackItemStyled key={idx}>
                 <Row>
                   <Col span={4}>
                     {i?.User?.FullName}
@@ -56,7 +56,7 @@ const Comments = ({ comments, teacher }) => {
                     <div>{moment(i.createdAt).calendar()}</div>
                   </Col>
                 </Row>
-              </CommentItemStyled>
+              </FeedbackItemStyled>
             )
             : <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description="Giáo viên chưa có đánh giá nào" />
         }
@@ -74,4 +74,4 @@ const Comments = ({ comments, teacher }) => {
   )
 }
 
-export default Comments
+export default Feedbacks

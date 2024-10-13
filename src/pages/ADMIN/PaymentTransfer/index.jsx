@@ -13,10 +13,10 @@ import { formatMoney } from "src/lib/stringUtils"
 import { globalSelector } from "src/redux/selector"
 import BankingService from "src/services/BankingService"
 import PaymentService from "src/services/PaymentService"
-import ModalViewReport from "./components/ModalViewReport"
 import ModalPaymentTransfer from "./components/ModalPaymentTransfer"
 import dayjs from "dayjs"
 import { getCurrentWeekRange } from "src/lib/dateUtils"
+import ModalViewIssue from "./components/ModalViewIssue"
 
 
 const PaymentTransfer = () => {
@@ -31,7 +31,7 @@ const PaymentTransfer = () => {
     FromDate: getCurrentWeekRange().startOfWeek,
     ToDate: getCurrentWeekRange().endOfWeek
   })
-  const [openModalViewReport, setOpenModalViewReport] = useState(false)
+  const [openModalViewIssue, setOpenModalViewIssue] = useState(false)
   const [openModalPaymentTransfer, setOpenModalTransfer] = useState(false)
   const { listSystemKey } = useSelector(globalSelector)
   const PaymentStatuskey = getListComboKey(SYSTEM_KEY.PAYMENT_STATUS, listSystemKey)
@@ -66,7 +66,7 @@ const PaymentTransfer = () => {
         PaymentID: record?._id,
         Email: record?.Receiver?.Email,
         FullName: record?.Receiver?.FullName,
-        Reports: record?.Receiver?.Reports?.map(i => ({
+        Issues: record?.Receiver?.Issues?.map(i => ({
           DateAt: dayjs(open?.TimeTables?.find(item => item?._id === i?.Timetable)?.DateAt).format("DD/MM/YYYY"),
           Time: `${dayjs(open?.TimeTables?.find(item => item?._id === i?.Timetable)?.StartTime).format("HH:mm")} - ${dayjs(open?.TimeTables?.find(item => item?._id === i?.Timetable)?.EndTime).format("HH:mm")}`,
           Title: i?.Title,
@@ -116,10 +116,10 @@ const PaymentTransfer = () => {
 
   const listBtn = record => [
     {
-      title: "Xem chi tiết báo cáo",
-      disabled: !record?.Receiver?.Reports?.length,
+      title: "Xem chi tiết phản ánh",
+      disabled: !record?.Receiver?.Issues?.length,
       icon: ListIcons?.ICON_VIEW,
-      onClick: () => setOpenModalViewReport({
+      onClick: () => setOpenModalViewIssue({
         ...record?.Receiver,
         RequestAxplanationAt: record?.RequestAxplanationAt,
         PaymentID: record?._id
@@ -134,7 +134,7 @@ const PaymentTransfer = () => {
     {
       title: "Gửi yêu cầu giải trình",
       icon: ListIcons?.ICON_CLOSE,
-      disabled: !record?.Receiver?.Reports?.length || !!record?.RequestAxplanationAt,
+      disabled: !record?.Receiver?.Issues?.length || !!record?.RequestAxplanationAt,
       onClick: () => handleSendRequestExplanation(record)
     }
   ]
@@ -173,11 +173,11 @@ const PaymentTransfer = () => {
       )
     },
     {
-      title: "Số tiết học bị báo cáo",
+      title: "Số tiết học bị phản ánh",
       width: 100,
       align: "center",
       render: (_, record) => (
-        <div>{record?.Receiver?.Reports?.length}</div>
+        <div>{record?.Receiver?.Issues?.length}</div>
       )
     },
     {
@@ -269,10 +269,10 @@ const PaymentTransfer = () => {
         </Col>
 
         {
-          !!openModalViewReport &&
-          <ModalViewReport
-            open={openModalViewReport}
-            onCancel={() => setOpenModalViewReport(false)}
+          !!openModalViewIssue &&
+          <ModalViewIssue
+            open={openModalViewIssue}
+            onCancel={() => setOpenModalViewIssue(false)}
             setPagination={setPagination}
           />
         }

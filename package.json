@@ -21,7 +21,6 @@
     "echarts": "^5.5.1",
     "echarts-for-react": "^3.0.2",
     "file-saver": "^2.0.5",
-    "js-cookie": "^3.0.5",
     "lodash": "^4.17.21",
     "moment": "^2.30.1",
     "peerjs": "^1.5.4",
