@@ -22,7 +22,7 @@ const Search = ({ subjects }) => {
 
   return (
     <SearchContainerStyled>
-      <Row gutter={[16]} >
+      <Row gutter={[16]} className="d-flex-sb">
         <Col span={7}>
           <div className="d-flex align-items-center mb-8">
             {ListIcons.ICON_SUBJECT_CATE_PRIMARY_COLOR}
@@ -100,7 +100,7 @@ const Search = ({ subjects }) => {
             </Select>
           </div>
         </Col>
-        <Col span={3}>
+        <Col span={3} className="d-flex-center">
           <ButtonCustom className="yellow-btn medium-size mt-23">
             <Link>Tìm</Link>
           </ButtonCustom>

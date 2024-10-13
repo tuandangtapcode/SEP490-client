@@ -11,7 +11,7 @@ import { getListComboKey } from "src/lib/commonFunction"
 import { Roles, SYSTEM_KEY } from "src/lib/constant"
 import { globalSelector } from "src/redux/selector"
 import LearnHistoryService from "src/services/LearnHistoryService"
-import ModalReportMentor from "../SchedulePage/components/ModalReportMentor"
+import ModalIssueMentor from "../SchedulePage/components/ModalIssueMentor"
 import ModalSendFeedback from "src/pages/ANONYMOUS/TeacherDetail/modal/ModalSendFeedback"
 import SpinCustom from "src/components/SpinCustom"
 
@@ -20,7 +20,7 @@ const StudiedSubject = () => {
   const [loading, setLoading] = useState(false)
   const [listSubject, setListSubject] = useState([])
   const [total, setTotal] = useState(0)
-  const [modalReportMentor, setModalReportMentor] = useState(false)
+  const [modalIssueMentor, setModalIssueMentor] = useState(false)
   const [openModalSendFeedback, setOpenModalSendFeedback] = useState(false)
   const [pagination, setPagination] = useState({
     CurrentPage: 1,
@@ -125,7 +125,7 @@ const StudiedSubject = () => {
               key={record?.LearnedStatus}
               title="Báo cáo giáo viên"
               icon={ListIcons?.ICON_WARNING}
-              onClick={() => setModalReportMentor(record)}
+              onClick={() => setModalIssueMentor(record)}
             />
           }
           {record?.LearnedStatus === 2 &&
@@ -207,10 +207,10 @@ const StudiedSubject = () => {
           />
         </Col>
         {
-          !!modalReportMentor &&
-          <ModalReportMentor
-            open={modalReportMentor}
-            onCancel={() => setModalReportMentor(false)}
+          !!modalIssueMentor &&
+          <ModalIssueMentor
+            open={modalIssueMentor}
+            onCancel={() => setModalIssueMentor(false)}
           />
         }
         {

@@ -6,7 +6,7 @@ import InputCustom from "src/components/InputCustom"
 import ModalCustom from "src/components/ModalCustom"
 import ButtonCustom from "src/components/MyButton/ButtonCustom"
 import { globalSelector } from "src/redux/selector"
-import CommentService from "src/services/CommentService"
+import FeedbackService from "src/services/FeedbackService"
 import socket from "src/utils/socket"
 
 const ModalSendFeedback = ({ open, onCancel }) => {
@@ -15,16 +15,16 @@ const ModalSendFeedback = ({ open, onCancel }) => {
   const [loading, setLoading] = useState(false)
   const { user } = useSelector(globalSelector)
 
-  const handleSendComment = async () => {
+  const handleSendFeedback = async () => {
     try {
       setLoading(true)
       const values = await form.validateFields()
-      const res = await CommentService.createComment({
+      const res = await FeedbackService.createFeedback({
         ...values,
         Teacher: !!open?.Teacher?._id ? open?.Teacher?._id : open?._id
       })
       if (!!res?.isError) return toast.error(res?.msg)
-      socket.emit("send-comment", {
+      socket.emit("send-feedback", {
         ...values,
         User: {
           FullName: user?.FullName,
@@ -57,7 +57,7 @@ const ModalSendFeedback = ({ open, onCancel }) => {
             <ButtonCustom
               className="primary"
               loading={loading}
-              onClick={() => handleSendComment()}
+              onClick={() => handleSendFeedback()}
             >
               Gửi
             </ButtonCustom>

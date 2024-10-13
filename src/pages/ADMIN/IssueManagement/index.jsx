@@ -5,9 +5,9 @@ import { toast } from "react-toastify"
 import InputCustom from "src/components/InputCustom"
 import SpinCustom from "src/components/SpinCustom"
 import TableCustom from "src/components/TableCustom"
-import ReportService from "src/services/ReportService"
+import IssueService from "src/services/IssueService"
 
-const ReportManagement = () => {
+const IssueManagement = () => {
 
   const [loading, setLoading] = useState(false)
   const [listData, setListData] = useState([])
@@ -18,10 +18,10 @@ const ReportManagement = () => {
   })
 
 
-  const getListReport = async () => {
+  const getListIssue = async () => {
     try {
       setLoading(true)
-      const res = await ReportService.getListReport(pagination)
+      const res = await IssueService.getListIssue(pagination)
       if (!!res?.isError) return toast.error(res?.msg)
       setListData(res?.data?.List)
       setTotal(res?.data?.Total)
@@ -30,7 +30,7 @@ const ReportManagement = () => {
     }
   }
   useEffect(() => {
-    if (pagination.PageSize) getListReport()
+    if (pagination.PageSize) getListIssue()
   }, [pagination])
 
 
@@ -45,7 +45,7 @@ const ReportManagement = () => {
       ),
     },
     {
-      title: 'Người báo cáo',
+      title: 'Người phản ánh',
       width: 100,
       align: 'center',
       dataIndex: 'AuthorName',
@@ -55,14 +55,14 @@ const ReportManagement = () => {
       ),
     },
     {
-      title: 'Tiêu đề báo cáo',
+      title: 'Tiêu đề phản ánh',
       width: 100,
       align: 'center',
       dataIndex: 'Title',
       key: 'Title',
     },
     {
-      title: 'Nội dung báo cáo chi tiết',
+      title: 'Nội dung phản ánh chi tiết',
       width: 300,
       dataIndex: 'Content',
       key: 'Content',
@@ -85,7 +85,7 @@ const ReportManagement = () => {
       <Row gutter={[16, 16]}>
         <Col span={24} className="mb-5">
           <div className="title-type-1">
-            QUẢN LÝ BÁO CÁO
+            QUẢN LÝ PHẢN ÁNH CỦA HỌC SINH
           </div>
         </Col>
         <Col span={24}>
@@ -134,4 +134,4 @@ const ReportManagement = () => {
   )
 }
 
-export default ReportManagement
+export default IssueManagement

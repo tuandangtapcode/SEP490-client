@@ -16,8 +16,8 @@ import { globalSelector } from "src/redux/selector"
 import { toast } from "react-toastify"
 import socket from "src/utils/socket"
 import ModalSendFeedback from "./modal/ModalSendFeedback"
-import CommentService from "src/services/CommentService"
-import Comments from "./components/Comments"
+import FeedbackService from "src/services/FeedbackService"
+import Feedbacks from "./components/Feedbacks"
 import ModalSendMessage from "./modal/ModalSendMessage"
 import IntroVideos from "./components/IntroVideos"
 import 'swiper/css'
@@ -32,8 +32,8 @@ const TeacherDetail = () => {
   const [loading, setLoading] = useState(false)
   const [teacher, setTeacher] = useState()
   const [quote, setQuote] = useState()
-  const [comments, setComments] = useState([])
-  const [totalComment, setTotalComment] = useState(0)
+  const [feedbacks, setFeedbacks] = useState([])
+  const [totalFeedback, setTotalFeedback] = useState(0)
   const { user, profitPercent } = useSelector(globalSelector)
   const [openModalSendFeedback, setOpenModalSendFeedback] = useState(false)
   const [openModalSendMessage, setOpenModalSendMessage] = useState(false)
@@ -52,17 +52,17 @@ const TeacherDetail = () => {
     }
   }
 
-  const getListComment = async () => {
+  const getListFeedback = async () => {
     try {
       setLoading(true)
-      const res = await CommentService.getListCommentOfTeacher({
+      const res = await FeedbackService.getListFeedbackOfTeacher({
         PageSize: 3,
         CurrentPage: 1,
         TeacherID
       })
       if (!!res?.isError) return toast.error(res?.msg)
-      setComments(res?.data?.List)
-      setTotalComment(res?.data?.Total)
+      setFeedbacks(res?.data?.List)
+      setTotalFeedback(res?.data?.Total)
     } finally {
       setLoading(false)
     }
@@ -74,7 +74,7 @@ const TeacherDetail = () => {
 
   useEffect(() => {
     if (!!teacher) {
-      getListComment()
+      getListFeedback()
     }
   }, [teacher])
 
@@ -85,8 +85,8 @@ const TeacherDetail = () => {
   }, [teacher])
 
   useEffect(() => {
-    socket.on("get-comment", data => {
-      setComments([...comments, data])
+    socket.on("get-feedback", data => {
+      setFeedbacks([...feedbacks, data])
     })
   }, [])
 
@@ -220,7 +220,7 @@ const TeacherDetail = () => {
             </Col>
             <Col span={24} className="mb-16">
               <MainProfileWrapper className="p-24" id="review">
-                <Comments comments={comments} teacher={teacher} />
+                <Feedbacks feedbacks={feedbacks} teacher={teacher} />
               </MainProfileWrapper>
             </Col>
             <Col span={24} className="mb-16">

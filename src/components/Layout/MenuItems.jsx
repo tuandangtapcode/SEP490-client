@@ -116,7 +116,7 @@ export const MenuAdmin = () => [
   },
   {
     icon: ListIcons.ICON_REPORT,
-    label: "Report",
+    label: "Issue",
     key: Router.QUAN_LY_REPORT,
     RoleID: [1, 2]
   },

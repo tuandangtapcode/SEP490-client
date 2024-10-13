@@ -6,6 +6,7 @@ export const HomeContainerStyled = styled.div`
 `
 
 export const SearchContainerStyled = styled.div`
+  width: 100%;
   background-color: white;
   padding: 24px 16px;
   border-radius: 12px;
