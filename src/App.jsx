@@ -405,6 +405,7 @@ const App = () => {
     if (!!res?.isError) return
     if (!!res?.data) {
       const tokenInfor = decodeData(res?.data)
+      console.log("tokenInfor", tokenInfor);
       if (!!tokenInfor.ID) {
         setTotenInfor(tokenInfor)
         getDetailProfile()

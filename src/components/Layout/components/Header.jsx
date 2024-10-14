@@ -84,6 +84,7 @@ const Header = () => {
     }
   }, [user])
 
+
   const menuAccoutUser = [
     {
       key: Router.PROFILE,
@@ -131,6 +132,7 @@ const Header = () => {
       setNewNotification(newNotifications + 1)
     })
   }, [])
+
 
   return (
     <HeaderContainerStyled isHome={location.pathname === "/"}>

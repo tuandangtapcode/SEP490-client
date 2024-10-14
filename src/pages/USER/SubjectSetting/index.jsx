@@ -230,7 +230,7 @@ const SubjectSetting = () => {
                 <ButtonCustom
                   className="big-size primary fw-700"
                   onClick={() => {
-                    if (user?.RegisterStatus === 1) {
+                    if (!subjectSetting?.IsActive) {
                       handleSubmit()
                     }
                   }}
