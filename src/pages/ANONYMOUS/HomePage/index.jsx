@@ -3,15 +3,20 @@ import { toast } from "react-toastify"
 import { useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
 import SubjectService from "src/services/SubjectService"
-import Search from "./components/Search/Search"
 import { Col, Row } from "antd"
+import SpinCustom from "src/components/SpinCustom"
+import Search from "./components/Search"
 import FamoursTeacher from "./components/FamousTeacher"
+import UserService from "src/services/UserService"
 
 const HomePage = () => {
 
   const navigate = useNavigate()
   const [loading, setLoading] = useState(false)
   const [subjects, setSubjects] = useState([])
+  const [recommendSubjects, setRecommendSSubjects] = useState([])
+  const [subject, setSubject] = useState()
+  const [teachers, setTeachers] = useState([])
 
   const getListSubject = async () => {
     try {
@@ -28,21 +33,57 @@ const HomePage = () => {
     }
   }
 
+  const getListRecommendSubject = async () => {
+    try {
+      setLoading(true)
+      const res = await SubjectService.getListRecommendSubject()
+      if (!!res?.isError) return toast.error(res?.msg)
+      setRecommendSSubjects(res?.data)
+      setSubject(res?.data[0])
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const getListTopTeacherBySubject = async () => {
+    try {
+      setLoading(true)
+      const res = await UserService.getListTopTeacherBySubject(subject?._id)
+      if (!!res?.isError) return toast.error(res?.msg)
+      setTeachers(res?.data)
+    } finally {
+      setLoading(false)
+    }
+  }
+
   useEffect(() => {
     getListSubject()
+    getListRecommendSubject()
   }, [])
 
+  useEffect(() => {
+    if (!!subject)
+      getListTopTeacherBySubject()
+  }, [subject])
+
   return (
-    <HomeContainerStyled>
-      <Row gutter={[0, 16]}>
-        <Col span={24} className="d-flex-center mb-70">
-          <Search subjects={subjects} />
-        </Col>
-        <Col span={24} className="d-flex-center">
-          <FamoursTeacher subjects={subjects} />
-        </Col>
-      </Row>
-    </HomeContainerStyled>
+    <SpinCustom spinning={loading}>
+      <HomeContainerStyled>
+        <Row gutter={[0, 16]}>
+          <Col span={24} className="d-flex-center mb-70">
+            <Search subjects={subjects} />
+          </Col>
+          <Col span={24} className="d-flex-center">
+            <FamoursTeacher
+              recommendSubjects={recommendSubjects}
+              teachers={teachers}
+              subject={subject}
+              setSubject={setSubject}
+            />
+          </Col>
+        </Row>
+      </HomeContainerStyled>
+    </SpinCustom>
   )
 }
 

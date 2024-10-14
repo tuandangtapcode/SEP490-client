@@ -14,7 +14,8 @@ const Certificates = ({ user }) => {
               src={i}
               alt=""
               style={{
-                height: "250px"
+                height: "250px",
+                width: "100%"
               }}
             />
           </Col>
