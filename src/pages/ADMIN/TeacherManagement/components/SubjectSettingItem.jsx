@@ -1,28 +1,17 @@
-import { Col, Image, Row } from "antd"
+import { Col, Empty, Image, Row } from "antd"
 import { useSelector } from "react-redux"
 import { getListComboKey } from "src/lib/commonFunction"
 import { SYSTEM_KEY } from "src/lib/constant"
 import { formatMoney } from "src/lib/stringUtils"
 import { globalSelector } from "src/redux/selector"
 import dayjs from "dayjs"
-import { useEffect, useState } from "react"
-import { Calendar, momentLocalizer, Views } from "react-big-calendar"
-import moment from "moment"
+import { useState } from "react"
 import VideoItem from "src/pages/ANONYMOUS/TeacherDetail/components/VideoItem"
 import "react-big-calendar/lib/css/react-big-calendar.css"
 import PreviewVideo from "src/pages/USER/SubjectSetting/modal/PreviewVideo"
 import ButtonCustom from "src/components/MyButton/ButtonCustom"
 import UserService from "src/services/UserService"
 import { toast } from "react-toastify"
-
-const localizer = momentLocalizer(moment)
-const formats = {
-  monthHeaderFormat: () => { }, // Định dạng tiêu đề tháng
-  dayFormat: "ddd", // Định dạng hiển thị ngày trong ngày
-  dayHeaderFormat: () => { }, // Tiêu đề nagyf
-  dayRangeHeaderFormat: () => { }, // Định dạng tiêu đề ngày khi chọn khoảng thời gian
-  agendaDateFormat: () => { }, //Cột trong lịch làm việc
-}
 
 const SubjectSettingItem = ({
   subjectSetting,
@@ -33,7 +22,6 @@ const SubjectSettingItem = ({
 }) => {
 
   const { listSystemKey } = useSelector(globalSelector)
-  const [schedules, setSchedules] = useState([])
   const [openPreviewVideo, setOpenPreviewVideo] = useState()
   const [loading, setLoading] = useState(false)
 
@@ -53,25 +41,6 @@ const SubjectSettingItem = ({
     }
   }
 
-  useEffect(() => {
-    if (!!subjectSetting?.Schedules?.length) {
-      const getDayFormSchedule = subjectSetting?.Schedules?.find(i => i?.DateAt === dayjs().format("dddd"))
-      setSchedules(
-        subjectSetting?.Schedules?.map(i => {
-          const dayGap = dayjs().startOf("day").diff(dayjs(getDayFormSchedule?.StartTime).startOf("day"), "days")
-          return {
-            start: dayGap > 5
-              ? dayjs(i?.StartTime).add(dayGap, "days")
-              : dayjs(i?.StartTime),
-            end: dayGap > 5
-              ? dayjs(i?.EndTime).add(dayGap, "days")
-              : dayjs(i?.EndTime),
-            title: ""
-          }
-        })
-      )
-    }
-  }, [subjectSetting])
 
   return (
     <div className="p-12">
@@ -111,26 +80,6 @@ const SubjectSettingItem = ({
         </Col>
         <Col span={24}>
           <div className="fs-18 fw-600 mb-12">Lịch trình giảng dạy</div>
-        </Col>
-        <Col span={24} className="mb-16">
-          <Calendar
-            localizer={localizer}
-            startAccessor={event => {
-              return new Date(event.start)
-            }}
-            endAccessor={event => {
-              return new Date(event.end)
-            }}
-            style={{ width: "100%", height: 700 }}
-            toolbar={false}
-            defaultView={Views.WEEK}
-            formats={formats}
-            selectable
-            events={schedules}
-            onShowMore={(schedules, date) =>
-              this.setState({ showModal: true, schedules })
-            }
-          />
         </Col>
         <Col span={24}>
           <div className="fs-18 fw-600 mb-12">Kinh nghiệm giảng dạy</div>
@@ -186,16 +135,18 @@ const SubjectSettingItem = ({
         <Col span={24}>
           <Row>
             {
-              subjectSetting?.IntroVideos?.map((i, idx) =>
-                <Col
-                  key={idx} span={8}
-                  onClick={() => setOpenPreviewVideo(i)}
-                >
-                  <VideoItem
-                    videoUrl={i}
-                  />
-                </Col>
-              )
+              !!subjectSetting?.IntroVideos?.length ?
+                subjectSetting?.IntroVideos?.map((i, idx) =>
+                  <Col
+                    key={idx} span={8}
+                    onClick={() => setOpenPreviewVideo(i)}
+                  >
+                    <VideoItem
+                      videoUrl={i}
+                    />
+                  </Col>
+                )
+                : <Empty description="Giáo viên không có video giới thiệu" />
             }
           </Row>
         </Col>
@@ -203,10 +154,15 @@ const SubjectSettingItem = ({
           <ButtonCustom
             className="primary"
             loading={loading}
-            disabled={!!subjectSetting?.IsActive ? true : false}
-            onClick={() => handleConfirmSubjectSetting()}
+            onClick={() => {
+              if (!subjectSetting?.IsActive) {
+                handleConfirmSubjectSetting()
+              }
+            }}
           >
-            Duyệt môn học
+            {
+              !!subjectSetting?.IsActive ? "Đã duyệt môn học" : "Duyệt môn học"
+            }
           </ButtonCustom>
         </Col>
       </Row>

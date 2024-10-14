@@ -40,7 +40,7 @@ const LayoutAdmin = ({ children }) => {
               inlineCollapsed={collapsed}
               mode="inline"
               onClick={e => handleChangeMenu(e.key)}
-              items={MenuAdmin()?.filter(i => i?.RoleID?.includes(user?.RoleID))}
+              items={MenuAdmin()}
               selectedKeys={location?.pathname}
             />
             <div

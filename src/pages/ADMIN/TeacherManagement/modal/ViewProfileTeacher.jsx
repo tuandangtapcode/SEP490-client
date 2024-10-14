@@ -1,6 +1,6 @@
 import ModalCustom from "src/components/ModalCustom"
 import { PatentChildBorder, TabStyled } from "../styled"
-import ProfilePhoto from "../components/ProfilePhoto"
+import AvatarAndSchedule from "../components/AvatarAndSchedule"
 import { Tabs } from "antd"
 import SubjectSettingItem from "../components/SubjectSettingItem"
 
@@ -29,7 +29,7 @@ const ViewProfileTeacher = ({ open, onCancel, getListTeacher }) => {
       label: "Ảnh đại diện",
       children: (
         <PatentChildBorder>
-          <ProfilePhoto user={open} />
+          <AvatarAndSchedule user={open} />
         </PatentChildBorder>
       )
     },
