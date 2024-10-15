@@ -3,7 +3,7 @@ import { useNavigate, useParams } from "react-router-dom"
 import SpinCustom from "src/components/SpinCustom"
 import UserService from "src/services/UserService"
 import { DivTimeContainer, MainProfileWrapper } from "./styled"
-import { Col, Collapse, Menu, Row, Select, Tabs } from "antd"
+import { Carousel, Col, Collapse, Image, Menu, Rate, Row, Select, Tabs } from "antd"
 import ButtonCustom from "src/components/MyButton/ButtonCustom"
 import Description from "./components/Description"
 import ExperiencesOrEducations from "./components/ExperiencesOrEducations"
@@ -22,6 +22,12 @@ import ModalSendMessage from "./modal/ModalSendMessage"
 import IntroVideos from "./components/IntroVideos"
 import 'swiper/css'
 import { convertSchedules } from "src/lib/dateUtils"
+import ListIcons from "src/components/ListIcons"
+import VideoItem from "./components/VideoItem"
+import PreviewVideo from "src/pages/USER/SubjectSetting/modal/PreviewVideo"
+import { getListComboKey } from "src/lib/commonFunction"
+import { SYSTEM_KEY } from "src/lib/constant"
+import dayjs from "dayjs"
 
 const { Option } = Select
 
@@ -31,12 +37,12 @@ const TeacherDetail = () => {
   const navigate = useNavigate()
   const [loading, setLoading] = useState(false)
   const [teacher, setTeacher] = useState()
-  const [quote, setQuote] = useState()
   const [feedbacks, setFeedbacks] = useState([])
   const [totalFeedback, setTotalFeedback] = useState(0)
-  const { user, profitPercent } = useSelector(globalSelector)
+  const { user, profitPercent, listSystemKey } = useSelector(globalSelector)
   const [openModalSendFeedback, setOpenModalSendFeedback] = useState(false)
   const [openModalSendMessage, setOpenModalSendMessage] = useState(false)
+  const [openModalPreviewVideo, setOpenModalPreviewVideo] = useState(false)
 
   const getDetailTeacher = async () => {
     try {
@@ -44,9 +50,6 @@ const TeacherDetail = () => {
       const res = await UserService.getDetailTeacher({ TeacherID, SubjectID })
       if (!!res?.isError) return navigate("/not-found")
       setTeacher(res?.data)
-      setQuote(
-        res?.data?.Quotes?.find(i => i?.SubjectID === SubjectID)
-      )
     } finally {
       setLoading(false)
     }
@@ -90,35 +93,8 @@ const TeacherDetail = () => {
     })
   }, [])
 
-  const items = [
-    {
-      key: "overview",
-      label: <a href="#overview">Tổng quan</a>
-    },
-    {
-      key: "description",
-      label: <a href="#description">Chi tiết</a>
-    },
-    {
-      key: "review",
-      label: <a href="#review">Đánh giá</a>
-    },
-    {
-      key: "experience",
-      label: <a href="#experience">Kinh nghiệm</a>
-    },
-    {
-      key: "education",
-      label: <a href="#education">Học vấn</a>
-    },
-    {
-      key: "introvideo",
-      label: <a href="#introvideo">Video giới thiệu</a>
-    },
-  ]
-
-  const itemTab = !!teacher?.Schedules?.length
-    ? convertSchedules(teacher?.Schedules)?.map(i => (
+  const itemTab = !!teacher?.Teacher?.Schedules?.length
+    ? convertSchedules(teacher?.Teacher?.Schedules)?.map(i => (
       {
         key: i?.DateAt,
         label: i?.DateAt,
@@ -139,147 +115,145 @@ const TeacherDetail = () => {
     ))
     : []
 
+
   return (
     <SpinCustom spinning={loading}>
-      <Row gutter={[20]} className="pt-20">
+      <Row gutter={[20, 16]} className="pt-20">
+        <Col xxl={24} xl={24} lg={24} md={24}>
+          <div className="d-flex align-items-center mb-8">
+            <img
+              src={teacher?.Teacher?.AvatarPath}
+              alt=""
+              style={{
+                minWidth: "80px",
+                height: "80px",
+                borderRadius: "50%",
+                marginRight: "10px"
+              }}
+            />
+            <div>
+              <p className="fs-20 fw-700 mb-4">{teacher?.Teacher?.FullName}</p>
+              <p className="fs-18">Giảng viên {teacher?.Subject?.SubjectName}</p>
+            </div>
+          </div>
+          <div className="d-flex align-items-center mr-10 mb-2">
+            <span className="mr-4">{ListIcons.ICON_LOCATION}</span>
+            <span>{teacher?.Teacher?.Address}</span>
+          </div>
+          <div>
+            <Rate
+              allowHalf
+              disabled
+              value={
+                !!teacher?.Teacher?.TotalVotes
+                  ? teacher?.Teacher?.TotalVotes / teacher?.Teacher?.Votes?.length
+                  : 0
+              }
+              style={{
+                fontSize: "12px",
+                marginRight: "3px"
+              }}
+            />
+            <span>({teacher?.Teacher?.Votes?.length} đánh giá)</span>
+          </div>
+        </Col>
         <Col span={17}>
-          <Row>
+          <Row gutter={[0, 16]}>
             <Col span={24}>
-              <MainProfileWrapper className="p-24 mb-16" id="overview">
-                <Row style={{ width: "100%" }}>
-                  <Col xxl={5} xl={5} lg={5} md={24} className="d-flex-center mr-12">
-                    <img
-                      src={teacher?.AvatarPath}
-                      alt=""
-                      style={{
-                        minWidth: "150px",
-                        height: "150px",
-                        borderRadius: "50%",
-                      }}
-                    />
-                  </Col>
-                  <Col span={16} className="d-flex flex-column justify-content-space-around">
-                    <div className="fs-25 fw-700">{teacher?.FullName}</div>
-                    <div>
-
-                    </div>
-                    {
-                      user?._id !== TeacherID &&
-                      <div>
-                        <ButtonCustom
-                          className="third-type-2 mr-12"
-                          onClick={() => {
-                            if (!!user?._id) {
-                              setOpenModalSendMessage(teacher)
-                            } else {
-                              return toast.warning("Hãy đăng nhập để trò chuyện với giáo viên")
-                            }
-                          }}
-                        >
-                          Gửi câu hỏi cho giáo viên
-                        </ButtonCustom>
-                        <ButtonCustom
-                          className="third-type-2"
-                          onClick={() => {
-                            if (!!user?._id) {
-                              setOpenModalSendFeedback(teacher)
-                            } else {
-                              return toast.warning("Hãy đăng nhập để đánh giá giáo viên")
-                            }
-                          }}
-                        >
-                          Gửi đánh giá giáo viên
-                        </ButtonCustom>
+              <MainProfileWrapper>
+                <Carousel
+                  autoplay
+                  arrows={!!teacher?.IntroVideos?.length > 1 ? true : false}
+                >
+                  {
+                    teacher?.IntroVideos?.map((i, idx) =>
+                      <div
+                        key={idx}
+                        onClick={() => setOpenModalPreviewVideo(i)}
+                      >
+                        <VideoItem
+                          videoUrl={i}
+                        />
                       </div>
+                    )
+                  }
+                </Carousel>
+                <div className="d-flex-sb">
+                  <div className="d-flex align-items-center">
+                    <span className="mr-6">{ListIcons.ICON_LEVEL}</span>
+                    <span className="mr-6 fw-500">Trình độ</span>
+                    {
+                      getListComboKey(SYSTEM_KEY.SKILL_LEVEL, listSystemKey)
+                        ?.map((item, idx) => {
+                          if (teacher?.Levels?.includes(item?.ParentID))
+                            return <span key={idx} className="mr-4 m-2">{item?.ParentName}</span>
+                        })
                     }
-                  </Col>
-                  <Col span={24}>
-                    <Menu
-                      items={items}
-                      mode="horizontal"
-                    />
-                  </Col>
-                  <Col className="mt-16">
-                    <div
-                      className="fs-20 fw-600 mb-8"
-                      style={{ wordWrap: "break-word", overflowWrap: 'break-word' }}
-                    >
-                      {quote?.Title}
+                  </div>
+                  <div className="d-flex align-items-center">
+                    <span className="mr-6">{ListIcons.ICON_LEARN_TYPE}</span>
+                    <span className="mr-6 fw-500">Hình thức học</span>
+                    {
+                      getListComboKey(SYSTEM_KEY.LEARN_TYPE, listSystemKey)
+                        ?.map((item, idx) => {
+                          if (teacher?.LearnTypes?.includes(item?.ParentID))
+                            return <span key={idx} className="mr-4 m-2">{item?.ParentName}</span>
+                        })
+                    }
+                  </div>
+                </div>
+              </MainProfileWrapper>
+            </Col>
+            <Col span={24}>
+              <MainProfileWrapper>
+                <p className="fs-16 fw-600 mb-12">{teacher?.Quote?.Title}</p>
+                <p>{teacher?.Quote?.Content}</p>
+              </MainProfileWrapper>
+            </Col>
+            <Col span={24}>
+              <MainProfileWrapper>
+                <p className="fs-16 fw-600 mb-12">Kinh nghiệm</p>
+                {
+                  teacher?.Experiences?.map((i, idx) =>
+                    <div key={idx} className="d-flex-sb mb-8">
+                      <p>{i?.Content}</p>
+                      <p>{dayjs(i?.StartDate).format("DD/MM/YYYY")} - {dayjs(i?.EndDate).format("DD/MM/YYYY")}</p>
                     </div>
-                    <div className="spaced-text">
-                      {quote?.Content}
+                  )
+                }
+              </MainProfileWrapper>
+            </Col>
+            <Col span={24}>
+              <MainProfileWrapper>
+                <p className="fs-16 fw-600 mb-12">Học vấn</p>
+                {
+                  teacher?.Educations?.map((i, idx) =>
+                    <div key={idx} className="d-flex-sb mb-8">
+                      <p>{i?.Content}</p>
+                      <p>{dayjs(i?.StartDate).format("DD/MM/YYYY")} - {dayjs(i?.EndDate).format("DD/MM/YYYY")}</p>
                     </div>
-                  </Col>
-                </Row>
+                  )
+                }
               </MainProfileWrapper>
             </Col>
-            <Col span={24} className="mb-16">
-              <MainProfileWrapper className="p-24" id="description">
-                <Description teacher={teacher} />
-              </MainProfileWrapper>
-            </Col>
-            <Col span={24} className="mb-16">
-              <MainProfileWrapper className="p-24" id="review">
-                <Feedbacks feedbacks={feedbacks} teacher={teacher} />
-              </MainProfileWrapper>
-            </Col>
-            <Col span={24} className="mb-16">
-              <MainProfileWrapper id="experience" className="p-12">
-                <Collapse
-                  ghost
-                  size="large"
-                  expandIconPosition="end"
-                  items={[
-                    {
-                      key: "1",
-                      label: (
-                        <div className="fs-20 fw-600">Kinh nghiệm</div>
-                      ),
-                      children: (
-                        <ExperiencesOrEducations teacher={teacher} isExperience={true} />
-                      )
-                    }
-                  ]} />
-              </MainProfileWrapper>
-            </Col>
-            <Col span={24} className="mb-16">
-              <MainProfileWrapper id="education" className="p-12">
-                <Collapse
-                  ghost
-                  size="large"
-                  expandIconPosition="end"
-                  items={[
-                    {
-                      key: "1",
-                      label: (
-                        <div className="fs-20 fw-600">Học vấn</div>
-                      ),
-                      children: (
-                        <ExperiencesOrEducations teacher={teacher} isExperience={false} />
-                      )
-                    }
-                  ]}
-                />
-              </MainProfileWrapper>
-            </Col>
-            <Col span={24} className="mb-16">
-              <MainProfileWrapper id="introvideo" className="p-12">
-                <Collapse
-                  ghost
-                  size="large"
-                  expandIconPosition="end"
-                  items={[
-                    {
-                      key: "1",
-                      label: (
-                        <div className="fs-20 fw-600">Video giới thiệu</div>
-                      ),
-                      children: (
-                        <IntroVideos teacher={teacher} />
-                      )
-                    }
-                  ]}
-                />
+            <Col span={24}>
+              <MainProfileWrapper>
+                <p className="fs-16 fw-600 mb-12">Chứng chỉ/Giải thưởng</p>
+                <div className="d-flex">
+                  {
+                    teacher?.Certificates?.map((i, idx) =>
+                      <Image
+                        src={i}
+                        alt="" key={idx}
+                        style={{
+                          width: "200px",
+                          height: "200px",
+                          marginRight: "12px"
+                        }}
+                      />
+                    )
+                  }
+                </div>
               </MainProfileWrapper>
             </Col>
           </Row>
@@ -287,62 +261,60 @@ const TeacherDetail = () => {
 
         <Col span={7}>
           <div>
-            <MainProfileWrapper className="p-24 mb-16">
-              <div className="fs-20 fw-700 mb-12">Thông tin chi tiết</div>
-              <div className="mb-12">
-                <div className="fs-17 fw-600 mb-8">Môn học</div>
-                <Select
-                  defaultValue={SubjectID}
-                  onChange={e => navigate(`${Router.GIAO_VIEN}/${TeacherID}${Router.MON_HOC}/${e}`)}
+            <div className="fs-20 fw-700 mb-12">Thông tin chi tiết</div>
+            <div className="mb-12">
+              <div className="fs-17 fw-600 mb-8">Môn học</div>
+              <Select
+                defaultValue={SubjectID}
+                onChange={e => navigate(`${Router.GIAO_VIEN}/${TeacherID}${Router.MON_HOC}/${e}`)}
+              >
+                {
+                  teacher?.Subjects?.map(i =>
+                    <Option
+                      key={i?._id}
+                      value={i?._id}
+                    >
+                      {i?.SubjectName}
+                    </Option>
+                  )
+                }
+              </Select>
+            </div>
+            <div className="mb-12">
+              <div className="fs-17 fw-600 mb-8">Thời gian</div>
+              <TabStyled>
+                <Tabs
+                  type="card"
+                  items={itemTab}
+                  size="small"
+                  animated={{
+                    // inkBar: true,
+                    tabPane: true,
+                  }}
+                />
+              </TabStyled>
+            </div>
+            <div className="mb-12">
+              <span className="fs-17 fw-600 mr-4">Giá: </span>
+              <span>{formatMoney(teacher?.Price) * 1000 * (1 + profitPercent)} VNĐ</span>
+            </div>
+            {
+              user?._id !== TeacherID &&
+              <div>
+                <ButtonCustom
+                  className="primary submit-btn"
+                  onClick={() => {
+                    if (!!user?._id) {
+                      navigate(`${Router.GIAO_VIEN}/${TeacherID}${Router.MON_HOC}/${SubjectID}/booking`)
+                    } else {
+                      return toast.warning("Hãy đăng nhập để tiến hành đặt lịch")
+                    }
+                  }}
                 >
-                  {
-                    teacher?.Subjects?.map(i =>
-                      <Option
-                        key={i?._id}
-                        value={i?._id}
-                      >
-                        {i?.SubjectName}
-                      </Option>
-                    )
-                  }
-                </Select>
+                  Đặt lịch ngay
+                </ButtonCustom>
               </div>
-              <div className="mb-12">
-                <div className="fs-17 fw-600 mb-8">Thời gian</div>
-                <TabStyled>
-                  <Tabs
-                    type="card"
-                    items={itemTab}
-                    size="small"
-                    animated={{
-                      // inkBar: true,
-                      tabPane: true,
-                    }}
-                  />
-                </TabStyled>
-              </div>
-              <div className="mb-12">
-                <span className="fs-17 fw-600 mr-4">Giá: </span>
-                <span>{formatMoney(teacher?.Price) * 1000 * (1 + profitPercent)} VNĐ</span>
-              </div>
-              {
-                user?._id !== TeacherID &&
-                <div>
-                  <ButtonCustom
-                    className="primary submit-btn"
-                    onClick={() => {
-                      if (!!user?._id) {
-                        navigate(`${Router.GIAO_VIEN}/${TeacherID}${Router.MON_HOC}/${SubjectID}/booking`)
-                      } else {
-                        return toast.warning("Hãy đăng nhập để tiến hành đặt lịch")
-                      }
-                    }}
-                  >
-                    Đặt lịch ngay
-                  </ButtonCustom>
-                </div>
-              }
-            </MainProfileWrapper>
+            }
           </div>
         </Col>
 
@@ -359,6 +331,14 @@ const TeacherDetail = () => {
           <ModalSendMessage
             open={openModalSendMessage}
             onCancel={() => setOpenModalSendMessage(false)}
+          />
+        }
+
+        {
+          !!openModalPreviewVideo &&
+          <PreviewVideo
+            open={openModalPreviewVideo}
+            onCancel={() => setOpenModalPreviewVideo(false)}
           />
         }
 

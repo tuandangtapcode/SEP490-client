@@ -49,7 +49,7 @@ const NotificationItem = ({
 
 const Header = () => {
 
-  const { user } = useSelector(globalSelector)
+  const { user, isLogin } = useSelector(globalSelector)
   const dispatch = useDispatch()
   const navigate = useNavigate()
   const [notifications, setNotifications] = useState([])
@@ -156,7 +156,9 @@ const Header = () => {
           </Col>
           <Col span={18} className="d-flex-end">
             {
-              ![Roles.ROLE_ADMIN, Roles.ROLE_STAFF].includes(user?.RoleID) &&
+              (![Roles.ROLE_ADMIN, Roles.ROLE_STAFF].includes(user?.RoleID) ||
+                !isLogin
+              ) &&
               <div>
                 <Menu
                   style={{

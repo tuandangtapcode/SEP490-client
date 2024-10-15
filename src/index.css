@@ -73,3 +73,7 @@ body {
 .ant-modal-confirm .ant-modal-confirm-btns {
   margin-top: 20px !important;
 }
+
+.ant-rate .ant-rate-star {
+  margin-inline-end: 2px !important
+}

@@ -5,7 +5,7 @@ import InputCustom from "src/components/InputCustom"
 import { globalSelector } from "src/redux/selector"
 import { getListComboKey } from "src/lib/commonFunction"
 import { SYSTEM_KEY } from "src/lib/constant"
-import { formatMoney } from "src/lib/stringUtils"
+import { formatMoney, getRealFee } from "src/lib/stringUtils"
 
 const BasicInformation = () => {
 
@@ -92,7 +92,7 @@ const BasicInformation = () => {
               style={{ width: "200px" }}
               type='isNumber'
               suffix=".000 VNĐ"
-              onChange={e => setTotalFee(e * (1 + profitPercent) * 1000)}
+              onChange={e => setTotalFee(getRealFee(e, profitPercent))}
             />
           </Form.Item>
           <div className="d-flex align-items-center">
