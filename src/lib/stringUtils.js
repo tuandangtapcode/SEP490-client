@@ -30,8 +30,13 @@ export const getRegexDOB = (dateString) => {
   return moment(dateString, 'DD/MM/YYYY', true).isValid()
 }
 
-export const formatMoney = money =>
-  (Math.round(money * 100) / 100).toLocaleString().replaceAll(",", ".")
+export const getRealFee = (price, profitPrecent) => {
+  return price * (1 + profitPrecent) * 1000
+}
+
+export const formatMoney = money => {
+  return (Math.round(money * 100) / 100).toLocaleString().replaceAll(",", ".")
+}
 
 export const formatNumber = (number) => {
   var formattedNumber = number.toLocaleString('en-US').replace(/,/g, '.')

@@ -21,7 +21,7 @@ const Feedbacks = ({ feedbacks, teacher }) => {
   const { user } = useSelector(globalSelector)
 
   return (
-    <div>
+    <>
       <div className="mb-30 d-flex-sb">
         <div className="fs-20 fw-600">Đánh giá</div>
         <div
@@ -61,16 +61,7 @@ const Feedbacks = ({ feedbacks, teacher }) => {
             : <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description="Giáo viên chưa có đánh giá nào" />
         }
       </div>
-
-      {
-        !!openModalSendFeedback &&
-        <ModalSendFeedback
-          open={openModalSendFeedback}
-          onCancel={() => setOpenModalSendFeedback(false)}
-        />
-      }
-
-    </div>
+    </>
   )
 }
 
