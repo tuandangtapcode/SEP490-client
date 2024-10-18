@@ -127,7 +127,7 @@ const ModalChangeTimetable = ({
                 style={{ width: "100%" }}
                 placeholder="Chọn ngày học"
                 format="dddd DD/MM/YYYY"
-                disabledDate={current => { disabledBeforeDate(current) }}
+                disabledDate={current => disabledBeforeDate(current)}
               />
             </Form.Item>
           </Col>

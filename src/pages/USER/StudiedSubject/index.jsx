@@ -158,6 +158,7 @@ const StudiedSubject = () => {
           <InputCustom
             type="isSearch"
             placeholder="Tìm kiếm môn học..."
+            allowClear
             onSearch={e => setPagination(pre => ({ ...pre, TextSearch: e }))}
           />
         </Col>

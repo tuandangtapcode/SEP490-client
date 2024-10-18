@@ -22,7 +22,7 @@ const FamoursTeacher = ({
   const navigate = useNavigate()
 
   return (
-    <Row gutter={[16]}>
+    <Row gutter={[16]} style={{ width: "80%" }}>
       <Col span={24} className="d-flex-center">
         <div className="fs-36 fw-700">Khám phá các giáo viên nổi tiếng</div>
       </Col>

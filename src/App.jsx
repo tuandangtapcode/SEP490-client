@@ -3,7 +3,6 @@ import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate, useRoutes } from 'react-router-dom'
 import { toast, ToastContainer } from 'react-toastify'
 import SpinCustom from './components/SpinCustom'
-import FindTeacher from './pages/ANONYMOUS/FindTeacher'
 import globalSlice from './redux/globalSlice'
 import Router from './routers'
 import CommonService from './services/CommonService'
@@ -39,6 +38,7 @@ const MentorForSubject = React.lazy(() => import("src/pages/ANONYMOUS/MentorForS
 const BookingPage = React.lazy(() => import("src/pages/ANONYMOUS/BookingPage"))
 const FindSubject = React.lazy(() => import("src/pages/ANONYMOUS/FindSubject"))
 const MeetingRoom = React.lazy(() => import("src/pages/ANONYMOUS/MeetingRoom"))
+const SubjectcateDetail = React.lazy(() => import("src/pages/ANONYMOUS/SubjectcateDetail"))
 
 // USER
 const UserRoutes = React.lazy(() => import("src/pages/USER/UserRoutes"))
@@ -318,7 +318,7 @@ const App = () => {
           path: `${Router.DANH_MUC}/:SubjectCateID`,
           element: (
             <LazyLoadingComponent>
-              <FindTeacher />
+              <SubjectcateDetail />
             </LazyLoadingComponent>
           )
         },

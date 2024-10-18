@@ -134,13 +134,13 @@ const TeacherManagement = () => {
       }
     },
     {
-      title: !!record?.IsActive ? "Khóa tài khoản" : "Mở khóa tài khoản",
-      icon: !!record?.IsActive ? ListIcons?.ICON_BLOCK : ListIcons?.ICON_UNBLOCK,
-      disabled: record?.RegisterStatus !== 3 && !!record?.IsActive,
+      title: !!record?.Account?.IsActive ? "Khóa tài khoản" : "Mở khóa tài khoản",
+      icon: !!record?.Account?.IsActive ? ListIcons?.ICON_BLOCK : ListIcons?.ICON_UNBLOCK,
+      disabled: record?.RegisterStatus !== 3 && !!record?.Account?.IsActive,
       onClick: () => handleInactiveOrActiveAccount({
         UserID: record?._id,
-        IsActive: !!record?.IsActive ? false : true,
-        RegisterStatus: !!record?.IsActive ? 4 : 3
+        IsActive: !!record?.Account?.IsActive ? false : true,
+        RegisterStatus: !!record?.Account?.IsActive ? 4 : 3
       })
     },
   ]
@@ -185,12 +185,6 @@ const TeacherManagement = () => {
               ?.find(i => i?.ParentID === val)?.ParentName
           }
         </Tag>
-        // <div style={{ color: ["#106ebe", "#fa8c16", "rgb(29, 185, 84)", "red"][val - 1] }} className="fw-600">
-        //   {
-        //     getListComboKey(SYSTEM_KEY.REGISTER_STATUS, listSystemKey)
-        //       ?.find(i => i?.ParentID === val)?.ParentName
-        //   }
-        // </div >
       )
     },
     {
@@ -200,16 +194,11 @@ const TeacherManagement = () => {
       align: "center",
       key: "IsActive",
       render: (val, record) => (
-        <Tag color={["success", "error"][val - 1]} className="p-5 fs-16">
+        <Tag color={!!record?.Account?.IsActive ? "success" : "error"} className="p-5 fs-16">
           {
-            !!val ? "Đang sử dụng" : "Đã bị khóa"
+            !!record?.Account?.IsActive ? "Đang sử dụng" : "Đã bị khóa"
           }
         </Tag>
-        // <div style={{ color: !!val ? "rgb(29, 185, 84)" : "red" }} className="fw-600">
-        //   {
-        //     !!val ? "Đang sử dụng" : "Đã bị cấm"
-        //   }
-        // </div >
       )
     },
     {
@@ -245,6 +234,7 @@ const TeacherManagement = () => {
           <InputCustom
             type="isSearch"
             placeholder="Nhập vào tên giáo viên"
+            allowClear
             onSearch={e => setPagination(pre => ({ ...pre, TextSearch: e }))}
           />
         </Col>

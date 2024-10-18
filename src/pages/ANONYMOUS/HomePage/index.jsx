@@ -8,6 +8,10 @@ import SpinCustom from "src/components/SpinCustom"
 import Search from "./components/Search"
 import FamoursTeacher from "./components/FamousTeacher"
 import UserService from "src/services/UserService"
+import BackgroundChooseTeacher from "./components/BackgroundChooseTeacher"
+import SubjectCare from "./components/SubjectCare"
+import BackgroundMobileApp from "./components/BackgroundMobileApp"
+import BecomeTeacher from "./components/BecomeTeacher"
 
 const HomePage = () => {
 
@@ -73,13 +77,25 @@ const HomePage = () => {
           <Col span={24} className="d-flex-center mb-70">
             <Search subjects={subjects} />
           </Col>
-          <Col span={24} className="d-flex-center">
+          <Col span={24} className="d-flex-center mb-50">
             <FamoursTeacher
               recommendSubjects={recommendSubjects}
               teachers={teachers}
               subject={subject}
               setSubject={setSubject}
             />
+          </Col>
+          <Col span={24} className="mb-50">
+            <BackgroundChooseTeacher />
+          </Col>
+          <Col span={24} className="d-flex-center mb-50">
+            <SubjectCare />
+          </Col>
+          <Col span={24} className="d-flex-center mb-50">
+            <BackgroundMobileApp />
+          </Col>
+          <Col span={24} className="d-flex-center mb-50">
+            <BecomeTeacher />
           </Col>
         </Row>
       </HomeContainerStyled>
