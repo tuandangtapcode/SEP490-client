@@ -213,7 +213,7 @@ const BookingPage = () => {
                   format="DD/MM/YYYY"
                   disabledDate={current => disabledBeforeDate(current)}
                   onChange={e => {
-                    console.log("dayjs(e)", dayjs(e).format());
+                    console.log("dayjs(e)", dayjs(e).format("HH:mm"));
 
                     const daysFromTimeTable = !!timeTables?.length
                       ? timeTables

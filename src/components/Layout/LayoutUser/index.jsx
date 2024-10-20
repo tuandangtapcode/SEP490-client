@@ -66,7 +66,7 @@ const LayoutUser = ({ children }) => {
               <Menu
                 mode="inline"
                 onClick={e => handleChangeMenu(e.key)}
-                items={MenuUser(user)?.filter(i => !!i?.isview)}
+                items={MenuUser(user)?.filter(i => !!i?.isView)}
                 selectedKeys={location?.pathname}
               />
             </div>

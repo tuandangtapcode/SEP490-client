@@ -10,7 +10,6 @@ const MainLayout = ({ children }) => {
 
   const { user } = useSelector(globalSelector)
   const location = useLocation()
-  console.log("location", location.pathname);
 
 
   return (

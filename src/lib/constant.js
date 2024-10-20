@@ -7,7 +7,9 @@ export const SYSTEM_KEY = {
   PAYMENT_STATUS: "PaymentStatus",
   LEARNED_STATUS: "LearnedStatus",
   PROFIT_PERCENT: "ProfitPercent",
-  PAYMENT_METHOD: "PaymentMethod"
+  PAYMENT_METHOD: "PaymentMethod",
+  GENDER: "Gender",
+  CONFIRM_STATUS: "ConfirmStatus"
 }
 
 export const Roles = {

@@ -10,6 +10,8 @@ import ButtonCustom from "src/components/MyButton/ButtonCustom"
 import { useState } from "react"
 import ConfirmService from "src/services/ConfirmService"
 import { toast } from "react-toastify"
+import { useNavigate } from "react-router-dom"
+import Router from "src/routers"
 
 const MOdalConfirmInfor = ({
   open,
@@ -21,16 +23,24 @@ const MOdalConfirmInfor = ({
 
   const { listSystemKey, user, profitPercent } = useSelector(globalSelector)
   const [loading, setLoading] = useState(false)
+  const navigate = useNavigate()
 
   const sendRequestBooking = async () => {
     try {
       setLoading(true)
       const res = await ConfirmService.createConfirm({
         Sender: user?._id,
+        StudentName: user?.FullName,
         Receiver: teacher?.Teacher?._id,
+        TeacherName: teacher?.Teacher?.FullName,
+        TeacherEmail: teacher?.Teacher?.Email,
         Subject: teacher?.Subject?._id,
+        SubjectName: teacher?.Subject?.SubjectName,
         TotalFee: teacher?.Price * selectedTimes.length * 1000 * (1 + profitPercent),
         LearnType: bookingInfor?.LearnType,
+        Times: selectedTimes?.map(i =>
+          `Ngày ${dayjs(i?.StartTime).format("DD/MM/YYYY")} ${dayjs(i?.StartTime).format("HH:ss")} - ${dayjs(i?.EndTime).format("HH:ss")}`
+        ),
         Schedules: selectedTimes?.map(i => ({
           DateAt: dayjs(i?.StartTime),
           StartTime: dayjs(i?.StartTime),
@@ -40,6 +50,7 @@ const MOdalConfirmInfor = ({
       if (!!res?.isError) return toast.error(res?.msg)
       toast.success(res?.msg)
       onCancel()
+      navigate(`${Router.GIAO_VIEN}/${teacher?.Teacher?._id}${Router.MON_HOC}/${teacher?.Subject?._id}`)
     } finally {
       setLoading(false)
     }
