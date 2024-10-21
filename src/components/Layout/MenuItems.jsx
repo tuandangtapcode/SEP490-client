@@ -28,42 +28,42 @@ export const MenuCommon = () => [
 
 export const MenuUser = (user) => [
   {
-    isview: true,
+    isView: true,
     key: Router.PROFILE,
     label: "Profile",
   },
   {
-    isview: user?.RoleID === Roles.ROLE_TEACHER,
+    isView: user?.RoleID === Roles.ROLE_TEACHER,
     key: Router.SUBJECT_SETTING,
     label: "Cài đặt môn học",
   },
   {
-    isview: !user?.IsByGoogle,
+    isView: !user?.IsByGoogle,
     key: Router.CAI_DAT_MAT_KHAU,
     label: "Cài đặt mật khẩu"
   },
   {
-    isview: true,
+    isView: true,
     key: Router.LICH_HOC,
     label: "Lịch học",
   },
   {
-    isview: !!(user?.RoleID === Roles.ROLE_TEACHER),
-    key: Router.DANG_BAI_VIET,
-    label: "Đăng bài",
+    isView: true,
+    key: Router.LICH_SU_BOOKING,
+    label: "Lịch sử booking",
   },
   {
-    isview: true,
+    isView: true,
     key: Router.HOP_THU_DEN,
     label: "Hộp thư đến"
   },
   {
-    isview: true,
+    isView: true,
     key: Router.LICH_SU_GIAO_DICH,
     label: "Lịch sử giao dịch"
   },
   {
-    isview: true,
+    isView: true,
     key: Router.DANH_SACH_MON_DA_HOC,
     label: user?.RoleID === Roles.ROLE_TEACHER ?
       "Danh sách các môn đã dạy"
@@ -71,7 +71,7 @@ export const MenuUser = (user) => [
       "Danh sách các môn đã tham gia"
   },
   {
-    isview: true,
+    isView: true,
     key: Router.CAI_DAT_TAI_KHOAN_NH,
     label: "Cài đặt tài khoản ngân hàng"
   },
@@ -116,7 +116,7 @@ export const MenuAdmin = () => [
   },
   {
     icon: ListIcons.ICON_REPORT,
-    label: "Report",
+    label: "Issue",
     key: Router.QUAN_LY_REPORT,
     RoleID: [1, 2]
   },

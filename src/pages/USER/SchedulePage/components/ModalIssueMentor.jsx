@@ -5,9 +5,9 @@ import InputCustom from "src/components/InputCustom"
 import ModalCustom from "src/components/ModalCustom"
 import ButtonCustom from "src/components/MyButton/ButtonCustom"
 import SpinCustom from "src/components/SpinCustom"
-import ReportService from "src/services/ReportService"
+import IssueService from "src/services/IssueService"
 
-const ModalReportMentor = ({ open, onCancel }) => {
+const ModalIssueMentor = ({ open, onCancel }) => {
 
   const [form] = Form.useForm()
   const [loading, setLoading] = useState(false)
@@ -22,7 +22,7 @@ const ModalReportMentor = ({ open, onCancel }) => {
         Timetable: open?._id,
         Teacher: open?.Teacher
       }
-      const res = await ReportService.createReport(body)
+      const res = await IssueService.createIssue(body)
       if (!!res?.isError) return toast.error(res?.msg)
       toast.success(res?.msg)
       onCancel()
@@ -95,4 +95,4 @@ const ModalReportMentor = ({ open, onCancel }) => {
   );
 }
 
-export default ModalReportMentor;
+export default ModalIssueMentor;

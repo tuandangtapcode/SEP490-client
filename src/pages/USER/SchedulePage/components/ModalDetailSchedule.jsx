@@ -13,7 +13,7 @@ import TimeTableService from "src/services/TimeTableService"
 import dayjs from "dayjs"
 import ListIcons from "src/components/ListIcons"
 import ButtonCircle from "src/components/MyButton/ButtonCircle"
-import ModalReportMentor from "./ModalReportMentor"
+import ModalIssueMentor from "./ModalIssueMentor"
 import ModalChangeTimetable from "./ModalChangeTimetable"
 import { saveAs } from "file-saver"
 
@@ -28,7 +28,7 @@ const ModalDetailSchedule = ({
   const navigate = useNavigate()
   const { listSystemKey } = useSelector(globalSelector)
   const [loading, setLoading] = useState(false)
-  const [modalReportMentor, setModalReportMentor] = useState(false)
+  const [modalIssueMentor, setModalIssueMentor] = useState(false)
   const [openModalChangeTimetable, setOpenModalChangeTimetable] = useState(false)
 
   const handleAttendanceTimeTable = async () => {
@@ -107,7 +107,7 @@ const ModalDetailSchedule = ({
               <ButtonCircle
                 icon={ListIcons.ICON_WARNING}
                 title="Báo cáo Giáo viên"
-                onClick={() => setModalReportMentor(open)}
+                onClick={() => setModalIssueMentor(open)}
               />
             }
           </Col>
@@ -175,10 +175,10 @@ const ModalDetailSchedule = ({
       </div>
 
       {
-        !!modalReportMentor &&
-        <ModalReportMentor
-          open={modalReportMentor}
-          onCancel={() => setModalReportMentor(false)}
+        !!modalIssueMentor &&
+        <ModalIssueMentor
+          open={modalIssueMentor}
+          onCancel={() => setModalIssueMentor(false)}
         />
       }
 

@@ -4,28 +4,20 @@ import { useLocation, useNavigate, useParams } from "react-router-dom"
 import SpinCustom from "src/components/SpinCustom"
 import UserService from "src/services/UserService"
 import { MainProfileWrapper } from "../TeacherDetail/styled"
-import { PaymentMethodStyled, TimeItemStyled } from "./styled"
+import { TimeItemStyled } from "./styled"
 import dayjs from "dayjs"
 import { SYSTEM_KEY } from "src/lib/constant"
 import { useSelector } from "react-redux"
 import { globalSelector } from "src/redux/selector"
-import { generateSignature, getListComboKey, randomNumber } from "src/lib/commonFunction"
+import { getListComboKey } from "src/lib/commonFunction"
 import InputCustom from "src/components/InputCustom"
 import ButtonCustom from "src/components/MyButton/ButtonCustom"
 import { formatMoney } from "src/lib/stringUtils"
-import PaymentService from "src/services/PaymentService"
-import ModalSuccessBooking from "./components/ModalSuccessBooking"
 import TimeTableService from "src/services/TimeTableService"
-import LearnHistoryService from "src/services/LearnHistoryService"
-import ModalPaymentBooking from "./components/ModalPaymentBooking"
 import { toast } from "react-toastify"
-import Notice from "src/components/Notice"
-import logoVietQR from '/vietqr.png'
-import logoVNPay from '/Icon-VNPAY-QR.png'
-import handleCreatePaymentVNPay from "src/lib/getUrlVNPay"
 import { disabledBeforeDate } from "src/lib/dateUtils"
+import MOdalConfirmInfor from "./components/ModalConfirmInfor"
 
-const RootURLWebsite = import.meta.env.VITE_ROOT_URL_WEBSITE
 
 const BookingPage = () => {
 
@@ -34,27 +26,20 @@ const BookingPage = () => {
   const navigate = useNavigate()
   const [loading, setLoading] = useState(false)
   const [teacher, setTeacher] = useState()
-  const [subject, setSubject] = useState()
-  const [selectedDate, setSelectedDate] = useState()
   const [selectedTimes, setSelectedTimes] = useState([])
   const [bookingInfor, setBookingInfor] = useState()
   const [times, setTimes] = useState([])
   const [timeTables, SetTimeTables] = useState([])
   const location = useLocation()
-  const [openModalSuccessBooking, setOpenModalSuccessBooking] = useState(false)
-  const [openModalPaymentBooking, setOpenModalPaymentBooking] = useState(false)
   const queryParams = new URLSearchParams(location.search)
-  const [paymentMethod, setPaymentMethod] = useState("")
+  const [openModalConfirmInfor, setOpenModalConfirmInfor] = useState()
 
   const getDetailTeacher = async () => {
     try {
       setLoading(true)
-      const res = await UserService.getDetailTeacher({ TeacherID, SubjectID })
+      const res = await UserService.getDetailTeacher({ TeacherID, SubjectID, IsBookingPage: true })
       if (!!res?.isError) return navigate("/not-found")
       setTeacher(res?.data)
-      setSubject(
-        res?.data?.Subjects?.find(i => i?._id === SubjectID)
-      )
     } finally {
       setLoading(false)
     }
@@ -72,28 +57,26 @@ const BookingPage = () => {
   }
 
   const handleSelectedTimes = (date) => {
-    const dayGap = dayjs(selectedDate).startOf("day").diff(dayjs(date?.StartTime).startOf("day"), "days")
     const checkExistTime = selectedTimes?.find(i =>
       dayjs(i?.StartTime).format("DD/MM/YYYY") ===
-      dayjs(date?.StartTime).add(dayGap, "days").format("DD/MM/YYYY")
+      dayjs(date?.StartTime).format("DD/MM/YYYY")
     )
     if (!!checkExistTime) {
       const copySelectedTimes = [...selectedTimes]
       const indexExsitTime = selectedTimes?.findIndex(i =>
         dayjs(i?.StartTime).format("DD/MM/YYYY HH:ss") ===
-        dayjs(date?.StartTime).add(dayGap, "days").format("DD/MM/YYYY HH:ss")
+        dayjs(date?.StartTime).format("DD/MM/YYYY HH:ss")
       )
       if (indexExsitTime >= 0) {
         copySelectedTimes.splice(indexExsitTime, 1)
       } else if (indexExsitTime < 0) {
         const index = selectedTimes?.findIndex(i =>
           dayjs(i?.StartTime).format("DD/MM/YYYY") ===
-          dayjs(date?.StartTime).add(dayGap, "days").format("DD/MM/YYYY")
+          dayjs(date?.StartTime).format("DD/MM/YYYY")
         )
         copySelectedTimes.splice(index, 1, {
-          StartTime: dayjs(date?.StartTime).add(dayGap, "days"),
-          EndTime: dayjs(date?.EndTime).add(dayGap, "days"),
-          dayGap: dayGap
+          StartTime: dayjs(date?.StartTime),
+          EndTime: dayjs(date?.EndTime),
         })
       }
       setSelectedTimes(copySelectedTimes)
@@ -101,95 +84,94 @@ const BookingPage = () => {
       setSelectedTimes(pre => [
         ...pre,
         {
-          StartTime: dayjs(date?.StartTime).add(dayGap, "days"),
-          EndTime: dayjs(date?.EndTime).add(dayGap, "days"),
-          dayGap: dayGap
+          StartTime: dayjs(date?.StartTime),
+          EndTime: dayjs(date?.EndTime),
         }
       ])
     }
   }
 
-  const createPaymentLink = async () => {
-    try {
-      setLoading(true)
-      if (bookingInfor?.LearnType === 2 && !bookingInfor?.Address) {
-        return Notice({
-          isSuccess: false,
-          msg: "Hãy nhập địa chỉ"
-        })
-      }
-      if (paymentMethod === "vietqr") {
-        const body = {
-          orderCode: randomNumber(),
-          amount: +teacher?.Price * selectedTimes.length * 1000 * (1 + profitPercent),
-          description: "Thanh toán book giáo viên",
-          cancelUrl: `${RootURLWebsite}${location.pathname}`,
-          returnUrl: `${RootURLWebsite}${location.pathname}`,
-        }
-        const data = `amount=${body.amount}&cancelUrl=${body.cancelUrl}&description=${body.description}&orderCode=${body.orderCode}&returnUrl=${body.returnUrl}`
-        const resPaymemtLink = await PaymentService.createPaymentLink({
-          ...body,
-          signature: generateSignature(data)
-        })
-        if (resPaymemtLink?.data?.code !== "00") return toast.error("Có lỗi xảy ra trong quá trình tạo thanh toán")
-        window.location.href = resPaymemtLink?.data?.data?.checkoutUrl
-      } else if (paymentMethod === "vnpay") {
-        handleCreatePaymentVNPay(
-          "Thanh toán book giáo viên",
-          +teacher?.Price * selectedTimes.length * 1000 * (1 + profitPercent),
-          `${RootURLWebsite}${location.pathname}`,
-          teacher?.ipAddress
-        )
-      }
-    } finally {
-      setLoading(false)
-    }
-  }
+  // const createPaymentLink = async () => {
+  //   try {
+  //     setLoading(true)
+  //     if (bookingInfor?.LearnType === 2 && !bookingInfor?.Address) {
+  //       return Notice({
+  //         isSuccess: false,
+  //         msg: "Hãy nhập địa chỉ"
+  //       })
+  //     }
+  //     if (paymentMethod === "vietqr") {
+  //       const body = {
+  //         orderCode: randomNumber(),
+  //         amount: +teacher?.Price * selectedTimes.length * 1000 * (1 + profitPercent),
+  //         description: "Thanh toán book giáo viên",
+  //         cancelUrl: `${RootURLWebsite}${location.pathname}`,
+  //         returnUrl: `${RootURLWebsite}${location.pathname}`,
+  //       }
+  //       const data = `amount=${body.amount}&cancelUrl=${body.cancelUrl}&description=${body.description}&orderCode=${body.orderCode}&returnUrl=${body.returnUrl}`
+  //       const resPaymemtLink = await PaymentService.createPaymentLink({
+  //         ...body,
+  //         signature: generateSignature(data)
+  //       })
+  //       if (resPaymemtLink?.data?.code !== "00") return toast.error("Có lỗi xảy ra trong quá trình tạo thanh toán")
+  //       window.location.href = resPaymemtLink?.data?.data?.checkoutUrl
+  //     } else if (paymentMethod === "vnpay") {
+  //       handleCreatePaymentVNPay(
+  //         "Thanh toán book giáo viên",
+  //         +teacher?.Price * selectedTimes.length * 1000 * (1 + profitPercent),
+  //         `${RootURLWebsite}${location.pathname}`,
+  //         teacher?.ipAddress
+  //       )
+  //     }
+  //   } finally {
+  //     setLoading(false)
+  //   }
+  // }
 
-  const handleCompleteBooking = async () => {
-    try {
-      setLoading(true)
-      const resPayment = await PaymentService.createPayment({
-        PaymentType: 1,
-        Description: `Thanh toán book giáo viên ${teacher?.FullName}`,
-        TotalFee: +teacher?.Price * selectedTimes.length * 1000 * (1 + profitPercent),
-        TraddingCode: randomNumber()
-      })
-      if (!!resPayment?.isError) return
-      const bodyLearnHistory = {
-        Teacher: TeacherID,
-        Subject: SubjectID,
-        TotalLearned: selectedTimes.length,
-        TeacherName: teacher?.FullName,
-        TeacherEmail: teacher?.Email,
-        SubjectName: subject?.SubjectName,
-        StudentName: user?.FullName,
-        StudentEmail: user?.Email,
-        Times: selectedTimes?.map(i =>
-          `Ngày ${dayjs(i?.StartTime).format("DD/MM/YYYY")} ${dayjs(i?.StartTime).format("HH:ss")} - ${dayjs(i?.EndTime).format("HH:ss")}`
-        )
-      }
-      const resLearnHistory = await LearnHistoryService.createLearnHistory(bodyLearnHistory)
-      if (!!resLearnHistory?.isError) return
-      const bodyTimeTable = selectedTimes?.map(i => ({
-        LearnHistory: resLearnHistory?.data?._id,
-        Teacher: teacher?._id,
-        Subject: SubjectID,
-        DateAt: dayjs(i?.StartTime),
-        StartTime: dayjs(i?.StartTime),
-        EndTime: dayjs(i?.EndTime),
-        LearnType: bookingInfor?.LearnType,
-        Address: !!bookingInfor?.Address && bookingInfor?.LearnType === 2
-          ? bookingInfor?.Address
-          : undefined,
-      }))
-      const resTimeTable = await TimeTableService.createTimeTable(bodyTimeTable)
-      if (!!resTimeTable?.isError) return
-      setOpenModalSuccessBooking({ FullName: teacher?.FullName })
-    } finally {
-      setLoading(false)
-    }
-  }
+  // const handleCompleteBooking = async () => {
+  //   try {
+  //     setLoading(true)
+  //     const resPayment = await PaymentService.createPayment({
+  //       PaymentType: 1,
+  //       Description: `Thanh toán book giáo viên ${teacher?.FullName}`,
+  //       TotalFee: +teacher?.Price * selectedTimes.length * 1000 * (1 + profitPercent),
+  //       TraddingCode: randomNumber()
+  //     })
+  //     if (!!resPayment?.isError) return
+  //     const bodyLearnHistory = {
+  //       Teacher: TeacherID,
+  //       Subject: SubjectID,
+  //       TotalLearned: selectedTimes.length,
+  //       TeacherName: teacher?.FullName,
+  //       TeacherEmail: teacher?.Email,
+  //       SubjectName: teacher?.Subject?.SubjectName,
+  //       StudentName: user?.FullName,
+  //       StudentEmail: user?.Email,
+  //       Times: selectedTimes?.map(i =>
+  //         `Ngày ${dayjs(i?.StartTime).format("DD/MM/YYYY")} ${dayjs(i?.StartTime).format("HH:ss")} - ${dayjs(i?.EndTime).format("HH:ss")}`
+  //       )
+  //     }
+  //     const resLearnHistory = await LearnHistoryService.createLearnHistory(bodyLearnHistory)
+  //     if (!!resLearnHistory?.isError) return
+  //     const bodyTimeTable = selectedTimes?.map(i => ({
+  //       LearnHistory: resLearnHistory?.data?._id,
+  //       Teacher: teacher?._id,
+  //       Subject: SubjectID,
+  //       DateAt: dayjs(i?.StartTime),
+  //       StartTime: dayjs(i?.StartTime),
+  //       EndTime: dayjs(i?.EndTime),
+  //       LearnType: bookingInfor?.LearnType,
+  //       Address: !!bookingInfor?.Address && bookingInfor?.LearnType === 2
+  //         ? bookingInfor?.Address
+  //         : undefined,
+  //     }))
+  //     const resTimeTable = await TimeTableService.createTimeTable(bodyTimeTable)
+  //     if (!!resTimeTable?.isError) return
+  //     setOpenModalSuccessBooking({ FullName: teacher?.FullName })
+  //   } finally {
+  //     setLoading(false)
+  //   }
+  // }
 
   useEffect(() => {
     setBookingInfor(pre => ({
@@ -206,15 +188,15 @@ const BookingPage = () => {
     if (!!teacher) getTimeTable()
   }, [teacher])
 
-  useEffect(() => {
-    if (
-      ((!!queryParams.get("status") && queryParams.get("status") === "PAID") ||
-        (!!queryParams.get("vnp_ResponseCode") && queryParams.get("vnp_ResponseCode") === "00")) &&
-      !!teacher
-    ) {
-      handleCompleteBooking()
-    }
-  }, [location.search, teacher])
+  // useEffect(() => {
+  //   if (
+  //     ((!!queryParams.get("status") && queryParams.get("status") === "PAID") ||
+  //       (!!queryParams.get("vnp_ResponseCode") && queryParams.get("vnp_ResponseCode") === "00")) &&
+  //     !!teacher
+  //   ) {
+  //     handleCompleteBooking()
+  //   }
+  // }, [location.search, teacher])
 
 
   return (
@@ -229,29 +211,39 @@ const BookingPage = () => {
                 <DatePicker
                   style={{ width: "100%" }}
                   format="DD/MM/YYYY"
-                  disabledDate={current => { disabledBeforeDate(current) }}
+                  disabledDate={current => disabledBeforeDate(current)}
                   onChange={e => {
+                    console.log("dayjs(e)", dayjs(e).format("HH:mm"));
+
                     const daysFromTimeTable = !!timeTables?.length
                       ? timeTables
-                        ?.filter(i => dayjs(i?.DateAt).format("DD/MM/YYYY") === dayjs(e).format("DD/MM/YYYY") &&
+                        ?.filter(i =>
+                          dayjs(i?.DateAt).format("DD/MM/YYYY") === dayjs(e).format("DD/MM/YYYY") &&
                           i?.Teacher?._id === TeacherID)
                         ?.map(item => dayjs(item?.StartTime).format("HH:ss"))
                       : []
                     const times = !!daysFromTimeTable?.length
-                      ? teacher?.Schedules?.filter(i =>
+                      ? teacher?.Teacher?.Schedules?.filter(i =>
                         i?.DateAt === dayjs(e).format("dddd") &&
                         !daysFromTimeTable?.includes(dayjs(i?.StartTime).format("HH:ss"))
                       )
-                      : teacher?.Schedules?.filter(i =>
+                      : teacher?.Teacher?.Schedules?.filter(i =>
                         i?.DateAt === dayjs(e).format("dddd")
                       )
-                    setSelectedDate(dayjs(e).format())
-                    setTimes(times)
+                    setTimes(
+                      times?.map(i => {
+                        const dayGap = dayjs(e).startOf("day").diff(dayjs(i?.StartTime).startOf("day"), "days")
+                        return {
+                          StartTime: dayjs(i?.StartTime).add(dayGap, "days"),
+                          EndTime: dayjs(i?.EndTime).add(dayGap, "days"),
+                        }
+                      })
+                    )
                   }}
                 />
               </Col>
               <Col span={12}>
-                <div className="fs-16 fw-600 mb-8">Chọn thời gian học (Khung giờ trống của giáo viên)</div>
+                <div className="fs-16 fw-600 mb-8">Các khung giờ trống</div>
                 <Row gutter={[16, 8]}>
                   {
                     !!times.length ?
@@ -261,7 +253,7 @@ const BookingPage = () => {
                             className={
                               !!selectedTimes?.some(item =>
                                 dayjs(item?.StartTime).format("DD/MM/YYYY HH:ss") ===
-                                dayjs(i?.StartTime).add(item?.dayGap, "days").format("DD/MM/YYYY HH:ss"))
+                                dayjs(i?.StartTime).format("DD/MM/YYYY HH:ss"))
                                 ? "active"
                                 : ""
                             }
@@ -283,22 +275,22 @@ const BookingPage = () => {
             <div className="fs-20 fw-600 mb-16">Thông tin đặt lịch</div>
             <div className="teacher-infor d-flex mb-12">
               <img
-                src={teacher?.AvatarPath} alt=""
+                src={teacher?.Teacher?.AvatarPath}
+                alt=""
                 style={{
-                  width: '60px',
-                  height: "60px",
+                  width: '70px',
+                  height: "70px",
                   borderRadius: '50%',
                   marginRight: "12px"
                 }}
               />
-              <div>{teacher?.FullName}</div>
+              <div>
+                <p className="fs-16 fw-600">{teacher?.Teacher?.FullName}</p>
+                <p>{teacher?.Subject?.SubjectName}</p>
+              </div>
             </div>
-            <div className="subject-infor mb-12">
-              <span className="fw-600 fw-16 mr-8">Môn học:</span>
-              <spn>{subject?.SubjectName}</spn>
-            </div>
-            <div className="learn-type">
-              <div className="fw-600 fw-16 mb-8">Hình thức học:</div>
+            <div className="learn-type mb-12">
+              <div className="fw-600 fw-16 mb-8">Lựa chọn hình thức học:</div>
               <Radio.Group
                 className="mb-8"
                 onChange={e => setBookingInfor(pre => ({ ...pre, LearnType: e.target.value }))}
@@ -349,12 +341,12 @@ const BookingPage = () => {
                 <span className="fs-17 fw-600">{formatMoney(+teacher?.Price * selectedTimes.length * 1000 * (1 + profitPercent))} VNĐ</span>
               </div>
             }
-            <Radio.Group
-              value={paymentMethod}
-              onChange={e => setPaymentMethod(e.target.value)}
+            {/* <Radio.Group
+              onChange={e => setBookingInfor(pre => ({ ...pre, PaymentMethod: e.target.value }))}
+              className="mb-12"
             >
-              <PaymentMethodStyled className={`${paymentMethod === "vnpay" ? "active" : ""}`}>
-                <Radio value="vnpay">
+              <PaymentMethodStyled className={`${bookingInfor?.PaymentMethod === 1 ? "active" : ""}`}>
+                <Radio value={1}>
                   <div className="d-flex-sb">
                     <div className="mr-6 fs-16">Thanh toán bằng VNPay</div>
                     <img
@@ -368,8 +360,8 @@ const BookingPage = () => {
                   </div>
                 </Radio>
               </PaymentMethodStyled>
-              <PaymentMethodStyled className={`${paymentMethod === "vietqr" ? "active" : ""}`}>
-                <Radio value="vietqr">
+              <PaymentMethodStyled className={`${bookingInfor?.PaymentMethod === 2 ? "active" : ""}`}>
+                <Radio value={2}>
                   <div className="d-flex-sb">
                     <div className="mr-6 fs-16">Thanh toán bằng VietQR</div>
                     <img
@@ -383,26 +375,25 @@ const BookingPage = () => {
                   </div>
                 </Radio>
               </PaymentMethodStyled>
-            </Radio.Group>
+            </Radio.Group> */}
             {
               !!selectedTimes?.length &&
               (
                 (bookingInfor?.LearnType === 2 && !!bookingInfor?.Address) ||
                 (bookingInfor?.LearnType === 1)
               ) &&
-              !!paymentMethod &&
               <ButtonCustom
                 className="primary submit-btn"
                 loading={loading}
-                onClick={() => createPaymentLink()}
+                onClick={() => setOpenModalConfirmInfor(true)}
               >
-                Thanh toán
+                Xác nhận
               </ButtonCustom>
             }
           </MainProfileWrapper>
         </Col>
 
-        {
+        {/* {
           !!openModalSuccessBooking &&
           <ModalSuccessBooking
             open={openModalSuccessBooking}
@@ -416,6 +407,17 @@ const BookingPage = () => {
             open={openModalPaymentBooking}
             onCancel={() => setOpenModalPaymentBooking(false)}
             onOk={() => handleCompleteBooking()}
+          />
+        } */}
+
+        {
+          !!openModalConfirmInfor &&
+          <MOdalConfirmInfor
+            open={openModalConfirmInfor}
+            onCancel={() => setOpenModalConfirmInfor(false)}
+            teacher={teacher}
+            bookingInfor={bookingInfor}
+            selectedTimes={selectedTimes}
           />
         }
 

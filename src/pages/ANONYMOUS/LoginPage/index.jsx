@@ -10,11 +10,10 @@ import UserService from "src/services/UserService"
 import { toast } from "react-toastify"
 import { useDispatch, useSelector } from "react-redux"
 import globalSlice from "src/redux/globalSlice"
-import socket from "src/utils/socket"
 import SpinCustom from "src/components/SpinCustom"
+import { decodeData } from "src/lib/commonFunction"
 import { Roles } from "src/lib/constant"
 import { globalSelector } from "src/redux/selector"
-import { decodeData } from "src/lib/commonFunction"
 
 const LoginPage = () => {
 
@@ -22,54 +21,48 @@ const LoginPage = () => {
   const [loading, setLoading] = useState(false)
   const dispatch = useDispatch()
   const navigate = useNavigate()
-  const { user } = useSelector(globalSelector)
+  const { isLogin } = useSelector(globalSelector)
+
+  const handleNavigate = (user) => {
+    if (user.RoleID === Roles.ROLE_ADMIN) {
+      navigate("/dashboard")
+    } else {
+      navigate('/')
+    }
+  }
 
   const loginByGoogle = useGoogleLogin({
     onSuccess: async (tokenResponse) => {
       try {
+        setLoading(true)
         const userInfor = await UserService.getInforByGoogleLogin(tokenResponse?.access_token)
         const res = await UserService.loginByGoogle(userInfor?.data)
         if (!!res?.isError) return toast.error(res?.msg)
         const user = decodeData(res?.data)
         if (!!user.ID) {
-          getDetailProfile(res?.data)
+          dispatch(globalSlice.actions.setIsLogin(true))
+          handleNavigate(user)
         } else {
           navigate('/forbidden')
         }
       } finally {
-        console.log();
+        setLoading(false)
       }
     },
   })
 
   const loginByForm = async () => {
     try {
+      setLoading(true)
       const values = await form.validateFields()
       const res = await UserService.login(values)
       if (!!res?.isError) return toast.error(res?.msg)
       const user = decodeData(res?.data)
       if (!!user.ID) {
-        getDetailProfile(res?.data)
+        dispatch(globalSlice.actions.setIsLogin(true))
+        handleNavigate(user)
       } else {
         navigate('/forbidden')
-      }
-    } finally {
-      console.log();
-    }
-  }
-
-  const getDetailProfile = async (token) => {
-    try {
-      setLoading(true)
-      const res = await UserService.getDetailProfile(token)
-      if (!!res?.isError) return toast.error(res?.msg)
-      dispatch(globalSlice.actions.setUser(res?.data))
-      socket.connect()
-      socket.emit("add-user-online", res?.data?._id)
-      if (res?.data?.RoleID === Roles.ROLE_ADMIN) {
-        navigate("/dashboard")
-      } else {
-        navigate('/')
       }
     } finally {
       setLoading(false)
@@ -77,7 +70,7 @@ const LoginPage = () => {
   }
 
   useEffect(() => {
-    if (!!user?._id) navigate("/")
+    if (!!isLogin) navigate("/")
   }, [])
 
   return (
@@ -128,7 +121,6 @@ const LoginPage = () => {
                 className="primary submit-btn fs-18 mb-16"
                 htmlType="submit"
                 onClick={() => loginByForm()}
-                loading={loading}
                 id="login"
               >
                 Đăng nhập

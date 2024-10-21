@@ -4,7 +4,7 @@ export const InputWrapper = styled.div`
   .ant-input {
   background-color: white !important;
   color: black !important;
-  // padding: 8px 12px;
+  /* padding: 8px 12px; */
 }
 
 
@@ -27,7 +27,7 @@ export const InputWrapper = styled.div`
 }
 
 .ant-input-affix-wrapper {
-  padding: 7px 12px !important;
+  /* padding: 7px 12px !important; */
 }
 
 .anticon.ant-input-password-icon {
@@ -44,7 +44,7 @@ export const InputWrapper = styled.div`
 }
 
 .ant-input-search .ant-input-search-button {
-  height: 31px !important;
+  /* height: 32px !important; */
 }
 
 .ant-btn-default:not(:disabled):not(.ant-btn-disabled):hover {

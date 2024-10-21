@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from 'react'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate, useRoutes } from 'react-router-dom'
 import { toast, ToastContainer } from 'react-toastify'
 import SpinCustom from './components/SpinCustom'
-import FindTeacher from './pages/ANONYMOUS/FindTeacher'
 import globalSlice from './redux/globalSlice'
 import Router from './routers'
 import CommonService from './services/CommonService'
@@ -11,6 +10,7 @@ import UserService from './services/UserService'
 import socket from './utils/socket'
 import InactiveModal from './components/Layout/components/ModalInactiveAccount'
 import { decodeData } from './lib/commonFunction'
+import { globalSelector } from './redux/selector'
 
 // ADMIN
 const AdminRoutes = React.lazy(() => import("src/pages/ADMIN/AdminRoutes"))
@@ -18,7 +18,7 @@ const StatisticManagement = React.lazy(() => import("src/pages/ADMIN/StatisticMa
 const StaffManagement = React.lazy(() => import("src/pages/ADMIN/StaffManagement"))
 const StudentManagement = React.lazy(() => import("src/pages/ADMIN/StudentManagement"))
 const TeacherManagement = React.lazy(() => import("src/pages/ADMIN/TeacherManagement"))
-const ReportManagement = React.lazy(() => import("src/pages/ADMIN/ReportManagement"))
+const IssueManagement = React.lazy(() => import("src/pages/ADMIN/IssueManagement"))
 const PaymentManagement = React.lazy(() => import("src/pages/ADMIN/PaymentManagement"))
 const SubjectCateManagement = React.lazy(() => import("src/pages/ADMIN/SubjectCateManagement"))
 const InboxManagement = React.lazy(() => import("src/pages/ADMIN/InboxManagement"))
@@ -38,6 +38,7 @@ const MentorForSubject = React.lazy(() => import("src/pages/ANONYMOUS/MentorForS
 const BookingPage = React.lazy(() => import("src/pages/ANONYMOUS/BookingPage"))
 const FindSubject = React.lazy(() => import("src/pages/ANONYMOUS/FindSubject"))
 const MeetingRoom = React.lazy(() => import("src/pages/ANONYMOUS/MeetingRoom"))
+const SubjectcateDetail = React.lazy(() => import("src/pages/ANONYMOUS/SubjectcateDetail"))
 
 // USER
 const UserRoutes = React.lazy(() => import("src/pages/USER/UserRoutes"))
@@ -47,7 +48,7 @@ const InboxPage = React.lazy(() => import("src/pages/USER/InboxPage"))
 const BillingPage = React.lazy(() => import("src/pages/USER/BillingPage"))
 const JournalPage = React.lazy(() => import("src/pages/USER/JournalPage"))
 const SchedulePage = React.lazy(() => import("src/pages/USER/SchedulePage"))
-const BlogPosting = React.lazy(() => import("src/pages/USER/BlogPosting"))
+const BookingHistory = React.lazy(() => import("src/pages/USER/BookingHistory"))
 const AccountUser = React.lazy(() => import("src/pages/USER/AccountUser"))
 const StudiedSubject = React.lazy(() => import("src/pages/USER/StudiedSubject"))
 const BankInfor = React.lazy(() => import("src/pages/USER/BankInfor"))
@@ -118,10 +119,10 @@ const App = () => {
           )
         },
         {
-          path: Router.QUAN_LY_REPORT,
+          path: Router.QUAN_LY_ISSUE,
           element: (
             <LazyLoadingComponent>
-              <ReportManagement />
+              <IssueManagement />
             </LazyLoadingComponent>
           )
         },
@@ -216,10 +217,10 @@ const App = () => {
           )
         },
         {
-          path: Router.DANG_BAI_VIET,
+          path: Router.LICH_SU_BOOKING,
           element: (
             <LazyLoadingComponent>
-              <BlogPosting />
+              <BookingHistory />
             </LazyLoadingComponent>
           )
         },
@@ -317,7 +318,7 @@ const App = () => {
           path: `${Router.DANH_MUC}/:SubjectCateID`,
           element: (
             <LazyLoadingComponent>
-              <FindTeacher />
+              <SubjectcateDetail />
             </LazyLoadingComponent>
           )
         },
@@ -384,8 +385,8 @@ const App = () => {
   const appRoutes = useRoutes(routes)
   const dispatch = useDispatch()
   const navigate = useNavigate()
-  const [loading, setLoading] = useState(false)
   const [modalInactiveAccount, setModalInactiveAccount] = useState(false)
+  const { isLogin } = useSelector(globalSelector)
 
   const getListSystemkey = async () => {
     const res = await CommonService.getListSystemkey()
@@ -424,8 +425,11 @@ const App = () => {
   useEffect(() => {
     getListSystemkey()
     getProfitPercent()
-    checkAuth()
   }, [])
+
+  useEffect(() => {
+    checkAuth()
+  }, [isLogin])
 
   useEffect(() => {
     socket.on('listen-inactive-account', (data) => {

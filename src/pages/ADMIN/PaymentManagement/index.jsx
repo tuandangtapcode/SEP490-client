@@ -147,6 +147,7 @@ const PaymentManagement = () => {
           <InputCustom
             type="isSearch"
             placeholder="Tìm kiếm mã giao dịch hoặc người giao dịch..."
+            allowClear
             onSearch={e => setPagination(pre => ({ ...pre, TextSearch: e }))}
           />
         </Col>

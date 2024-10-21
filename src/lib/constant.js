@@ -6,14 +6,18 @@ export const SYSTEM_KEY = {
   PAYMENT_TYPE: "PaymentType",
   PAYMENT_STATUS: "PaymentStatus",
   LEARNED_STATUS: "LearnedStatus",
-  PROFIT_PERCENT: "ProfitPercent"
+  PROFIT_PERCENT: "ProfitPercent",
+  PAYMENT_METHOD: "PaymentMethod",
+  GENDER: "Gender",
+  CONFIRM_STATUS: "ConfirmStatus"
 }
 
 export const Roles = {
   ROLE_ADMIN: 1,
-  ROLE_STAFF: 5,
-  ROLE_SUBJECT: 6,
-  ROLE_INBOX: 7,
+  ROLE_STAFF_USER: 2,
+  ROLE_STAFF_SUBJECT: 5,
+  ROLE_STAFF_INBOX: 6,
+  ROLE_STAFF_TRANSFER: 7,
   ROLE_TEACHER: 3,
   ROLE_STUDENT: 4,
 }

@@ -49,7 +49,7 @@ const NotificationItem = ({
 
 const Header = () => {
 
-  const { user } = useSelector(globalSelector)
+  const { user, isLogin } = useSelector(globalSelector)
   const dispatch = useDispatch()
   const navigate = useNavigate()
   const [notifications, setNotifications] = useState([])
@@ -83,6 +83,7 @@ const Header = () => {
       getNotifications()
     }
   }, [user])
+
 
   const menuAccoutUser = [
     {
@@ -132,6 +133,7 @@ const Header = () => {
     })
   }, [])
 
+
   return (
     <HeaderContainerStyled isHome={location.pathname === "/"}>
       <HeaderStyled>
@@ -154,7 +156,7 @@ const Header = () => {
           </Col>
           <Col span={18} className="d-flex-end">
             {
-              ![Roles.ROLE_ADMIN, Roles.ROLE_STAFF].includes(user?.RoleID) &&
+              ![Roles.ROLE_ADMIN].includes(user?.RoleID) &&
               <div>
                 <Menu
                   style={{

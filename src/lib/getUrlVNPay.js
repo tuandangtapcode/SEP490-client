@@ -24,9 +24,6 @@ const sortObject = (obj) => {
 }
 
 const handleCreatePaymentVNPay = (orderInfo, amount, returnUrl, ipAddress) => {
-  console.log("VNP_Hashsecret", VNP_Hashsecret);
-  console.log("VNP_TMN_Code", VNP_TMN_Code);
-
   let vnp_Params
   vnp_Params = {
     vnp_Version: '2.1.0',

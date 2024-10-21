@@ -1,13 +1,13 @@
 import ListIcons from "src/components/ListIcons"
 import { Col, Row, Select } from "antd"
 import { useState } from "react"
-import { SearchContainerStyled } from "../../styled"
 import { useSelector } from "react-redux"
 import { globalSelector } from "src/redux/selector"
 import { getListComboKey } from "src/lib/commonFunction"
 import { SYSTEM_KEY } from "src/lib/constant"
 import { Link } from "react-router-dom"
 import ButtonCustom from "src/components/MyButton/ButtonCustom"
+import { SearchContainerStyled } from "../styled"
 
 const { Option } = Select
 
@@ -22,7 +22,7 @@ const Search = ({ subjects }) => {
 
   return (
     <SearchContainerStyled>
-      <Row gutter={[16]} >
+      <Row gutter={[16]} className="d-flex-sb">
         <Col span={7}>
           <div className="d-flex align-items-center mb-8">
             {ListIcons.ICON_SUBJECT_CATE_PRIMARY_COLOR}
@@ -100,8 +100,8 @@ const Search = ({ subjects }) => {
             </Select>
           </div>
         </Col>
-        <Col span={3}>
-          <ButtonCustom className="yellow-btn medium-size mt-23">
+        <Col span={3} className="d-flex-center">
+          <ButtonCustom className="yellow-btn submit-btn mt-23">
             <Link>Tìm</Link>
           </ButtonCustom>
         </Col>

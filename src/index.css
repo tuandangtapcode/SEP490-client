@@ -25,7 +25,7 @@
 .ant-menu-light.ant-menu-horizontal>.ant-menu-item:hover::after,
 .ant-menu-light.ant-menu-horizontal>.ant-menu-item-active::after,
 .ant-menu-light.ant-menu-horizontal>.ant-menu-item-selected::after {
-  border-bottom: 3px solid #106ebe;
+  border-bottom: 3px solid #7BBCB0;
 }
 
 .ant-menu .ant-menu-title-content {
@@ -45,7 +45,6 @@
 }
 
 .ant-menu-light .ant-menu-item-selected {
-  background-color: var(--color-primary-hover) !important;
   color: white;
 }
 
@@ -72,4 +71,8 @@ body {
 
 .ant-modal-confirm .ant-modal-confirm-btns {
   margin-top: 20px !important;
+}
+
+.ant-rate .ant-rate-star {
+  margin-inline-end: 2px !important
 }

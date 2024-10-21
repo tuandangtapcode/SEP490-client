@@ -5,22 +5,22 @@ import dayjs from "dayjs"
 import React, { useState } from "react"
 import PaymentService from "src/services/PaymentService"
 import { randomNumber } from "src/lib/commonFunction"
-import ReportService from "src/services/ReportService"
+import IssueService from "src/services/IssueService"
 import { toast } from "react-toastify"
 import { useSelector } from "react-redux"
 import { globalSelector } from "src/redux/selector"
 import { getCurrentWeekRange } from "src/lib/dateUtils"
 
-const ModalViewReport = ({ open, onCancel, setPagination }) => {
+const ModalViewIssue = ({ open, onCancel, setPagination }) => {
 
   const [loading, setLoading] = useState(false)
   const { profitPercent } = useSelector(globalSelector)
 
-  const handleReport = async (record) => {
+  const handleIssue = async (record) => {
     try {
       setLoading(true)
-      const resReport = await ReportService.handleReport(record?._id)
-      if (!!resReport?.isError) return toast.error(res?.msg)
+      const resIssue = await IssueService.handleIssue(record?._id)
+      if (!!resIssue?.isError) return toast.error(res?.msg)
       const res = await PaymentService.createPayment({
         PaymentType: 2,
         PaymentStatus: 1,
@@ -30,7 +30,7 @@ const ModalViewReport = ({ open, onCancel, setPagination }) => {
         Receiver: record?.Sender?._id
       })
       if (!!res?.isError) return toast.error(res?.msg)
-      toast.success("Report đã được xử lý. Đã tạo thanh toán hoàn tiền cho học sinh")
+      toast.success("Issue đã được xử lý. Đã tạo thanh toán hoàn tiền cho học sinh")
       onCancel()
       setPagination(pre => ({
         ...pre,
@@ -46,7 +46,7 @@ const ModalViewReport = ({ open, onCancel, setPagination }) => {
     <ModalCustom
       open={open}
       onCancel={onCancel}
-      title="Chi tiết báo cáo"
+      title="Chi tiết phản ánh"
       width="70vw"
       footer={
         <div className="d-flex-end">
@@ -69,19 +69,19 @@ const ModalViewReport = ({ open, onCancel, setPagination }) => {
           </Col>
         }
         {
-          open?.Reports?.map((i, idx) =>
+          open?.Issues?.map((i, idx) =>
             <React.Fragment key={idx}>
               <Col span={24}>
                 <div className="center-text fs-18 fw-700">Lần báo số {idx + 1}</div>
               </Col>
               <Col span={5}>
-                <div>Người báo cáo:</div>
+                <div>Người phản ánh:</div>
               </Col>
               <Col span={17}>
                 <div>{i?.Sender?.FullName}</div>
               </Col>
               <Col span={5}>
-                <div>Người bị báo cáo:</div>
+                <div>Người bị phản ánh:</div>
               </Col>
               <Col span={17}>
                 <div>{i?.Teacher?.FullName}</div>
@@ -117,13 +117,13 @@ const ModalViewReport = ({ open, onCancel, setPagination }) => {
                 </div>
               </Col>
               <Col span={5}>
-                <div>Tiêu đề báo cáo:</div>
+                <div>Tiêu đề phản ánh:</div>
               </Col>
               <Col span={17}>
                 <div>{i?.Title}</div>
               </Col>
               <Col span={5}>
-                <div>Nội dung báo cáo:</div>
+                <div>Nội dung phản ánh:</div>
               </Col>
               <Col span={17}>
                 <div>{i?.Content}</div>
@@ -134,7 +134,7 @@ const ModalViewReport = ({ open, onCancel, setPagination }) => {
                   loading={loading}
                   onClick={() => {
                     if (!i?.IsHandle) {
-                      handleReport(i)
+                      handleIssue(i)
                     }
                   }}
                 >
@@ -153,4 +153,4 @@ const ModalViewReport = ({ open, onCancel, setPagination }) => {
   )
 }
 
-export default ModalViewReport
+export default ModalViewIssue

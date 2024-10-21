@@ -14,7 +14,8 @@ import {
   BsSend,
   BsTelephone,
   BsFillPlayFill,
-  BsCake2
+  BsCake2,
+  BsBarChartFill
 } from "react-icons/bs"
 
 import {
@@ -66,7 +67,10 @@ import {
   FaPercent
 } from "react-icons/fa"
 
-import { MdReportProblem } from "react-icons/md"
+import {
+  MdReportProblem,
+  MdClass
+} from "react-icons/md"
 
 import { ImBooks } from "react-icons/im"
 
@@ -154,7 +158,9 @@ const ListIcons = {
   ICON_PLAY_FS_30: <BsFillPlayFill className='fs-23 ml-2' />,
   ICON_LOCATION: <HiLocationMarker />,
   ICON_DATE_OF_BIRTH: <BsCake2 />,
-  ICON_PERCENT: <FaPercent className="fs-18" />
+  ICON_PERCENT: <FaPercent className="fs-18" />,
+  ICON_LEVEL: <BsBarChartFill className="fs-18" />,
+  ICON_LEARN_TYPE: <MdClass className="fs-18" />
 }
 
 export default ListIcons

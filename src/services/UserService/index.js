@@ -24,6 +24,7 @@ import {
   apiUpdateSubjectSetting,
   apiConfirmSubjectSetting,
   apiCheckAuth,
+  apiGetListTopTeacherBySubject,
 } from "./urls"
 
 const getInforByGoogleLogin = (access_token) => axios.get(apiGetInforByGoogleLogin, {
@@ -53,6 +54,7 @@ const createSubjectSetting = SubjectID => http.get(`${apiCreateSubjectSetting}/$
 const updateSubjectSetting = body => http.post(apiUpdateSubjectSetting, body)
 const deleteSubjectSetting = SubjectSettingID => http.get(`${apiDeleteSubjectSetting}/${SubjectSettingID}`)
 const confirmSubjectSetting = body => http.post(apiConfirmSubjectSetting, body)
+const getListTopTeacherBySubject = SubjectID => http.get(`${apiGetListTopTeacherBySubject}/${SubjectID}`)
 
 const UserService = {
   getInforByGoogleLogin,
@@ -77,7 +79,8 @@ const UserService = {
   createSubjectSetting,
   updateSubjectSetting,
   deleteSubjectSetting,
-  confirmSubjectSetting
+  confirmSubjectSetting,
+  getListTopTeacherBySubject,
 }
 
 export default UserService

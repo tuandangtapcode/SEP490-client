@@ -45,6 +45,9 @@ const ModalTimeTable = ({
     setSchedules(newData)
   }
 
+  console.log("schedules", schedules);
+
+
   const handleChangeSchedules = async () => {
     try {
       setLoading(true)
@@ -111,7 +114,7 @@ const ModalTimeTable = ({
             onShowMore={(schedules, date) =>
               this.setState({ showModal: true, schedules })
             }
-            min={new Date(new Date().setHours(8, 0, 0, 0))}
+            min={new Date(new Date().setHours(6, 0, 0, 0))}
             max={new Date(new Date().setHours(23, 0, 0, 0))}
           />
         </Col>

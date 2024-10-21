@@ -9,7 +9,7 @@ const AdminRoutes = ({ tokenInfor }) => {
     <>
       {
         !!tokenInfor &&
-          !!tokenInfor?.RoleID === Roles.ROLE_ADMIN ?
+          tokenInfor?.RoleID === Roles.ROLE_ADMIN ?
           <LayoutAdmin>
             <Outlet />
           </LayoutAdmin>
