@@ -12,6 +12,8 @@ import { useGoogleLogin } from "@react-oauth/google"
 import { disabledBeforeDate } from "src/lib/dateUtils"
 import { useSelector } from "react-redux"
 import { globalSelector } from "src/redux/selector"
+import { getListComboKey } from "src/lib/commonFunction"
+import { SYSTEM_KEY } from "src/lib/constant"
 
 const { Option } = Select
 
@@ -22,7 +24,7 @@ const SignupPage = () => {
   const [loading, setLoading] = useState(false)
   const [subjects, setSubjects] = useState([])
   const [roleID, setRoleID] = useState()
-  const { user } = useSelector(globalSelector)
+  const { user, listSystemKey } = useSelector(globalSelector)
 
   const handleRegister = async () => {
     try {
@@ -75,6 +77,7 @@ const SignupPage = () => {
   useEffect(() => {
     if (!!user?._id) navigate("/")
   }, [])
+
 
   return (
     <SignupContainerStyled>
@@ -158,7 +161,7 @@ const SignupPage = () => {
                 style={{ width: "100%" }}
                 placeholder="Chọn ngày sinh của bạn"
                 format="DD/MM/YYYY"
-                disabledDate={current => { disabledBeforeDate(current) }}
+                disabledDate={current => disabledBeforeDate(current)}
               />
             </Form.Item>
           </Col>
@@ -170,6 +173,28 @@ const SignupPage = () => {
               ]}
             >
               <InputCustom placeholder="Địa chỉ" />
+            </Form.Item>
+          </Col>
+          <Col span={24} className="d-flex-center">
+            <Form.Item
+              name="Gender"
+              rules={[
+                { required: true, message: "Hãy chọn giới tính của bạn" },
+              ]}
+            >
+              <Radio.Group>
+                {
+                  getListComboKey(SYSTEM_KEY.GENDER, listSystemKey).map((i, idx) =>
+                    <Radio
+                      className="border-radio"
+                      key={idx}
+                      value={i?.ParentID}
+                    >
+                      {i?.ParentName}
+                    </Radio>
+                  )
+                }
+              </Radio.Group>
             </Form.Item>
           </Col>
           {

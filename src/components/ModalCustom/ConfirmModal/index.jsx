@@ -13,6 +13,7 @@ const ConfirmModal = ({
 }) => {
   ModalStyled.confirm({
     icon: null,
+    centered: true,
     title: (
       <div className="fs-25 fw-700">{title}</div>
     ),
@@ -26,7 +27,7 @@ const ConfirmModal = ({
         padding: "16px, 16px, 16px, 16px",
         borderRadius: 8,
         height: 32,
-        background: `#0078d4`,
+        background: `var(--color-primary)`,
       },
     },
     cancelButtonProps: {

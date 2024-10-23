@@ -48,20 +48,23 @@ const InsertUpdateSubject = ({ open, onCancel, onOk }) => {
     try {
       setLoading(true)
       const values = await form.validateFields()
-      const resFile = await FileService.uploadFileSingle({
-        FileSingle: values?.image?.file
-      })
-      if (resFile?.isError) return
+      let resFile
+      if (!!values?.image?.file) {
+        resFile = await FileService.uploadFileSingle({
+          FileSingle: values?.image?.file
+        })
+        if (resFile?.isError) return
+      }
       const body = {
         SubjectID: !!open?._id ? open?._id : undefined,
         SubjectCateID: open?.SubjectCateID,
-        Avatar: resFile?.data,
+        Avatar: !!resFile ? resFile?.data : open?.AvatarPath,
         SubjectName: values?.SubjectName,
       }
       const res = !!open?._id
         ? await SubjectService.updateSubject(body)
         : await SubjectService.createSubject(body)
-      if (!!res?.isError) return toast.error(res?.msg) 
+      if (!!res?.isError) return toast.error(res?.msg)
       onCancel()
       toast.success(res?.msg)
       onOk()

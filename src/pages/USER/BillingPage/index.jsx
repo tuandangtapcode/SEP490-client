@@ -112,6 +112,7 @@ const BillingPage = () => {
           <InputCustom
             type="isSearch"
             placeholder="Tìm kiếm mã giao dịch..."
+            allowClear
             onSearch={e => setPagination(pre => ({ ...pre, TraddingCode: e }))}
           />
         </Col>

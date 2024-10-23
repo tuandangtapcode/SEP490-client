@@ -14,7 +14,7 @@ overflow: hidden;
   justify-content: space-between;
 }
 .content-container {
-  padding: 40px;
+  padding: 0px 20px; 
   overflow-y: auto; 
   height: calc(100vh - 64px);
   &::-webkit-scrollbar {
@@ -33,5 +33,9 @@ overflow: hidden;
 }
 .ant-menu-light.ant-menu-root.ant-menu-inline {
   border-inline-end: none !important
+}
+.ant-menu-light .ant-menu-item-selected {
+  background-color: var(--color-primary-hover) !important;
+  color: white;
 }
 `

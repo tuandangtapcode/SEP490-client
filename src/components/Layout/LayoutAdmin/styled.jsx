@@ -34,4 +34,8 @@ overflow: hidden;
 .ant-menu-light.ant-menu-root.ant-menu-vertical {
   border-inline-end: none !important
 }
+.ant-menu-light .ant-menu-item-selected {
+  background-color: var(--color-primary-hover) !important;
+  color: white;
+}
 `

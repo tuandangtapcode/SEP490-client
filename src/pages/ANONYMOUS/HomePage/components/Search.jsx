@@ -101,7 +101,7 @@ const Search = ({ subjects }) => {
           </div>
         </Col>
         <Col span={3} className="d-flex-center">
-          <ButtonCustom className="yellow-btn medium-size mt-23">
+          <ButtonCustom className="yellow-btn submit-btn mt-23">
             <Link>Tìm</Link>
           </ButtonCustom>
         </Col>
