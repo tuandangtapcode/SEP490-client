@@ -52,11 +52,11 @@ export const MenuUser = (user) => [
     key: Router.LICH_SU_BOOKING,
     label: "Lịch sử booking",
   },
-  // {
-  //   isview: !!(user?.RoleID === Roles.ROLE_STUDENT),
-  //   key: Router.DANG_BAI_VIET,
-  //   label: "Bài viết đã đăng",
-  // },
+  {
+    isview: !!(user?.RoleID === Roles.ROLE_STUDENT),
+    key: Router.DANG_BAI_VIET,
+    label: "Bài viết đã đăng",
+  },
   {
     isView: true,
     key: Router.HOP_THU_DEN,

@@ -161,7 +161,7 @@ const SignupPage = () => {
                 style={{ width: "100%" }}
                 placeholder="Chọn ngày sinh của bạn"
                 format="DD/MM/YYYY"
-                disabledDate={current => disabledBeforeDate(current)}
+                // disabledDate={current => disabledBeforeDate(current)}
               />
             </Form.Item>
           </Col>
