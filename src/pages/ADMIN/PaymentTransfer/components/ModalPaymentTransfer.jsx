@@ -28,7 +28,6 @@ const ModalPaymentTransfer = ({ open, onCancel, onOk }) => {
     try {
       setLoading(true)
       const values = await form.validateFields()
-      console.log(values);
       const resFile = await FileService.uploadFileSingle({
         FileSingle: values?.image?.file
       })

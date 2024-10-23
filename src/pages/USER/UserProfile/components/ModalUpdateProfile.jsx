@@ -7,6 +7,7 @@ import ModalCustom from "src/components/ModalCustom"
 import ButtonCustom from "src/components/MyButton/ButtonCustom"
 import globalSlice from "src/redux/globalSlice"
 import { globalSelector } from "src/redux/selector"
+import FileService from "src/services/FileService"
 import UserService from "src/services/UserService"
 
 const ModalUpdateProfile = ({ open, onCancel }) => {
@@ -36,12 +37,19 @@ const ModalUpdateProfile = ({ open, onCancel }) => {
     try {
       setLoading(true)
       const values = await form.validateFields()
+      let resFile
+      if (!!values?.image?.file) {
+        resFile = await FileService.uploadFileSingle({
+          FileSingle: values?.image?.file
+        })
+        if (resFile?.isError) return
+      }
       const res = await UserService.changeProfile({
         FullName: values?.FullName,
         Address: values?.Address,
-        Avatar: values?.image?.file
+        Avatar: !!resFile ? resFile?.data : open?.AvatarPath
       })
-      if (!!res?.isError) return toast.error(res?.msg) 
+      if (!!res?.isError) return toast.error(res?.msg)
       toast.success(res?.msg)
       dispatch(globalSlice.actions.setUser(res?.data))
       onCancel()

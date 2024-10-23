@@ -35,7 +35,7 @@ const StudentManagement = () => {
     try {
       setLoading(true)
       const res = await UserService.getListStudent(pagination)
-      if (!!res?.isError) return toast.error(res?.msg) 
+      if (!!res?.isError) return toast.error(res?.msg)
       setListData(res?.data?.List)
       setTotal(res?.data?.Total)
     } finally {
@@ -76,14 +76,14 @@ const StudentManagement = () => {
     },
     {
       title: 'Địa chỉ Email',
-      width: 80,
+      width: 100,
       // align: 'center',
       dataIndex: 'Email',
       key: 'Email',
     },
     {
       title: 'Địa chỉ',
-      width: 80,
+      width: 100,
       dataIndex: 'Address',
       key: 'Address',
     },
@@ -105,14 +105,14 @@ const StudentManagement = () => {
             </Tooltip>
           }
         </div>,
-      width: 75,
+      width: 50,
       align: 'center',
       dataIndex: 'BookQuantity',
       key: 'BookQuantity',
     },
     {
       title: 'Thời gian tạo',
-      width: 50,
+      width: 70,
       align: 'center',
       dataIndex: 'createdAt',
       key: 'createdAt',
@@ -122,21 +122,16 @@ const StudentManagement = () => {
     },
     {
       title: "Trạng thái tài khoản",
-      width: 60,
-      dataIndex: "RegisterStatus",
+      width: 80,
+      dataIndex: "IsActive",
       align: "center",
-      key: "RegisterStatus",
+      key: "IsActive",
       render: (val, record) => (
-        <Tag color={["processing", "warning", "success", "error"][val - 1]} className="p-5 fs-16">
+        <Tag color={!!val ? "success" : "error"} className="p-5 fs-16">
           {
-            registerStatus?.find(i => i?.ParentID === val)?.ParentName
+            !!val ? "Đang sử dụng" : "Đã bị khóa"
           }
         </Tag>
-        // <div style={{ color: ["#106ebe", "#fa8c16", "rgb(29, 185, 84)", "red"][val - 1] }} className="fw-600">
-        //   {
-        //     registerStatus?.find(i => i?.ParentID === val)?.ParentName
-        //   }
-        // </div >
       )
     },
     {
@@ -156,7 +151,6 @@ const StudentManagement = () => {
                   handleInactiveOrActiveAccount({
                     UserID: record?._id,
                     IsActive: !!record?.IsActive ? false : true,
-                    RegisterStatus: !!record?.IsActive ? 4 : 3
                   })
                   close()
                 }
@@ -180,6 +174,7 @@ const StudentManagement = () => {
           <InputCustom
             type="isSearch"
             placeholder="Tìm kiếm tên hoặc email..."
+            allowClear
             onSearch={e => setPagination(pre => ({ ...pre, TextSearch: e }))}
           />
         </Col>

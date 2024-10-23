@@ -11,13 +11,14 @@ const MainLayout = ({ children }) => {
   const { user } = useSelector(globalSelector)
   const location = useLocation()
 
+
   return (
     <LayoutStyled>
       <div>
         <Header />
       </div>
       <ContentContainerStyled>
-        <ContentStyled ismeetingscreen={!!location.pathname.includes("meeting-room")}>
+        <ContentStyled isFullScreen={!!["meeting-room", "/"].includes(location.pathname)}>
           {children}
         </ContentStyled>
       </ContentContainerStyled>
@@ -29,7 +30,7 @@ const MainLayout = ({ children }) => {
         (!!user?._id && !location.pathname.includes("meeting-room")) &&
         <ModalChat />
       }
-    </LayoutStyled>
+    </LayoutStyled >
   )
 }
 

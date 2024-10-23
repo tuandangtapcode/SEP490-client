@@ -156,9 +156,7 @@ const Header = () => {
           </Col>
           <Col span={18} className="d-flex-end">
             {
-              (![Roles.ROLE_ADMIN, Roles.ROLE_STAFF].includes(user?.RoleID) ||
-                !isLogin
-              ) &&
+              ![Roles.ROLE_ADMIN].includes(user?.RoleID) &&
               <div>
                 <Menu
                   style={{

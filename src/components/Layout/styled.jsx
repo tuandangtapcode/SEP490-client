@@ -15,7 +15,7 @@ export const ContentContainerStyled = styled.div`
 `
 
 export const ContentStyled = styled.div`
-  width: ${props => props.ismeetingscreen ? "100%" : "80%"};
+  width: ${props => props.isFullScreen ? "100%" : "80%"};
   margin: auto;
 `
 

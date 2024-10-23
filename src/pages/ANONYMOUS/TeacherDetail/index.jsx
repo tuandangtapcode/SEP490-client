@@ -3,23 +3,19 @@ import { useNavigate, useParams } from "react-router-dom"
 import SpinCustom from "src/components/SpinCustom"
 import UserService from "src/services/UserService"
 import { DivTimeContainer, MainProfileWrapper } from "./styled"
-import { Carousel, Col, Collapse, Image, Menu, Rate, Row, Select, Tabs } from "antd"
+import { Carousel, Col, Image, Rate, Row, Select, Tabs } from "antd"
 import ButtonCustom from "src/components/MyButton/ButtonCustom"
-import Description from "./components/Description"
-import ExperiencesOrEducations from "./components/ExperiencesOrEducations"
 import Router from "src/routers"
 import { PatentChildBorder, TabStyled } from "src/pages/ADMIN/TeacherManagement/styled"
 import moment from "moment"
-import { formatMoney } from "src/lib/stringUtils"
+import { formatMoney, getRealFee } from "src/lib/stringUtils"
 import { useSelector } from "react-redux"
 import { globalSelector } from "src/redux/selector"
 import { toast } from "react-toastify"
 import socket from "src/utils/socket"
 import ModalSendFeedback from "./modal/ModalSendFeedback"
 import FeedbackService from "src/services/FeedbackService"
-import Feedbacks from "./components/Feedbacks"
 import ModalSendMessage from "./modal/ModalSendMessage"
-import IntroVideos from "./components/IntroVideos"
 import 'swiper/css'
 import { convertSchedules } from "src/lib/dateUtils"
 import ListIcons from "src/components/ListIcons"
@@ -28,6 +24,7 @@ import PreviewVideo from "src/pages/USER/SubjectSetting/modal/PreviewVideo"
 import { getListComboKey } from "src/lib/commonFunction"
 import { SYSTEM_KEY } from "src/lib/constant"
 import dayjs from "dayjs"
+import Feedback from "./components/Feedback"
 
 const { Option } = Select
 
@@ -37,6 +34,7 @@ const TeacherDetail = () => {
   const navigate = useNavigate()
   const [loading, setLoading] = useState(false)
   const [teacher, setTeacher] = useState()
+  const [subjects, setSubjects] = useState([])
   const [feedbacks, setFeedbacks] = useState([])
   const [totalFeedback, setTotalFeedback] = useState(0)
   const { user, profitPercent, listSystemKey } = useSelector(globalSelector)
@@ -44,12 +42,14 @@ const TeacherDetail = () => {
   const [openModalSendMessage, setOpenModalSendMessage] = useState(false)
   const [openModalPreviewVideo, setOpenModalPreviewVideo] = useState(false)
 
+
   const getDetailTeacher = async () => {
     try {
       setLoading(true)
-      const res = await UserService.getDetailTeacher({ TeacherID, SubjectID })
+      const res = await UserService.getDetailTeacher({ TeacherID, SubjectID, IsBookingPage: false })
       if (!!res?.isError) return navigate("/not-found")
-      setTeacher(res?.data)
+      setTeacher(res?.data?.TeacherInfor)
+      setSubjects(res?.data?.Subjects)
     } finally {
       setLoading(false)
     }
@@ -59,7 +59,7 @@ const TeacherDetail = () => {
     try {
       setLoading(true)
       const res = await FeedbackService.getListFeedbackOfTeacher({
-        PageSize: 3,
+        PageSize: 10,
         CurrentPage: 1,
         TeacherID
       })
@@ -76,10 +76,10 @@ const TeacherDetail = () => {
   }, [TeacherID, SubjectID])
 
   useEffect(() => {
-    if (!!teacher) {
+    if (!!teacher?.Teacher?._id) {
       getListFeedback()
     }
-  }, [teacher])
+  }, [teacher?.Teacher?._id])
 
   useEffect(() => {
     if (!!teacher) {
@@ -256,66 +256,73 @@ const TeacherDetail = () => {
                 </div>
               </MainProfileWrapper>
             </Col>
+            <Col span={24}>
+              <MainProfileWrapper>
+                <Feedback feedbacks={feedbacks} />
+              </MainProfileWrapper>
+            </Col>
           </Row>
         </Col>
 
         <Col span={7}>
-          <div>
-            <div className="fs-20 fw-700 mb-12">Thông tin chi tiết</div>
-            <div className="mb-12">
-              <div className="fs-17 fw-600 mb-8">Môn học</div>
-              <Select
-                defaultValue={SubjectID}
-                onChange={e => navigate(`${Router.GIAO_VIEN}/${TeacherID}${Router.MON_HOC}/${e}`)}
-              >
-                {
-                  teacher?.Subjects?.map(i =>
-                    <Option
-                      key={i?._id}
-                      value={i?._id}
-                    >
-                      {i?.SubjectName}
-                    </Option>
-                  )
-                }
-              </Select>
-            </div>
-            <div className="mb-12">
-              <div className="fs-17 fw-600 mb-8">Thời gian</div>
-              <TabStyled>
-                <Tabs
-                  type="card"
-                  items={itemTab}
-                  size="small"
-                  animated={{
-                    // inkBar: true,
-                    tabPane: true,
-                  }}
-                />
-              </TabStyled>
-            </div>
-            <div className="mb-12">
-              <span className="fs-17 fw-600 mr-4">Giá: </span>
-              <span>{formatMoney(teacher?.Price) * 1000 * (1 + profitPercent)} VNĐ</span>
-            </div>
-            {
-              user?._id !== TeacherID &&
-              <div>
-                <ButtonCustom
-                  className="primary submit-btn"
-                  onClick={() => {
-                    if (!!user?._id) {
-                      navigate(`${Router.GIAO_VIEN}/${TeacherID}${Router.MON_HOC}/${SubjectID}/booking`)
-                    } else {
-                      return toast.warning("Hãy đăng nhập để tiến hành đặt lịch")
-                    }
-                  }}
+          <MainProfileWrapper>
+            <div>
+              <div className="fs-20 fw-700 mb-12">Thông tin chi tiết</div>
+              <div className="mb-12">
+                <div className="fs-17 fw-600 mb-8">Môn học</div>
+                <Select
+                  defaultValue={SubjectID}
+                  onChange={e => navigate(`${Router.GIAO_VIEN}/${TeacherID}${Router.MON_HOC}/${e}`)}
                 >
-                  Đặt lịch ngay
-                </ButtonCustom>
+                  {
+                    subjects?.map(i =>
+                      <Option
+                        key={i?.Subject?._id}
+                        value={i?.Subject?._id}
+                      >
+                        {i?.Subject?.SubjectName}
+                      </Option>
+                    )
+                  }
+                </Select>
               </div>
-            }
-          </div>
+              <div className="mb-12">
+                <div className="fs-17 fw-600 mb-8">Thời gian</div>
+                <TabStyled>
+                  <Tabs
+                    type="card"
+                    items={itemTab}
+                    size="small"
+                    animated={{
+                      // inkBar: true,
+                      tabPane: true,
+                    }}
+                  />
+                </TabStyled>
+              </div>
+              <div className="mb-12">
+                <span className="gray-text mr-4">Giá tiền/Buổi học: </span>
+                <span className="primary-text fw-700 fs-17">{formatMoney(getRealFee(teacher?.Price, profitPercent))} VNĐ</span>
+              </div>
+              {
+                user?._id !== TeacherID &&
+                <div>
+                  <ButtonCustom
+                    className="primary submit-btn"
+                    onClick={() => {
+                      if (!!user?._id) {
+                        navigate(`${Router.GIAO_VIEN}/${TeacherID}${Router.MON_HOC}/${SubjectID}/booking`)
+                      } else {
+                        return toast.warning("Hãy đăng nhập để tiến hành đặt lịch")
+                      }
+                    }}
+                  >
+                    Đặt lịch ngay
+                  </ButtonCustom>
+                </div>
+              }
+            </div>
+          </MainProfileWrapper>
         </Col>
 
         {
