@@ -41,6 +41,7 @@ const FindSubject = React.lazy(() => import("src/pages/ANONYMOUS/FindSubject"))
 const MeetingRoom = React.lazy(() => import("src/pages/ANONYMOUS/MeetingRoom"))
 
 // USER
+// const CreateBlog = React.lazy(() => import("src/pages/ANONYMOUS/MeetingRoom"))
 const UserRoutes = React.lazy(() => import("src/pages/USER/UserRoutes"))
 const UserProfile = React.lazy(() => import("src/pages/USER/UserProfile"))
 const SubjectSetting = React.lazy(() => import("src/pages/USER/SubjectSetting"))
@@ -307,7 +308,7 @@ const App = () => {
           )
         },
         {
-          path: Router.DAY_VOI_CHUNG_TOI,
+          path: Router.POST_BAI_TIM_GIAO_VIEN,
           element: (
             <LazyLoadingComponent>
               <TeachWithUsPage />
