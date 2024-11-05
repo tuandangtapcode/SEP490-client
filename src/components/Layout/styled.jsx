@@ -63,9 +63,10 @@ export const ChatBoxContainerStyled = styled.div`
   min-width: 450px;
   box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
   padding: 8px 12px;
-  position: absolute;
-  right: 0;
-  bottom: 0;
+  position: fixed; /* Chuyển từ absolute sang fixed */
+  right: 20px; /* Thêm khoảng cách từ cạnh */
+  bottom: 20px; /* Thêm khoảng cách từ đáy */
+  z-index: 1000; /* Đảm bảo xuất hiện trên cùng */
   .header {
     padding-bottom: 12px;
     margin-bottom: 12px;
