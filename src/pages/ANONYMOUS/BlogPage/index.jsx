@@ -1,8 +1,8 @@
-import { Button, Card, Dropdown, Popover, Space } from "antd"
+import {  Card, Dropdown, Popover, Space, Button, Spin } from "antd"
+
 import {
   CardContent,
   CardDescription,
-  CardImage,
   Container,
   Description,
   StyledButton,
@@ -22,6 +22,7 @@ import CB1 from "src/components/Modal/CB1"
 
 
 
+
 const BlogPage = () => {
 
   const navigate = useNavigate()
@@ -35,7 +36,6 @@ const BlogPage = () => {
 
   const { user } = useSelector(globalSelector)
 
-
   const getListBlog = async () => {
     try {
       setLoading(true)
@@ -47,102 +47,121 @@ const BlogPage = () => {
     }
   }
 
-  const handleDeleteBlog = async (id) => {
-    try {
-      setLoading(true)
-      const res = await BlogService.deleteBlog(id)
-      if (!!res?.isError) return toast.error(res?.msg)
-      toast.success(res?.msg)
-    } catch (error) {
-      console.log("Error:", error)
-    } finally {
-      setLoading(false)
-    }
-  }
+  // const handleDeleteBlog = async (id) => {
+  //   try {
+  //     setLoading(true)
+  //     const res = await BlogService.deleteBlog(id)
+  //     if (!!res?.isError) return toast.error(res?.msg)
+  //     toast.success(res?.msg)
+  //   } catch (error) {
+  //     console.log("Error:", error)
+  //   } finally {
+  //     setLoading(false)
+  //   }
+  // }
 
   useEffect(() => {
     getListBlog()
   }, [pagination])
 
-  return (
-    <SpinCustom spinning={loading}>
-      <Container>
-        <Title>Talent LearningHub Blog</Title>
-        <Description>
-          Tại đây, bạn sẽ tìm thấy nhiều tài nguyên hữu ích để tham khảo khi học điều gì đó mới - từ hướng dẫn toàn diện đến hướng dẫn từng bước.
-        </Description>
+//   return (
+//     <SpinCustom spinning={loading}>
+//       <Container>
+//         <Title>Talent LearningHub Blog</Title>
+//         <Description>
+//           Tại đây, bạn sẽ tìm thấy nhiều tài nguyên hữu ích để tham khảo khi học điều gì đó mới - từ hướng dẫn toàn diện đến hướng dẫn từng bước.
+//         </Description>
+//         {listBlog.map((blog) => (
+//           <>
+//             <Card
+//               className="mt-20"
+//               hoverable
+//               title={blog?.Title}
+//               style={{ textTransform: 'uppercase',fontSize: '3em' }}
+//             >
+//               <CardContent>
+//                 <CardDescription>
+//                   {blog?.Content}
+//                 </CardDescription>
+//                 <CardDescription>
+//                   {blog?.Gender}
+//                 </CardDescription>
+//                 <StyledButton
+//                   type="primary"
+//                   onClick={() => navigate(`/blog/${blog?._id}`)}
+//                 >
+//                   Xem chi tiết
+//                 </StyledButton>
+//               </CardContent>
+//             </Card >
+//           </>
+//         ))
+//         }
+//       </Container >
+//       {!!modalBlog && (
+//         <InsertUpdateBlog
+//           open={modalBlog}
+//           onCancel={() => setModalBlog(false)}
+//           onOk={() => getListBlog()}
+//         />
+//       )}
+//     </SpinCustom >
+//   )
+// }
+
+return (
+  <Spin spinning={loading}>
+    <Container>
+      <Title>Talent LearningHub Blog</Title>
+      <Description>
+        Tại đây, bạn sẽ tìm thấy nhiều tài nguyên hữu ích để tham khảo khi học điều gì đó mới - từ hướng dẫn toàn diện đến hướng dẫn từng bước.
+      </Description>
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '20px' }}>
         {listBlog.map((blog) => (
-          <>
-            <Card
-              className="mt-20"
-              hoverable
-              title={blog?.Title}
-              extra={!!(user?._id === blog?.Teacher) ?
-                <Popover
-                  placement="topRight"
-                  trigger="click"
-                  content={(
-                    <Space>
-                      < ButtonCircle
-                        title="Xoá"
-                        icon={ListIcons?.ICON_DELETE}
-                        onClick={() => {
-                          CB1({
-                            title: `Bạn có chắc chắn muốn xoá bài viết "${blog?.Title}" không?`,
-                            // icon: "trashRed",
-                            okText: "Đồng ý",
-                            cancelText: "Đóng",
-                            onOk: async close => {
-                              handleDeleteBlog(blog?._id)
-                              getListBlog()
-                              close()
-                            },
-                          })
-                        }
-                        }
-                      />
-                      < ButtonCircle
-                        title="Chỉnh sửa"
-                        icon={ListIcons?.ICON_EDIT}
-                        onClick={() => setModalBlog(blog)}
-                      />
-                    </Space>
-                  )}
-                >
-                  < ButtonCircle
-                    icon={ListIcons?.ICON_ELLIP}
-
-                  />
-                </Popover>
-                : ""
+          <Card
+            key={blog?._id}
+            hoverable
+            title={<span style={{ textTransform: 'uppercase', fontSize: '1.5em' }}>{blog?.Title}</span>}
+            style={{ width: 300 }}
+            actions={[
+              <Button
+                type="primary"
+                onClick={() => navigate(`/blog/${blog?._id}`)}
+              >
+                Xem chi tiết
+              </Button>
+            ]}
+          >
+            <Card.Meta
+              description={
+                <>
+                  <CardDescription>
+                    <strong>Nội dung:</strong> {blog?.Content || 'Không xác định'}
+                  </CardDescription>
+                  <CardDescription>
+                    <strong>Môn học:</strong> {blog?.Subject || 'Không xác định'}
+                  </CardDescription>
+                  <CardDescription>
+                    <strong>Học phí:</strong> {blog?.Price ? `${blog?.Price.toLocaleString()} VNĐ` : 'Miễn phí'} /Buổi
+                  </CardDescription>
+                  <CardDescription>
+                    <strong>Hình thức học:</strong> {blog?.LearnTypes?.map((type) => (type === 1 ? 'Online' : 'Offline')).join(', ') || 'Không xác định'}
+                  </CardDescription>
+                </>
               }
-            >
-              <CardImage src={blog?.AvatarPath} />
-              <CardContent>
-                <CardDescription>
-                  {blog?.Description}
-                </CardDescription>
-                <StyledButton
-                  type="primary"
-                  onClick={() => navigate(`/blog/${blog?._id}`)}
-                >
-                  Đọc thêm
-                </StyledButton>
-              </CardContent>
-            </Card >
-          </>
-        ))
-        }
-      </Container >
-      {!!modalBlog && (
-        <InsertUpdateBlog
-          open={modalBlog}
-          onCancel={() => setModalBlog(false)}
-          onOk={() => getListBlog()}
-        />
-      )}
-    </SpinCustom >
-  )
+            />
+          </Card>
+        ))}
+      </div>
+    </Container>
+    {!!modalBlog && (
+      <InsertUpdateBlog
+        open={modalBlog}
+        onCancel={() => setModalBlog(false)}
+        onOk={() => getListBlog()}
+      />
+    )}
+  </Spin>
+)
 }
-
 export default BlogPage

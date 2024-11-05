@@ -5,6 +5,7 @@ import { useSelector } from "react-redux"
 import { globalSelector } from "src/redux/selector"
 import ModalChat from "../components/ModalChat"
 import { useLocation } from "react-router-dom"
+// import ChatBoxAI from "src/components/ChatBoxAI"
 
 const MainLayout = ({ children }) => {
 
@@ -28,9 +29,13 @@ const MainLayout = ({ children }) => {
       }
       {
         (!!user?._id && !location.pathname.includes("meeting-room")) &&
-        <ModalChat />
+        <ModalChat /> 
       }
-    </LayoutStyled >
+      {/* {
+        (!!user?._id && !location.pathname.includes("meeting-room")) &&
+      <ChatBoxAI />
+      } */}
+    </LayoutStyled>
   )
 }
 

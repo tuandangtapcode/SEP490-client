@@ -11,8 +11,9 @@ import socket from './utils/socket'
 import InactiveModal from './components/Layout/components/ModalInactiveAccount'
 import { decodeData } from './lib/commonFunction'
 import { globalSelector } from './redux/selector'
-
+// import InsertUpdateBlog from './pages/USER/BlogPosting/components/InsertUpdateBlog.jsx'
 // ADMIN
+
 const AdminRoutes = React.lazy(() => import("src/pages/ADMIN/AdminRoutes"))
 const StatisticManagement = React.lazy(() => import("src/pages/ADMIN/StatisticManagement"))
 const StaffManagement = React.lazy(() => import("src/pages/ADMIN/StaffManagement"))
@@ -25,6 +26,7 @@ const InboxManagement = React.lazy(() => import("src/pages/ADMIN/InboxManagement
 const PaymentTransfer = React.lazy(() => import("src/pages/ADMIN/PaymentTransfer"))
 
 // ANONYMOUS
+// const ChatBoxAI = React.lazy(() => import("src/components/ChatBoxAI"))
 const AnonymousRoutes = React.lazy(() => import("src/pages/ANONYMOUS/AnonymousRoutes"))
 const HomePage = React.lazy(() => import("src/pages/ANONYMOUS/HomePage"))
 const LoginPage = React.lazy(() => import("src/pages/ANONYMOUS/LoginPage"))
@@ -32,7 +34,7 @@ const SignupPage = React.lazy(() => import("src/pages/ANONYMOUS/SignupPage"))
 const BlogPage = React.lazy(() => import("src/pages/ANONYMOUS/BlogPage"))
 const BlogDetail = React.lazy(() => import("src/pages/ANONYMOUS/BlogDetail"))
 const HowWordPage = React.lazy(() => import("src/pages/ANONYMOUS/HowWorkPage"))
-const TeachWithUsPage = React.lazy(() => import("src/pages/ANONYMOUS/TeachWithUsPage"))
+// const TeachWithUsPage = React.lazy(() => import("src/pages/ANONYMOUS/TeachWithUsPage"))
 const TeacherDetail = React.lazy(() => import("src/pages/ANONYMOUS/TeacherDetail"))
 const MentorForSubject = React.lazy(() => import("src/pages/ANONYMOUS/MentorForSubject"))
 const BookingPage = React.lazy(() => import("src/pages/ANONYMOUS/BookingPage"))
@@ -41,8 +43,8 @@ const MeetingRoom = React.lazy(() => import("src/pages/ANONYMOUS/MeetingRoom"))
 const SubjectcateDetail = React.lazy(() => import("src/pages/ANONYMOUS/SubjectcateDetail"))
 
 // USER
-// const CreateBlog = React.lazy(() => import("src/pages/ANONYMOUS/MeetingRoom"))
 const UserRoutes = React.lazy(() => import("src/pages/USER/UserRoutes"))
+const BlogPosting = React.lazy(() => import( "./pages/USER/BlogPosting"))
 const UserProfile = React.lazy(() => import("src/pages/USER/UserProfile"))
 const SubjectSetting = React.lazy(() => import("src/pages/USER/SubjectSetting"))
 const InboxPage = React.lazy(() => import("src/pages/USER/InboxPage"))
@@ -218,6 +220,14 @@ const App = () => {
           )
         },
         {
+          path: Router.DANG_BAI_VIET,
+          element: (
+            <LazyLoadingComponent>
+              <BlogPosting />
+            </LazyLoadingComponent>
+          )
+        },
+        {
           path: Router.LICH_SU_BOOKING,
           element: (
             <LazyLoadingComponent>
@@ -307,14 +317,14 @@ const App = () => {
             </LazyLoadingComponent>
           )
         },
-        {
-          path: Router.POST_BAI_TIM_GIAO_VIEN,
-          element: (
-            <LazyLoadingComponent>
-              <TeachWithUsPage />
-            </LazyLoadingComponent>
-          )
-        },
+        // {
+        //   path: Router.POST_BAI_TIM_GIAO_VIEN,
+        //   element: (
+        //     <LazyLoadingComponent>
+        //       <HowWordPage />
+        //     </LazyLoadingComponent>
+        //   )
+        // },
         {
           path: `${Router.DANH_MUC}/:SubjectCateID`,
           element: (
