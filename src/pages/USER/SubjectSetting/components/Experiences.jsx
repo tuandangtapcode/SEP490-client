@@ -16,7 +16,7 @@ const Experiences = () => {
               <div className="d-flex-sb">
                 <div className="fs-18 fw-600">Kinh nghiệm giảng dạy</div>
                 <ButtonCustom
-                  className="primary"
+                  className="third-type-2"
                   onClick={() => add()}
                 >
                   Thêm mô tả mới

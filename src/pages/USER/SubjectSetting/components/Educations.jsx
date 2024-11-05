@@ -16,7 +16,7 @@ const Educations = () => {
               <div className="d-flex-sb">
                 <div className="fs-18 fw-600">Trình độ học vấn</div>
                 <ButtonCustom
-                  className="primary"
+                  className="third-type-2"
                   onClick={() => add()}
                 >
                   Thêm mô tả mới

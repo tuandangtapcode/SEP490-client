@@ -15,7 +15,9 @@ const IntroVideo = ({
   const handleBeforeUpload = async (file) => {
     const isAllowedType = file.type.includes("video")
     if (!isAllowedType) {
-      message.error("Yêu cầu chọn ảnh (mp4)")
+      message.error("Yêu cầu chọn file ảnh (jpg, png, gif)")
+    } else if (file.size > 10 * 1024 * 1024) {
+      message.error("Dung lượng file tải lên phải nhỏ 10MB")
     }
     return isAllowedType ? false : Upload.LIST_IGNORE
   }

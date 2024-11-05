@@ -27,7 +27,7 @@ const ModalChangeTimetable = ({
     if (!!open?._id) {
       form.setFieldsValue({
         ...open,
-        DateAt: dayjs(open?.DateAt),
+        DateAt: dayjs(open?.StartTime),
         Time: [dayjs(open?.StartTime), dayjs(open?.EndTime)],
         Files: open?.Documents?.map(i => ({
           url: i?.DocPath,
@@ -44,6 +44,8 @@ const ModalChangeTimetable = ({
     const isAllowedType = file.type.includes("application")
     if (!isAllowedType) {
       message.error("Yêu cầu chọn file tài liệu (doc, docx, pdf, xls, xlsx)")
+    } else if (file.size > 5 * 1024 * 1024) {
+      message.error("Dung lượng ảnh tải lên phải nhỏ 5MB")
     }
     return isAllowedType ? false : Upload.LIST_IGNORE
   }
@@ -69,7 +71,6 @@ const ModalChangeTimetable = ({
       const dayGap = dayjs(values?.DateAt).startOf("days").diff(dayjs(values?.Time[0]).startOf("days"), "days")
       const res = await TimeTableService.updateTimeTable({
         TimeTableID: open?._id,
-        DateAt: values?.DateAt,
         StartTime: dayjs(values?.Time[0]).add(dayGap, "days"),
         EndTime: dayjs(values?.Time[1]).add(dayGap, "days"),
         Documents: [
@@ -93,22 +94,20 @@ const ModalChangeTimetable = ({
       title="Chỉnh sửa lịch học"
       width="40vw"
       footer={
-        <div className="d-flex-end">
-          <Space>
-            <ButtonCustom
-              className="third"
-              onClick={() => onCancel()}>
-              Đóng
-            </ButtonCustom>
-            <ButtonCustom
-              className="primary"
-              loading={loading}
-              onClick={() => handleUpdateTimetable()}
-            >
-              Lưu
-            </ButtonCustom>
-          </Space>
-        </div>
+        <Space className="d-flex-end">
+          <ButtonCustom
+            className="third"
+            onClick={() => onCancel()}>
+            Đóng
+          </ButtonCustom>
+          <ButtonCustom
+            className="primary"
+            loading={loading}
+            onClick={() => handleUpdateTimetable()}
+          >
+            Lưu
+          </ButtonCustom>
+        </Space>
       }
     >
       <Form form={form}>

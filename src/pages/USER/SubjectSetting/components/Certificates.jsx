@@ -21,7 +21,9 @@ const Certificates = ({
   const handleBeforeUpload = async (file) => {
     const isAllowedType = file.type.includes("image")
     if (!isAllowedType) {
-      message.error("Yêu cầu chọn ảnh (jpg, jpeg, gif, png, svg)")
+      message.error("Yêu cầu chọn file ảnh (jpg, png, gif)")
+    } else if (file.size > 5 * 1024 * 1024) {
+      message.error("Dung lượng file tải lên phải nhỏ 5MB")
     }
     return isAllowedType ? false : Upload.LIST_IGNORE
   }

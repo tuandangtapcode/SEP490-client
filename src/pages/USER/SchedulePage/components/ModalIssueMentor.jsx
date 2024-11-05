@@ -41,22 +41,20 @@ const ModalIssueMentor = ({ open, onCancel }) => {
       title="Báo cáo giáo viên"
       width="35vw"
       footer={
-        <div className="d-flex-end">
-          <Space>
-            <ButtonCustom
-              className="third"
-              onClick={() => onCancel()}
-            >
-              Đóng
-            </ButtonCustom>
-            <ButtonCustom
-              className="primary"
-              onClick={() => handleSubmit()}
-            >
-              Gửi
-            </ButtonCustom>
-          </Space>
-        </div >
+        <Space className="d-flex-end">
+          <ButtonCustom
+            className="third"
+            onClick={() => onCancel()}
+          >
+            Đóng
+          </ButtonCustom>
+          <ButtonCustom
+            className="primary"
+            onClick={() => handleSubmit()}
+          >
+            Gửi
+          </ButtonCustom>
+        </Space>
       }
     >
       <SpinCustom spinning={loading}>

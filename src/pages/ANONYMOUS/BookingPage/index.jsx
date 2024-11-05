@@ -1,10 +1,9 @@
-import { Col, DatePicker, Empty, Radio, Row } from "antd"
+import { Col, DatePicker, Empty, message, Radio, Row, Space, Tooltip } from "antd"
 import { useEffect, useState } from "react"
-import { useLocation, useNavigate, useParams } from "react-router-dom"
+import { useNavigate, useParams } from "react-router-dom"
 import SpinCustom from "src/components/SpinCustom"
 import UserService from "src/services/UserService"
 import { MainProfileWrapper } from "../TeacherDetail/styled"
-import { TimeItemStyled } from "./styled"
 import dayjs from "dayjs"
 import { SYSTEM_KEY } from "src/lib/constant"
 import { useSelector } from "react-redux"
@@ -12,12 +11,26 @@ import { globalSelector } from "src/redux/selector"
 import { getListComboKey } from "src/lib/commonFunction"
 import InputCustom from "src/components/InputCustom"
 import ButtonCustom from "src/components/MyButton/ButtonCustom"
-import { formatMoney } from "src/lib/stringUtils"
+import { formatMoney, getRealFee } from "src/lib/stringUtils"
 import TimeTableService from "src/services/TimeTableService"
 import { toast } from "react-toastify"
 import { disabledBeforeDate } from "src/lib/dateUtils"
-import MOdalConfirmInfor from "./components/ModalConfirmInfor"
+import ModalConfirmInfor from "./components/ModalConfirmInfor"
+import ListIcons from "src/components/ListIcons"
+import TimeItem from "./components/TimeItem"
+import ModalChangeSchedule from "./components/ModalChangeSchedule"
+import ModalChooseCourse from "./components/ModalChooseCourse"
 
+const scheduleTypes = [
+  {
+    value: 1,
+    title: "Tự lựa chọn thời gian"
+  },
+  {
+    value: 2,
+    title: "Khoảng thời gian cố định"
+  }
+]
 
 const BookingPage = () => {
 
@@ -29,10 +42,16 @@ const BookingPage = () => {
   const [selectedTimes, setSelectedTimes] = useState([])
   const [bookingInfor, setBookingInfor] = useState()
   const [times, setTimes] = useState([])
-  const [timeTables, SetTimeTables] = useState([])
-  const location = useLocation()
-  const queryParams = new URLSearchParams(location.search)
+  const [timeTablesTeacher, SetTimeTablesTeacher] = useState([])
+  const [timeTablesStudent, SetTimeTablesStudent] = useState([])
   const [openModalConfirmInfor, setOpenModalConfirmInfor] = useState()
+  const [totalSlot, setTotalSlot] = useState(0)
+  const [slotInWeek, setSlotInWeek] = useState(0)
+  const [scheduleInWeek, setScheduleInWeek] = useState([])
+  const [scheduleType, setScheduleType] = useState(0)
+  const [course, setCourse] = useState()
+  const [openModalChangeSchedule, setOpenModalChangeSchedule] = useState()
+  const [openModalChooseCourse, setOpenModalChooseCourse] = useState()
 
   const getDetailTeacher = async () => {
     try {
@@ -50,22 +69,33 @@ const BookingPage = () => {
       setLoading(true)
       const res = await TimeTableService.getTimeTableByUser()
       if (!!res?.isError) return toast.error(res?.msg)
-      SetTimeTables(res?.data?.List)
+      SetTimeTablesStudent(res?.data?.List)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const getTimeTableOfTeacher = async () => {
+    try {
+      setLoading(true)
+      const res = await TimeTableService.getTimeTableOfTeacherOrStudent(TeacherID)
+      if (!!res?.isError) return toast.error(res?.msg)
+      SetTimeTablesTeacher(res?.data)
     } finally {
       setLoading(false)
     }
   }
 
   const handleSelectedTimes = (date) => {
-    const checkExistTime = selectedTimes?.find(i =>
+    const checkExistDate = selectedTimes?.find(i =>
       dayjs(i?.StartTime).format("DD/MM/YYYY") ===
       dayjs(date?.StartTime).format("DD/MM/YYYY")
     )
-    if (!!checkExistTime) {
+    if (!!checkExistDate) {
       const copySelectedTimes = [...selectedTimes]
       const indexExsitTime = selectedTimes?.findIndex(i =>
-        dayjs(i?.StartTime).format("DD/MM/YYYY HH:ss") ===
-        dayjs(date?.StartTime).format("DD/MM/YYYY HH:ss")
+        dayjs(i?.StartTime).format("DD/MM/YYYY HH:mm") ===
+        dayjs(date?.StartTime).format("DD/MM/YYYY HH:mm")
       )
       if (indexExsitTime >= 0) {
         copySelectedTimes.splice(indexExsitTime, 1)
@@ -91,89 +121,70 @@ const BookingPage = () => {
     }
   }
 
-  // const createPaymentLink = async () => {
-  //   try {
-  //     setLoading(true)
-  //     if (bookingInfor?.LearnType === 2 && !bookingInfor?.Address) {
-  //       return Notice({
-  //         isSuccess: false,
-  //         msg: "Hãy nhập địa chỉ"
-  //       })
-  //     }
-  //     if (paymentMethod === "vietqr") {
-  //       const body = {
-  //         orderCode: randomNumber(),
-  //         amount: +teacher?.Price * selectedTimes.length * 1000 * (1 + profitPercent),
-  //         description: "Thanh toán book giáo viên",
-  //         cancelUrl: `${RootURLWebsite}${location.pathname}`,
-  //         returnUrl: `${RootURLWebsite}${location.pathname}`,
-  //       }
-  //       const data = `amount=${body.amount}&cancelUrl=${body.cancelUrl}&description=${body.description}&orderCode=${body.orderCode}&returnUrl=${body.returnUrl}`
-  //       const resPaymemtLink = await PaymentService.createPaymentLink({
-  //         ...body,
-  //         signature: generateSignature(data)
-  //       })
-  //       if (resPaymemtLink?.data?.code !== "00") return toast.error("Có lỗi xảy ra trong quá trình tạo thanh toán")
-  //       window.location.href = resPaymemtLink?.data?.data?.checkoutUrl
-  //     } else if (paymentMethod === "vnpay") {
-  //       handleCreatePaymentVNPay(
-  //         "Thanh toán book giáo viên",
-  //         +teacher?.Price * selectedTimes.length * 1000 * (1 + profitPercent),
-  //         `${RootURLWebsite}${location.pathname}`,
-  //         teacher?.ipAddress
-  //       )
-  //     }
-  //   } finally {
-  //     setLoading(false)
-  //   }
-  // }
+  const handleSetScheduleInWeek = (idxScheduleInWeek, i, date) => {
+    const copyScheduleInWeek = [...scheduleInWeek]
+    const indexExistTime = scheduleInWeek?.findIndex(i =>
+      dayjs(i?.StartTime).format("DD/MM/YYYY HH:mm") ===
+      dayjs(date?.StartTime).format("DD/MM/YYYY HH:mm")
+    )
+    if (indexExistTime >= 0) {
+      copyScheduleInWeek.splice(idxScheduleInWeek, 1, {
+        ...i,
+        StartTime: "",
+        EndTime: ""
+      })
+      setScheduleInWeek(copyScheduleInWeek)
+    } else {
+      copyScheduleInWeek.splice(idxScheduleInWeek, 1, {
+        ...i,
+        StartTime: dayjs(date?.StartTime),
+        EndTime: dayjs(date?.EndTime)
+      })
+      setScheduleInWeek(copyScheduleInWeek)
+    }
+  }
 
-  // const handleCompleteBooking = async () => {
-  //   try {
-  //     setLoading(true)
-  //     const resPayment = await PaymentService.createPayment({
-  //       PaymentType: 1,
-  //       Description: `Thanh toán book giáo viên ${teacher?.FullName}`,
-  //       TotalFee: +teacher?.Price * selectedTimes.length * 1000 * (1 + profitPercent),
-  //       TraddingCode: randomNumber()
-  //     })
-  //     if (!!resPayment?.isError) return
-  //     const bodyLearnHistory = {
-  //       Teacher: TeacherID,
-  //       Subject: SubjectID,
-  //       TotalLearned: selectedTimes.length,
-  //       TeacherName: teacher?.FullName,
-  //       TeacherEmail: teacher?.Email,
-  //       SubjectName: teacher?.Subject?.SubjectName,
-  //       StudentName: user?.FullName,
-  //       StudentEmail: user?.Email,
-  //       Times: selectedTimes?.map(i =>
-  //         `Ngày ${dayjs(i?.StartTime).format("DD/MM/YYYY")} ${dayjs(i?.StartTime).format("HH:ss")} - ${dayjs(i?.EndTime).format("HH:ss")}`
-  //       )
-  //     }
-  //     const resLearnHistory = await LearnHistoryService.createLearnHistory(bodyLearnHistory)
-  //     if (!!resLearnHistory?.isError) return
-  //     const bodyTimeTable = selectedTimes?.map(i => ({
-  //       LearnHistory: resLearnHistory?.data?._id,
-  //       Teacher: teacher?._id,
-  //       Subject: SubjectID,
-  //       DateAt: dayjs(i?.StartTime),
-  //       StartTime: dayjs(i?.StartTime),
-  //       EndTime: dayjs(i?.EndTime),
-  //       LearnType: bookingInfor?.LearnType,
-  //       Address: !!bookingInfor?.Address && bookingInfor?.LearnType === 2
-  //         ? bookingInfor?.Address
-  //         : undefined,
-  //     }))
-  //     const resTimeTable = await TimeTableService.createTimeTable(bodyTimeTable)
-  //     if (!!resTimeTable?.isError) return
-  //     setOpenModalSuccessBooking({ FullName: teacher?.FullName })
-  //   } finally {
-  //     setLoading(false)
-  //   }
-  // }
+  const getFreeTimeOfTeacher = (e) => {
+    const daysFromTimeTable = !!timeTablesTeacher?.length
+      ? timeTablesTeacher
+        ?.filter(i => dayjs(i?.StartTime).format("DD/MM/YYYY") === dayjs(e).format("DD/MM/YYYY"))
+        ?.map(item => dayjs(item?.StartTime).format("HH:mm"))
+      : []
+    const times = !!daysFromTimeTable?.length
+      ? teacher?.Teacher?.Schedules?.filter(i =>
+        i?.DateAt === dayjs(e).format("dddd") &&
+        !daysFromTimeTable?.includes(dayjs(i?.StartTime).format("HH:mm"))
+      )
+      : teacher?.Teacher?.Schedules?.filter(i =>
+        i?.DateAt === dayjs(e).format("dddd")
+      )
+    const timesResult = times?.map(i => {
+      const dayGap = dayjs(e).startOf("day").diff(dayjs(i?.StartTime).startOf("day"), "days")
+      return {
+        StartTime: dayjs(i?.StartTime).add(dayGap, "days"),
+        EndTime: dayjs(i?.EndTime).add(dayGap, "days"),
+      }
+    })
+    return timesResult
+  }
+
+  const hanleSelectTimesWithFixedSchedule = () => {
+    let selectTimesRaw = []
+    for (let i = 0; selectTimesRaw.length < totalSlot; i++) {
+      scheduleInWeek.forEach(s => {
+        if (selectTimesRaw.length < totalSlot) {
+          selectTimesRaw.push({
+            StartTime: dayjs(s?.StartTime).add(i * 7, "days"),
+            EndTime: dayjs(s?.EndTime).add(i * 7, "days")
+          })
+        }
+      })
+    }
+    setSelectedTimes(selectTimesRaw)
+  }
 
   useEffect(() => {
+    getTimeTable()
     setBookingInfor(pre => ({
       ...pre,
       Address: !!user?.Address ? user?.Address : ""
@@ -185,18 +196,8 @@ const BookingPage = () => {
   }, [TeacherID, SubjectID])
 
   useEffect(() => {
-    if (!!teacher) getTimeTable()
+    if (!!teacher) getTimeTableOfTeacher()
   }, [teacher])
-
-  // useEffect(() => {
-  //   if (
-  //     ((!!queryParams.get("status") && queryParams.get("status") === "PAID") ||
-  //       (!!queryParams.get("vnp_ResponseCode") && queryParams.get("vnp_ResponseCode") === "00")) &&
-  //     !!teacher
-  //   ) {
-  //     handleCompleteBooking()
-  //   }
-  // }, [location.search, teacher])
 
 
   return (
@@ -204,75 +205,239 @@ const BookingPage = () => {
       <Row gutter={[20]} className="pt-20">
         <Col span={17}>
           <MainProfileWrapper className="p-24">
-            <div className="fs-20 fw-600 mb-12">Lựa chọn thời gian học</div>
-            <Row gutter={[16]}>
-              <Col span={12}>
-                <div className="fs-16 fw-600 mb-8">Chọn ngày học</div>
-                <DatePicker
-                  style={{ width: "100%" }}
-                  format="DD/MM/YYYY"
-                  disabledDate={current => disabledBeforeDate(current)}
-                  onChange={e => {
-                    console.log("dayjs(e)", dayjs(e).format("HH:mm"));
-
-                    const daysFromTimeTable = !!timeTables?.length
-                      ? timeTables
-                        ?.filter(i =>
-                          dayjs(i?.DateAt).format("DD/MM/YYYY") === dayjs(e).format("DD/MM/YYYY") &&
-                          i?.Teacher?._id === TeacherID)
-                        ?.map(item => dayjs(item?.StartTime).format("HH:ss"))
-                      : []
-                    const times = !!daysFromTimeTable?.length
-                      ? teacher?.Teacher?.Schedules?.filter(i =>
-                        i?.DateAt === dayjs(e).format("dddd") &&
-                        !daysFromTimeTable?.includes(dayjs(i?.StartTime).format("HH:ss"))
-                      )
-                      : teacher?.Teacher?.Schedules?.filter(i =>
-                        i?.DateAt === dayjs(e).format("dddd")
-                      )
-                    setTimes(
-                      times?.map(i => {
-                        const dayGap = dayjs(e).startOf("day").diff(dayjs(i?.StartTime).startOf("day"), "days")
-                        return {
-                          StartTime: dayjs(i?.StartTime).add(dayGap, "days"),
-                          EndTime: dayjs(i?.EndTime).add(dayGap, "days"),
+            <div className="mb-12 color-tooltip">
+              <div className="fw-600 mb-8 d-flex align-items-center">
+                <span className="mr-4">Bước 1:</span>
+                <span className="mr-8">Lựa chọn số lượng buổi học</span>
+                <Tooltip
+                  title="Bạn hãy chọn số buổi học hoặc khóa học dài hạn để đến bước tiếp theo"
+                  className="color-tooltip"
+                >
+                  <span className="mt-4 fs-16 cursor-pointer">{ListIcons.ICON_QUESTION}</span>
+                </Tooltip>
+              </div>
+              <Space>
+                {
+                  [1, 4, 10, 14].map(i =>
+                    <ButtonCustom
+                      key={i}
+                      className={`${i === totalSlot ? "primary" : "third"} mini-size`}
+                      onClick={() => {
+                        if (i !== totalSlot) {
+                          setTotalSlot(i)
+                        } else {
+                          setTotalSlot(0)
                         }
-                      })
+                        setScheduleType(0)
+                        setScheduleInWeek([])
+                        setSelectedTimes([])
+                        setCourse()
+                      }}
+                    >
+                      {i} buổi
+                    </ButtonCustom>
+                  )
+                }
+                <ButtonCustom
+                  className="third mini-size"
+                  onClick={() => {
+                    setOpenModalChooseCourse({ TeacherID, SubjectID })
+                    setTotalSlot(0)
+                  }}
+                >
+                  Khóa học dài hạn
+                </ButtonCustom>
+              </Space>
+            </div>
+            {
+              (!!totalSlot && totalSlot !== 1 && !course) &&
+              <div className="mb-16">
+                <div className="fw-600 mb-12 d-flex align-items-center">
+                  <span className="mr-4">Bước 2:</span>
+                  <span className="mr-8">Lựa chọn hình thức xếp lịch học</span>
+                  <Tooltip
+                    title="Bạn hãy chọn hình thức xếp lịch học để đến bước tiếp theo"
+                  >
+                    <span className="mt-4 fs-16 cursor-pointer">{ListIcons.ICON_QUESTION}</span>
+                  </Tooltip>
+                </div>
+                <Space>
+                  {
+                    scheduleTypes?.map((i, idx) =>
+                      <ButtonCustom
+                        key={idx}
+                        className={`${i.value === scheduleType ? "primary" : "third"} mini-size`}
+                        onClick={() => {
+                          if (i?.value !== scheduleType) {
+                            setScheduleType(i?.value)
+                          } else {
+                            setScheduleType(0)
+                          }
+                          setSlotInWeek(0)
+                          setScheduleInWeek([])
+                          setSelectedTimes([])
+                        }}
+                      >
+                        {i.title}
+                      </ButtonCustom>
                     )
+                  }
+                </Space>
+              </div>
+            }
+            {
+              (scheduleType === 1 || totalSlot === 1) &&
+              <Row gutter={[16]}>
+                <Col span={12}>
+                  <div className="fw-600 mb-12 d-flex align-items-center">
+                    <span className="mr-4">Bước 3:</span>
+                    <span className="mr-8">Chọn ngày học</span>
+                  </div>
+                  <DatePicker
+                    style={{ width: "100%" }}
+                    format="DD/MM/YYYY"
+                    disabledDate={current => disabledBeforeDate(current)}
+                    onChange={e => {
+                      if (selectedTimes.length === totalSlot) {
+                        message.warning("Số lượng slot đã đủ")
+                      } else {
+                        setTimes(getFreeTimeOfTeacher(e))
+                      }
+                    }}
+                  />
+                </Col>
+                <Col span={12}>
+                  <div className="fw-600 mb-12 d-flex align-items-center">
+                    <span className="mr-4">Bước 4:</span>
+                    <span className="mr-8">Chọn khung giờ</span>
+                  </div>
+                  <Row gutter={[16, 8]}>
+                    {
+                      !!times.length ?
+                        times?.map((i, idx) =>
+                          <Col span={12} key={idx}>
+                            <TimeItem
+                              timeItem={i}
+                              selectedTimes={selectedTimes}
+                              timeTablesStudent={timeTablesStudent}
+                              handleSelectedTimes={handleSelectedTimes}
+                              isFixedSchedule={false}
+                            />
+                          </Col>
+                        )
+                        : <Empty description="Không có thời gian học" />
+                    }
+                  </Row>
+                </Col>
+              </Row>
+            }
+            {
+              !!course &&
+              <div className="mb-12">
+                <p className="fw-600 mb-8">Thông tin khóa học</p>
+                <div className="d-flex align-items-center mb-4">
+                  <span className="mr-4">Tiêu đề khóa học:</span>
+                  <span>{course?.Title}</span>
+                </div>
+                <div className="d-flex align-items-center mb-4">
+                  <span className="mr-4">Số buổi học:</span>
+                  <span>{course?.QuantitySlot}</span>
+                </div>
+                <div className="d-flex align-items-center">
+                  <span className="mr-4">Giá tiền:</span>
+                  <span>{formatMoney(getRealFee(course?.Price, profitPercent))} VNĐ</span>
+                </div>
+              </div>
+            }
+            {
+              (scheduleType === 2 || !!course) &&
+              <div>
+                <InputCustom
+                  type="isNumber"
+                  placeholder="Bạn muốn học bao nhiêu buổi 1 tuần?"
+                  style={{
+                    width: "350px",
+                    marginBottom: "12px"
+                  }}
+                  value={!!slotInWeek ? slotInWeek : ""}
+                  onChange={e => {
+                    setSlotInWeek(e)
+                    const newArray = Array.from({ length: e }, (_, index) => ({
+                      id: index + 1,
+                      DateAt: "",
+                      StartTime: "",
+                      EndTime: "",
+                      Times: []
+                    }))
+                    setScheduleInWeek(newArray)
+                    setSelectedTimes([])
                   }}
                 />
-              </Col>
-              <Col span={12}>
-                <div className="fs-16 fw-600 mb-8">Các khung giờ trống</div>
-                <Row gutter={[16, 8]}>
-                  {
-                    !!times.length ?
-                      times?.map((i, idx) =>
-                        <Col span={12} key={idx}>
-                          <TimeItemStyled
-                            className={
-                              !!selectedTimes?.some(item =>
-                                dayjs(item?.StartTime).format("DD/MM/YYYY HH:ss") ===
-                                dayjs(i?.StartTime).format("DD/MM/YYYY HH:ss"))
-                                ? "active"
-                                : ""
-                            }
-                            onClick={() => handleSelectedTimes(i)}
-                          >
-                            {dayjs(i?.StartTime).format("HH:mm")} - {dayjs(i?.EndTime).format("HH:mm")}
-                          </TimeItemStyled>
-                        </Col>
-                      )
-                      : <Empty description="Không có thời gian học học" />
-                  }
-                </Row>
-              </Col>
-            </Row>
+                {
+                  !!slotInWeek &&
+                  scheduleInWeek.map((i, idxScheduleInWeek) =>
+                    <Row className="mb-12" key={idxScheduleInWeek}>
+                      <Col span={12}>
+                        <DatePicker
+                          placeholder="Bạn muốn bắt đầu học vào thời điểm nào?"
+                          format="DD/MM/YYYY"
+                          style={{
+                            width: "350px",
+                          }}
+                          value={i?.DateAt}
+                          disabledDate={current => disabledBeforeDate(current)}
+                          onChange={e => {
+                            const copyScheduleInWeek = [...scheduleInWeek]
+                            copyScheduleInWeek.splice(idxScheduleInWeek, 1, {
+                              ...i,
+                              DateAt: e,
+                              Times: getFreeTimeOfTeacher(e, true)
+                            })
+                            setScheduleInWeek(copyScheduleInWeek)
+                          }}
+                        />
+                      </Col>
+                      <Col span={12}>
+                        <Row gutter={[16, 8]}>
+                          {!!i?.DateAt &&
+                            (
+                              !!i?.Times.length ?
+                                i?.Times?.map((item, idx) =>
+                                  <Col span={12} key={idx}>
+                                    <TimeItem
+                                      timeItem={item}
+                                      selectedTimes={selectedTimes}
+                                      scheduleInWeek={scheduleInWeek}
+                                      timeTablesStudent={timeTablesStudent}
+                                      handleSelectedTimes={handleSelectedTimes}
+                                      handleSetScheduleInWeek={() => handleSetScheduleInWeek(idxScheduleInWeek, i, item)}
+                                      isFixedSchedule={true}
+                                    />
+                                  </Col>
+                                )
+                                : <Empty description="Không có thời gian học" />
+                            )}
+                        </Row>
+                      </Col>
+                    </Row>
+                  )
+                }
+                {
+                  (!!scheduleInWeek.length && scheduleInWeek.every(i => !!i?.DateAt && !!i?.StartTime && !!i?.EndTime)) &&
+                  <ButtonCustom
+                    className="primary"
+                    onClick={() => hanleSelectTimesWithFixedSchedule()}
+                  >
+                    Xác nhận
+                  </ButtonCustom>
+                }
+              </div>
+            }
           </MainProfileWrapper>
-        </Col>
+        </Col >
         <Col span={7}>
           <MainProfileWrapper className="p-24">
-            <div className="fs-20 fw-600 mb-16">Thông tin đặt lịch</div>
+            <div className="fs-16 fw-600 mb-16">Thông tin đặt lịch</div>
             <div className="teacher-infor d-flex mb-12">
               <img
                 src={teacher?.Teacher?.AvatarPath}
@@ -326,56 +491,42 @@ const BookingPage = () => {
                     <div key={idx} className="mb-4">
                       <span className="mr-2">Ngày</span>
                       <span className="mr-4">{dayjs(i?.StartTime).format("DD/MM/YYYY")}:</span>
-                      <span className="mr-2">{dayjs(i?.StartTime).format("HH:ss")}</span>
+                      <span className="mr-2">{dayjs(i?.StartTime).format("HH:mm")}</span>
                       <span className="mr-2">-</span>
-                      <span>{dayjs(i?.EndTime).format("HH:ss")}</span>
+                      <span>{dayjs(i?.EndTime).format("HH:mm")}</span>
                     </div>
                   )
                 }
+                <ButtonCustom
+                  className="primary mini-size mt-8"
+                  onClick={() => {
+                    const copySelectTimes = selectedTimes.map(i => ({
+                      ...i,
+                      DateAt: i?.StartTime,
+                      Times: getFreeTimeOfTeacher(i?.StartTime)
+                    }))
+                    setSelectedTimes(copySelectTimes)
+                    setOpenModalChangeSchedule(true)
+                  }}
+                >
+                  Chỉnh sửa lịch học
+                </ButtonCustom>
               </div>
             }
             {
               !!selectedTimes?.length &&
               <div className="mb-16">
                 <span className="fw-600 fw-16 mr-4">Tổng giá:</span>
-                <span className="fs-17 fw-600">{formatMoney(+teacher?.Price * selectedTimes.length * 1000 * (1 + profitPercent))} VNĐ</span>
+                <span className="fs-17 fw-600 primary-text">
+                  {
+                    !!course
+                      ? formatMoney(getRealFee(course?.Price, profitPercent))
+                      : formatMoney(getRealFee(+teacher?.Price * selectedTimes.length, profitPercent))
+                  } VNĐ
+                </span>
               </div>
             }
-            {/* <Radio.Group
-              onChange={e => setBookingInfor(pre => ({ ...pre, PaymentMethod: e.target.value }))}
-              className="mb-12"
-            >
-              <PaymentMethodStyled className={`${bookingInfor?.PaymentMethod === 1 ? "active" : ""}`}>
-                <Radio value={1}>
-                  <div className="d-flex-sb">
-                    <div className="mr-6 fs-16">Thanh toán bằng VNPay</div>
-                    <img
-                      src={logoVNPay}
-                      alt=""
-                      style={{
-                        width: "25px",
-                        height: "25px"
-                      }}
-                    />
-                  </div>
-                </Radio>
-              </PaymentMethodStyled>
-              <PaymentMethodStyled className={`${bookingInfor?.PaymentMethod === 2 ? "active" : ""}`}>
-                <Radio value={2}>
-                  <div className="d-flex-sb">
-                    <div className="mr-6 fs-16">Thanh toán bằng VietQR</div>
-                    <img
-                      src={logoVietQR}
-                      alt=""
-                      style={{
-                        width: "25px",
-                        height: "25px"
-                      }}
-                    />
-                  </div>
-                </Radio>
-              </PaymentMethodStyled>
-            </Radio.Group> */}
+
             {
               !!selectedTimes?.length &&
               (
@@ -392,36 +543,44 @@ const BookingPage = () => {
             }
           </MainProfileWrapper>
         </Col>
+      </Row >
 
-        {/* {
-          !!openModalSuccessBooking &&
-          <ModalSuccessBooking
-            open={openModalSuccessBooking}
-            onCancel={() => setOpenModalSuccessBooking(false)}
-          />
-        }
+      {
+        !!openModalConfirmInfor &&
+        <ModalConfirmInfor
+          open={openModalConfirmInfor}
+          onCancel={() => setOpenModalConfirmInfor(false)}
+          teacher={teacher}
+          bookingInfor={bookingInfor}
+          selectedTimes={selectedTimes}
+          course={course}
+        />
+      }
 
-        {
-          !!openModalPaymentBooking &&
-          <ModalPaymentBooking
-            open={openModalPaymentBooking}
-            onCancel={() => setOpenModalPaymentBooking(false)}
-            onOk={() => handleCompleteBooking()}
-          />
-        } */}
+      {
+        !!openModalChangeSchedule &&
+        <ModalChangeSchedule
+          open={openModalChangeSchedule}
+          onCancel={() => setOpenModalChangeSchedule(false)}
+          selectedTimes={selectedTimes}
+          timeTablesStudent={timeTablesStudent}
+          getFreeTimeOfTeacher={getFreeTimeOfTeacher}
+          setSelectedTimes={setSelectedTimes}
+        />
+      }
 
-        {
-          !!openModalConfirmInfor &&
-          <MOdalConfirmInfor
-            open={openModalConfirmInfor}
-            onCancel={() => setOpenModalConfirmInfor(false)}
-            teacher={teacher}
-            bookingInfor={bookingInfor}
-            selectedTimes={selectedTimes}
-          />
-        }
-
-      </Row>
+      {
+        !!openModalChooseCourse &&
+        <ModalChooseCourse
+          open={openModalChooseCourse}
+          onCancel={() => setOpenModalChooseCourse(false)}
+          course={course}
+          setCourse={setCourse}
+          setTotalSlot={setTotalSlot}
+          setSlotInWeek={setSlotInWeek}
+          setScheduleInWeek={setScheduleInWeek}
+        />
+      }
 
     </SpinCustom >
   )

@@ -19,6 +19,8 @@ import { useSelector } from "react-redux"
 import { globalSelector } from "src/redux/selector"
 import socket from "src/utils/socket"
 import ModalTimeTable from "./modal/ModalTimeTable"
+import { getRealFee } from "src/lib/stringUtils"
+import { convertToCurrentEquivalent } from "src/lib/dateUtils"
 
 const SubjectSetting = () => {
 
@@ -29,9 +31,10 @@ const SubjectSetting = () => {
   const [form] = Form.useForm()
   const [filesCertificate, setFilesCertificate] = useState([])
   const [filesIntroVideo, setFilesIntroVideo] = useState([])
-  const { user } = useSelector(globalSelector)
+  const { user, profitPercent } = useSelector(globalSelector)
   const [openModalTimeTable, setOpenModalTimeTable] = useState(false)
   const [schedules, setSchedules] = useState([])
+  const [totalFee, setTotalFee] = useState(0)
 
   const getListSubjectSetting = async () => {
     try {
@@ -147,22 +150,19 @@ const SubjectSetting = () => {
           id: idx
         }))
       })
+      setTotalFee(getRealFee(subjectSetting?.Price, profitPercent))
     }
   }, [subjectSetting?.Subject?._id])
 
   useEffect(() => {
     if (!!user?.Schedules?.length) {
-      const getDayFormSchedule = user?.Schedules?.find(i => i?.DateAt === dayjs().format("dddd"))
       setSchedules(
         user?.Schedules?.map(i => {
-          const dayGap = dayjs().startOf("day").diff(dayjs(getDayFormSchedule?.StartTime).startOf("day"), "days")
+          const dayGap = dayjs().startOf("day").diff(dayjs(user?.Schedules[0]?.StartTime).startOf("day"), "days")
+          console.log('convertToCurrentEquivalent(new Date(i?.StartTime))', convertToCurrentEquivalent(new Date(i?.StartTime)));
           return {
-            start: dayGap > 5
-              ? dayjs(i?.StartTime).add(dayGap, "days")
-              : dayjs(i?.StartTime),
-            end: dayGap > 5
-              ? dayjs(i?.EndTime).add(dayGap, "days")
-              : dayjs(i?.EndTime),
+            start: convertToCurrentEquivalent(new Date(i?.StartTime)),
+            end: convertToCurrentEquivalent(new Date(i?.EndTime)),
             title: ""
           }
         })
@@ -178,13 +178,13 @@ const SubjectSetting = () => {
             <div className="fs-18 fw-600">Danh sách môn học</div>
             <Space>
               <ButtonCustom
-                className="primary"
+                className="third-type-2"
                 onClick={() => setOpenModalSubject(true)}
               >
                 Thêm Môn học
               </ButtonCustom>
               <ButtonCustom
-                className="primary"
+                className="third-type-2"
                 onClick={() => setOpenModalTimeTable(true)}
               >
                 Cài đặt lịch dạy
@@ -213,7 +213,11 @@ const SubjectSetting = () => {
           {
             !!subjectSetting &&
             <>
-              <BasicInformation />
+              <BasicInformation
+                totalFee={totalFee}
+                setTotalFee={setTotalFee}
+                subjectSetting={subjectSetting}
+              />
               <Experiences />
               <Educations />
               <Certificates
