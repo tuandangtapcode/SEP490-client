@@ -61,7 +61,7 @@ const BlogPosting = () => {
     <Row gutter={[16, 16]}>
       <Col span={24} className="d-flex-sb">
         <div className="title-type-1">
-          DANH SÁCH BÀI VIẾT
+          DANH SÁCH BÀI VIẾT ĐÃ ĐĂNG
         </div>
         <ButtonCustom
           className="third-type-2"

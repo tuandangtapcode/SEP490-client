@@ -6,18 +6,25 @@ import { globalSelector } from "src/redux/selector"
 import { getListComboKey } from "src/lib/commonFunction"
 import { SYSTEM_KEY } from "src/lib/constant"
 import { formatMoney, getRealFee } from "src/lib/stringUtils"
+import ButtonCustom from "src/components/MyButton/ButtonCustom"
+import InsertUpdateCourse from "../../MyCourse/components/InsertUpdateCourse"
 
-const BasicInformation = () => {
+const BasicInformation = ({ totalFee, setTotalFee, subjectSetting }) => {
 
   const { listSystemKey, profitPercent } = useSelector(globalSelector)
-  const [totalFee, setTotalFee] = useState(0)
-
+  const [openModalUpdateCourse, setOpenModalUpdateCourse] = useState(false)
 
   return (
     <Col span={24}>
       <Row>
-        <Col span={24}>
+        <Col span={24} className="d-flex-sb">
           <div className="fs-18 fw-600 mb-12">Thông tin cơ bản môn học</div>
+          <ButtonCustom
+            className="third-type-2"
+            onClick={() => setOpenModalUpdateCourse({ Subject: subjectSetting?.Subject })}
+          >
+            Tạo khóa học
+          </ButtonCustom>
         </Col>
         <Col span={24}>
           <Form.Item
@@ -85,7 +92,6 @@ const BasicInformation = () => {
                   return Promise.resolve()
                 }
               },
-              { required: true, message: "Thông tin không được để trống" }
             ]}
           >
             <InputNumber
@@ -122,6 +128,15 @@ const BasicInformation = () => {
           </Form.Item>
         </Col>
       </Row>
+
+      {
+        !!openModalUpdateCourse &&
+        <InsertUpdateCourse
+          open={openModalUpdateCourse}
+          onCancel={() => setOpenModalUpdateCourse(false)}
+        />
+      }
+
     </Col>
   )
 }

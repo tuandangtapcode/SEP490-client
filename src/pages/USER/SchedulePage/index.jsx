@@ -12,6 +12,8 @@ import ModalDetailSchedule from "./components/ModalDetailSchedule"
 import { toast } from "react-toastify"
 
 const localizer = momentLocalizer(moment)
+moment.updateLocale('en', { week: { dow: 1 } })
+
 const messages = {
   allDay: "Cả ngày",
   previous: "Trước",
@@ -57,7 +59,7 @@ const SchedulePage = () => {
             ...i,
             start: moment(i?.StartTime),
             end: moment(i?.EndTime),
-            title: i?.Subject?.SubjectName,
+            title: `${i?.Subject?.SubjectName} - ${!!i.Status ? "Đã điểm danh" : "Chưa điểm danh"}`,
           }
         ))
       )
@@ -90,6 +92,8 @@ const SchedulePage = () => {
         onShowMore={(timetables, date) =>
           this.setState({ showModal: true, timetables })
         }
+        min={new Date(new Date().setHours(7, 0, 0, 0))}
+        max={new Date(new Date().setHours(23, 0, 0, 0))}
       />
 
       {
@@ -102,7 +106,6 @@ const SchedulePage = () => {
           getTimeTable={getTimeTable}
         />
       }
-
     </SpinCustom>
   )
 }

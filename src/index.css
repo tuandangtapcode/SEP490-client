@@ -3,7 +3,7 @@
   --color-background: #73b3a8;
   --color-primary-hover: #6fafa3;
   --color-text-default: #404040;
-  --color-border-matte: #eaeaea;
+  --color-border-matte: #e3e0e0;
   --color-yellow: #FFDA32;
   --color-yellow-hover: #d7b933;
 }
@@ -25,7 +25,7 @@
 .ant-menu-light.ant-menu-horizontal>.ant-menu-item:hover::after,
 .ant-menu-light.ant-menu-horizontal>.ant-menu-item-active::after,
 .ant-menu-light.ant-menu-horizontal>.ant-menu-item-selected::after {
-  border-bottom: 3px solid #106ebe;
+  border-bottom: 3px solid #7BBCB0;
 }
 
 .ant-menu .ant-menu-title-content {
@@ -45,7 +45,6 @@
 }
 
 .ant-menu-light .ant-menu-item-selected {
-  background-color: var(--color-primary-hover) !important;
   color: white;
 }
 
@@ -76,4 +75,8 @@ body {
 
 .ant-rate .ant-rate-star {
   margin-inline-end: 2px !important
+}
+
+.rbc-event {
+  left: 6px !important;
 }

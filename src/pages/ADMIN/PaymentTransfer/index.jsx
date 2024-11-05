@@ -227,6 +227,7 @@ const PaymentTransfer = () => {
           <InputCustom
             type="isSearch"
             placeholder="Tìm kiếm tên người nhận..."
+            allowClear
             onSearch={e => setPagination(pre => ({ ...pre, TraddingCode: e }))}
           />
         </Col>

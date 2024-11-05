@@ -1,5 +1,5 @@
 import { Outlet } from "react-router-dom"
-import LayoutAdmin from "src/components/Layout/LayoutAdmin"
+import MainLayout from "src/components/Layout/MainLayout"
 import { Roles } from "src/lib/constant"
 import ForbiddenPage from "src/pages/ErrorPage/ForbiddenPage"
 
@@ -10,9 +10,9 @@ const AdminRoutes = ({ tokenInfor }) => {
       {
         !!tokenInfor &&
           tokenInfor?.RoleID === Roles.ROLE_ADMIN ?
-          <LayoutAdmin>
+          <MainLayout tokenInfor={tokenInfor}>
             <Outlet />
-          </LayoutAdmin>
+          </MainLayout>
           : <ForbiddenPage />
       }
     </>

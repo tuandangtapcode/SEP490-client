@@ -61,8 +61,8 @@ const ModalSubject = ({
       open={open}
       onCancel={onCancel}
       footer={
-        <Space direction="horizontal" className="d-flex-end">
-          <ButtonCustom btnType="cancel" onClick={onCancel}>
+        <Space className="d-flex-end">
+          <ButtonCustom className="third" onClick={onCancel}>
             Đóng
           </ButtonCustom>
           <ButtonCustom

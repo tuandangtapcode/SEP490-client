@@ -2,11 +2,11 @@ import styled from 'styled-components'
 
 export const HomeContainerStyled = styled.div`
   /* text-align: center; */
-  padding: 50px 20px;
+  /* padding: 50px 20px; */
 `
 
 export const SearchContainerStyled = styled.div`
-  width: 100%;
+  width: 80%;
   background-color: white;
   padding: 24px 16px;
   border-radius: 12px;
@@ -16,4 +16,22 @@ export const SearchContainerStyled = styled.div`
 export const TopTeacherItemStyled = styled.div`
   box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
   padding: 12px;
+`
+export const BackgroundImageStyled = styled.div`
+  background-image: url(${props => props.bgImage});
+  background-size: cover;
+  background-repeat: no-repeat;
+  height: 550px;
+  width: 100%;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+`
+
+export const SubjectCareContainerStyled = styled.div`
+  width: 80%;
+`
+
+export const BecomeTeacherContainerStyled = styled.div`
+  width: 80%;
 `

@@ -18,6 +18,8 @@ const ModalPaymentTransfer = ({ open, onCancel, onOk }) => {
     const isAllowedType = allowedImageTypes.includes(file.type)
     if (!isAllowedType) {
       message.error("Yêu cầu chọn file ảnh (jpg, png, gif)")
+    } else if (file.size > 5 * 1024 * 1024) {
+      message.error("Dung lượng file tải lên phải nhỏ 5MB")
     } else {
       setPreview(URL.createObjectURL(file))
     }
@@ -28,7 +30,6 @@ const ModalPaymentTransfer = ({ open, onCancel, onOk }) => {
     try {
       setLoading(true)
       const values = await form.validateFields()
-      console.log(values);
       const resFile = await FileService.uploadFileSingle({
         FileSingle: values?.image?.file
       })
@@ -59,7 +60,7 @@ const ModalPaymentTransfer = ({ open, onCancel, onOk }) => {
       onCancel={onCancel}
       width="60vw"
       footer={
-        <div className="d-flex-end">
+        <Space className="d-flex-end">
           <Space>
             <ButtonCustom
               onClick={() => onCancel()}
@@ -74,7 +75,7 @@ const ModalPaymentTransfer = ({ open, onCancel, onOk }) => {
               Xác nhận thanh toán
             </ButtonCustom>
           </Space>
-        </div>
+        </Space>
       }
     >
       <Form form={form}>

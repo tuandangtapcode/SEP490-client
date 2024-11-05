@@ -46,23 +46,21 @@ const ModalSendFeedback = ({ open, onCancel }) => {
       title="Gửi đánh giá giáo viên"
       width="50vw"
       footer={
-        <div className="d-flex-end">
-          <Space>
-            <ButtonCustom
-              className="third"
-              onClick={() => onCancel()}
-            >
-              Đóng
-            </ButtonCustom>
-            <ButtonCustom
-              className="primary"
-              loading={loading}
-              onClick={() => handleSendFeedback()}
-            >
-              Gửi
-            </ButtonCustom>
-          </Space>
-        </div>
+        <Space className="d-flex-end">
+          <ButtonCustom
+            className="third"
+            onClick={() => onCancel()}
+          >
+            Đóng
+          </ButtonCustom>
+          <ButtonCustom
+            className="primary"
+            loading={loading}
+            onClick={() => handleSendFeedback()}
+          >
+            Gửi
+          </ButtonCustom>
+        </Space>
       }
     >
       <Form form={form}>

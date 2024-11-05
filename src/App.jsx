@@ -3,7 +3,6 @@ import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate, useRoutes } from 'react-router-dom'
 import { toast, ToastContainer } from 'react-toastify'
 import SpinCustom from './components/SpinCustom'
-import FindTeacher from './pages/ANONYMOUS/FindTeacher'
 import globalSlice from './redux/globalSlice'
 import Router from './routers'
 import CommonService from './services/CommonService'
@@ -12,6 +11,7 @@ import socket from './utils/socket'
 import InactiveModal from './components/Layout/components/ModalInactiveAccount'
 import { decodeData } from './lib/commonFunction'
 import { globalSelector } from './redux/selector'
+import ScrollToTop from './components/ScrollToTop'
 
 // ADMIN
 const AdminRoutes = React.lazy(() => import("src/pages/ADMIN/AdminRoutes"))
@@ -39,19 +39,22 @@ const MentorForSubject = React.lazy(() => import("src/pages/ANONYMOUS/MentorForS
 const BookingPage = React.lazy(() => import("src/pages/ANONYMOUS/BookingPage"))
 const FindSubject = React.lazy(() => import("src/pages/ANONYMOUS/FindSubject"))
 const MeetingRoom = React.lazy(() => import("src/pages/ANONYMOUS/MeetingRoom"))
+const SubjectcateDetail = React.lazy(() => import("src/pages/ANONYMOUS/SubjectcateDetail"))
 
 // USER
+// const CreateBlog = React.lazy(() => import("src/pages/ANONYMOUS/MeetingRoom"))
 const UserRoutes = React.lazy(() => import("src/pages/USER/UserRoutes"))
 const UserProfile = React.lazy(() => import("src/pages/USER/UserProfile"))
 const SubjectSetting = React.lazy(() => import("src/pages/USER/SubjectSetting"))
 const InboxPage = React.lazy(() => import("src/pages/USER/InboxPage"))
 const BillingPage = React.lazy(() => import("src/pages/USER/BillingPage"))
-const JournalPage = React.lazy(() => import("src/pages/USER/JournalPage"))
 const SchedulePage = React.lazy(() => import("src/pages/USER/SchedulePage"))
-const BlogPosting = React.lazy(() => import("src/pages/USER/BlogPosting"))
+const BookingHistory = React.lazy(() => import("src/pages/USER/BookingHistory"))
 const AccountUser = React.lazy(() => import("src/pages/USER/AccountUser"))
 const StudiedSubject = React.lazy(() => import("src/pages/USER/StudiedSubject"))
 const BankInfor = React.lazy(() => import("src/pages/USER/BankInfor"))
+const CheckoutPage = React.lazy(() => import("src/pages/USER/CheckoutPage"))
+const MyCourse = React.lazy(() => import("src/pages/USER/MyCourse"))
 
 // ERROR
 const NotFoundPage = React.lazy(() => import("src/pages/ErrorPage/NotFoundPage"))
@@ -63,7 +66,7 @@ const LazyLoadingComponent = ({ children }) => {
     <React.Suspense
       fallback={
         <div className="loading-center" style={{ display: 'flex', justifyContent: 'center', height: '100vh', alignItems: 'center' }}>
-          <SpinCustom />
+          {/* <SpinCustom /> */}
         </div>
       }
     >
@@ -201,10 +204,10 @@ const App = () => {
           )
         },
         {
-          path: Router.TAP_CHI,
+          path: Router.KHOA_HOC,
           element: (
             <LazyLoadingComponent>
-              <JournalPage />
+              <MyCourse />
             </LazyLoadingComponent>
           )
         },
@@ -217,10 +220,10 @@ const App = () => {
           )
         },
         {
-          path: Router.DANG_BAI_VIET,
+          path: Router.LICH_SU_BOOKING,
           element: (
             <LazyLoadingComponent>
-              <BlogPosting />
+              <BookingHistory />
             </LazyLoadingComponent>
           )
         },
@@ -245,6 +248,14 @@ const App = () => {
           element: (
             <LazyLoadingComponent>
               <BankInfor />
+            </LazyLoadingComponent>
+          )
+        },
+        {
+          path: `${Router.CHECKOUT}/:ConfirmID`,
+          element: (
+            <LazyLoadingComponent>
+              <CheckoutPage />
             </LazyLoadingComponent>
           )
         },
@@ -307,7 +318,7 @@ const App = () => {
           )
         },
         {
-          path: Router.DAY_VOI_CHUNG_TOI,
+          path: Router.POST_BAI_TIM_GIAO_VIEN,
           element: (
             <LazyLoadingComponent>
               <TeachWithUsPage />
@@ -318,7 +329,7 @@ const App = () => {
           path: `${Router.DANH_MUC}/:SubjectCateID`,
           element: (
             <LazyLoadingComponent>
-              <FindTeacher />
+              <SubjectcateDetail />
             </LazyLoadingComponent>
           )
         },
@@ -405,7 +416,6 @@ const App = () => {
     if (!!res?.isError) return
     if (!!res?.data) {
       const tokenInfor = decodeData(res?.data)
-      console.log("tokenInfor", tokenInfor);
       if (!!tokenInfor.ID) {
         setTotenInfor(tokenInfor)
         getDetailProfile()
@@ -440,6 +450,7 @@ const App = () => {
 
   return (
     <div className="App">
+      <ScrollToTop />
       <ToastContainer
         autoClose={1500}
         hideProgressBar={true}
@@ -453,6 +464,7 @@ const App = () => {
           onCancel={() => setModalInactiveAccount(false)}
         />
       }
+
     </div>
   )
 }

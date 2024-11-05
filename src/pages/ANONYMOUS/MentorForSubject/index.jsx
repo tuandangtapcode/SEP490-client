@@ -97,7 +97,7 @@ const MentorForSubject = () => {
     try {
       setLoading(true)
       const res = await UserService.getListTeacherByUser(pagination)
-      if (!!res?.isError) return toast.error(res?.msg) 
+      if (!!res?.isError) return toast.error(res?.msg)
       setListMentor(res?.data?.List)
     } finally {
       setLoading(false)
@@ -116,6 +116,7 @@ const MentorForSubject = () => {
               <h1 className='center-text mb-20'>Tìm kiếm giáo viên</h1>
               <InputCustom
                 type="isSearch"
+                allowClear
                 onChange={(e) =>
                   setPagination({
                     ...pagination,

@@ -58,7 +58,6 @@ const LoginPage = () => {
       const res = await UserService.login(values)
       if (!!res?.isError) return toast.error(res?.msg)
       const user = decodeData(res?.data)
-      console.log("user", user);
       if (!!user.ID) {
         dispatch(globalSlice.actions.setIsLogin(true))
         handleNavigate(user)
@@ -122,7 +121,6 @@ const LoginPage = () => {
                 className="primary submit-btn fs-18 mb-16"
                 htmlType="submit"
                 onClick={() => loginByForm()}
-                loading={loading}
                 id="login"
               >
                 Đăng nhập

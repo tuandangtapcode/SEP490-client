@@ -1,0 +1,6 @@
+export const apiCreateConfirm = "confirm/createConfirm"
+export const apiGetListConfirm = "confirm/getListConfirm"
+export const apiChangeConfirmStatus = "confirm/changeConfirmStatus"
+export const apiUpdateConfirm = "confirm/updateConfirm"
+export const apiGetDetailConfirm = "confirm/getDetailConfirm"
+export const apiChangeConfirmPaid = "confirm/changeConfirmPaid"

@@ -42,7 +42,7 @@ const ModalChangeProfitPercent = ({ open, onCancel }) => {
       onCancel={onCancel}
       title="Thay đổi phần trăm lợi nhuận"
       footer={
-        <div className="d-flex-end">
+        <Space className="d-flex-end">
           <Space direction="horizontal">
             <ButtonCustom btnType="cancel" onClick={onCancel}>
               Đóng
@@ -57,7 +57,7 @@ const ModalChangeProfitPercent = ({ open, onCancel }) => {
               Lưu
             </ButtonCustom>
           </Space>
-        </div>
+        </Space>
       }
     >
       <Form form={form}>

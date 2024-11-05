@@ -38,14 +38,13 @@ const ModalDetailSchedule = ({
       if (!!res?.isError) return toast.error(res?.msg)
       toast.success(res?.msg)
       onCancel()
+      getTimeTable()
     } finally {
       setLoading(false)
     }
   }
 
-  const endTime = new Date(open?.EndTime)
-  const endTimePlus24h = new Date(endTime?.getTime() + 24 * 60 * 60 * 1000)
-  const currentTime = new Date()
+  console.log("buttonShow", !buttonShow?.isShowBtnAttendance);
 
 
   return (
@@ -55,43 +54,36 @@ const ModalDetailSchedule = ({
       title="Chi tiết lịch học"
       width="40vw"
       footer={
-        <div className="d-flex-end">
-          <Space>
+        <Space className="d-flex-end">
+          <ButtonCustom
+            className="third"
+            onClick={() => onCancel()}
+          >
+            Đóng
+          </ButtonCustom>
+          {
+            !!buttonShow?.isShowBtnAttendance &&
             <ButtonCustom
-              className="third"
-              onClick={() => onCancel()}
+              loading={loading}
+              disabled={!!open?.isAttendance ? false : true}
+              className="primary"
+              onClick={() => handleAttendanceTimeTable()}
             >
-              Đóng
+              Điểm danh
             </ButtonCustom>
-            {
-              !!buttonShow?.isAttendance &&
-              <ButtonCustom
-                loading={loading}
-                disabled={
-                  (new Date() < new Date(open?.StartTime) ||
-                    new Date() > new Date(open?.EndTime) ||
-                    !!open?.Status)
-                    ? true : false
-                }
-                className="primary"
-                onClick={() => handleAttendanceTimeTable()}
-              >
-                Điểm danh
-              </ButtonCustom>
-            }
-            {
-              !!buttonShow?.isUpdateTimeTable &&
-              <ButtonCustom
-                loading={loading}
-                disabled={!!open?.Status ? true : false}
-                className="third-type-2"
-                onClick={() => setOpenModalChangeTimetable(open)}
-              >
-                Chỉnh sửa lịch học
-              </ButtonCustom>
-            }
-          </Space>
-        </div >
+          }
+          {
+            !!buttonShow?.isShowBtnUpdateTimeTable &&
+            <ButtonCustom
+              loading={loading}
+              disabled={!!open?.isUpdateTimeTable ? false : true}
+              className="third-type-2"
+              onClick={() => setOpenModalChangeTimetable(open)}
+            >
+              Chỉnh sửa lịch học
+            </ButtonCustom>
+          }
+        </Space>
       }
     >
       <div className="d-flex-center">
@@ -100,10 +92,10 @@ const ModalDetailSchedule = ({
             <div>Ngày học:</div>
           </Col>
           <Col span={17}>
-            <div>{dayjs(open?.DateAt).startOf("day").format("dddd DD/MM/YYYY")}</div>
+            <div>{dayjs(open?.StartTime).startOf("day").format("dddd DD/MM/YYYY")}</div>
           </Col>
           <Col span={2} className="d-flex-end">
-            {currentTime < endTimePlus24h &&
+            {!!open?.isSubmitIssue &&
               <ButtonCircle
                 icon={ListIcons.ICON_WARNING}
                 title="Báo cáo Giáo viên"
@@ -115,21 +107,21 @@ const ModalDetailSchedule = ({
             <div>Thời gian:</div>
           </Col>
           <Col span={19}>
-            <div>{dayjs(open?.StartTime).format("HH:ss")} - {dayjs(open?.EndTime).format("HH:ss")}</div>
+            <div>{dayjs(open?.StartTime).format("HH:mm")} - {dayjs(open?.EndTime).format("HH:mm")}</div>
           </Col>
           <Col span={5}>
-            <div>{!buttonShow?.isAttendance ? "Giáo viên:" : "Học sinh:"}</div>
+            <div>{!buttonShow?.isShowBtnAttendance ? "Giáo viên:" : "Học sinh:"}</div>
           </Col>
           <Col span={19}>
             <div
               onClick={() => {
-                if (!buttonShow?.isAttendance) {
+                if (!buttonShow?.isShowBtnAttendance) {
                   navigate(`${Router.GIAO_VIEN}/${open?.Teacher?._id}${Router.MON_HOC}/${open?.Subject?._id}`)
                 }
               }}
-              className={!buttonShow?.isAttendance ? "primary-text cursor-pointer" : ""}
+              className={!buttonShow?.isShowBtnAttendance ? "primary-text cursor-pointer" : ""}
             >
-              {open[!buttonShow?.isAttendance ? "Teacher" : "Student"]?.FullName}
+              {open[!buttonShow?.isShowBtnAttendance ? "Teacher" : "Student"]?.FullName}
             </div>
           </Col>
           <Col span={5}>
