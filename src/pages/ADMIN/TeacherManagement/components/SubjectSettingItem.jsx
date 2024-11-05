@@ -34,6 +34,7 @@ const SubjectSettingItem = ({
         Email: email
       })
       if (!!res?.isError) return toast.error(res?.msg)
+      toast.success(res?.msg)
       getListTeacher()
       onCancel()
     } finally {

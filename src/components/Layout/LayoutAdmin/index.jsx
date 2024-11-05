@@ -1,6 +1,4 @@
 import { Col, Menu, Row } from "antd"
-import Header from "../components/Header"
-import { LayoutAdminStyled } from "./styled"
 import { useState } from "react"
 import { useLocation, useNavigate } from "react-router-dom"
 import { useDispatch, useSelector } from "react-redux"
@@ -8,6 +6,7 @@ import ListIcons from "src/components/ListIcons"
 import { MenuAdmin } from "../MenuItems"
 import { globalSelector } from "src/redux/selector"
 import { handleLogout } from "src/lib/commonFunction"
+import { LayoutUserStyled } from "../styled"
 
 const LayoutAdmin = ({ children }) => {
 
@@ -26,10 +25,9 @@ const LayoutAdmin = ({ children }) => {
   }
 
   return (
-    <LayoutAdminStyled>
-      <Header />
+    <LayoutUserStyled>
       <Row>
-        <Col span={collapsed ? 2 : 4}>
+        <Col>
           <div
             className="menu-container"
             style={{
@@ -50,7 +48,6 @@ const LayoutAdmin = ({ children }) => {
               <div className="mr-8">
                 {collapsed ? ListIcons.ICON_MENUUNFOLD : ListIcons.ICON_MENUFOLD}
               </div>
-              {/* <p style={{ display: collapsed ? "none" : "block" }}>Collapsed</p> */}
             </div>
           </div>
         </Col>
@@ -60,7 +57,7 @@ const LayoutAdmin = ({ children }) => {
           </div>
         </Col>
       </Row>
-    </LayoutAdminStyled>
+    </LayoutUserStyled>
   )
 }
 

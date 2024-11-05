@@ -1,41 +1,35 @@
-import { ContentContainerStyled, ContentStyled, FooterStyled, LayoutStyled } from "../styled"
-import Header from "../components/Header"
-import Footer from "../components/Footer"
-import { useSelector } from "react-redux"
-import { globalSelector } from "src/redux/selector"
-import ModalChat from "../components/ModalChat"
-import { useLocation } from "react-router-dom"
-// import ChatBoxAI from "src/components/ChatBoxAI"
+import { Layout } from "antd"
+import HeaderCommon from "../components/HeaderCommon"
+import { Roles } from "src/lib/constant"
+import LayoutAdmin from "../LayoutAdmin"
+import LayoutUser from "../LayoutUser"
+import LayoutCommon from "../LayoutCommon"
 
-const MainLayout = ({ children }) => {
+const { Content } = Layout
 
-  const { user } = useSelector(globalSelector)
-  const location = useLocation()
-
+const MainLayout = ({ children, tokenInfor }) => {
 
   return (
-    <LayoutStyled>
-      <div>
-        <Header />
-      </div>
-      <ContentContainerStyled>
-        <ContentStyled isFullScreen={!!["meeting-room", "/"].includes(location.pathname)}>
-          {children}
-        </ContentStyled>
-      </ContentContainerStyled>
-      {
-        !location.pathname.includes("meeting-room") &&
-        <Footer />
-      }
-      {
-        (!!user?._id && !location.pathname.includes("meeting-room")) &&
-        <ModalChat /> 
-      }
-      {/* {
-        (!!user?._id && !location.pathname.includes("meeting-room")) &&
-      <ChatBoxAI />
-      } */}
-    </LayoutStyled>
+    <Layout>
+      <HeaderCommon />
+      <Layout>
+        <Content className="site-layout-background">
+          {
+            (!!tokenInfor && tokenInfor?.RoleID === Roles.ROLE_ADMIN) ?
+              <LayoutAdmin>
+                {children}
+              </LayoutAdmin>
+              : (!!tokenInfor && tokenInfor?.RoleID !== Roles.ROLE_ADMIN) ?
+                <LayoutUser>
+                  {children}
+                </LayoutUser>
+                : <LayoutCommon>
+                  {children}
+                </LayoutCommon>
+          }
+        </Content>
+      </Layout>
+    </Layout>
   )
 }
 

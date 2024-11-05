@@ -25,6 +25,7 @@ export const HeaderContainerStyled = styled.div`
   background-size: cover;
   height: ${props => props.isHome ? "850px" : "auto"};
   margin-bottom: 30px;
+  border-bottom: 1px solid var(--color-border-matte);
 `
 
 export const HeaderStyled = styled.div`
@@ -74,5 +75,51 @@ export const ChatBoxContainerStyled = styled.div`
   .messages {
     height: 400px;
   }
-;
+`
+
+export const LayoutUserStyled = styled.div`
+.menu-container {
+  border: 1px solid #ddd;
+  height: calc(100vh - 116px);
+  overflow: hidden auto;
+  padding: 12px 0;
+  /* display: flex;
+  flex-direction: column;
+  justify-content: space-between; */
+}
+.menu-antd-user {
+  /* padding-left: 11px;
+  height: auto;
+  overflow: hidden auto;
+  margin-right: unset;
+  border: unset; */
+}
+.content-container {
+  padding: 0px 20px; 
+  overflow-y: auto; 
+  height: calc(100vh - 116px);
+  border-top: 1px solid var(--color-border-matte);
+  &::-webkit-scrollbar {
+      width: 0px;
+    }
+  &::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    box-shadow: unset;
+    margin: 5px 0px;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: #c5ced9;
+    border-radius: 30px;
+  }
+}
+.collapsed-menu {
+  padding: 0px 20px;
+}
+.ant-menu-light.ant-menu-root.ant-menu-inline {
+  border-inline-end: none !important
+}
+.ant-menu-light .ant-menu-item-selected {
+  background-color: var(--color-primary-hover) !important;
+  color: white;
+}
 `

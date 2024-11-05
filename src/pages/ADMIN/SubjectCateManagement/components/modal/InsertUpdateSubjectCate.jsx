@@ -51,21 +51,19 @@ const InsertUpdateSubjectCate = ({ open, onCancel, onOk }) => {
 
 
   const renderFooter = () => (
-    <div className="d-flex-center">
-      <Space direction="horizontal">
-        <ButtonCustom
-          className="primary"
-          onClick={() => {
-            handleSubmit()
-          }}
-        >
-          Ghi lại
-        </ButtonCustom>
-        <ButtonCustom btnType="cancel" onClick={onCancel}>
-          Đóng
-        </ButtonCustom>
-      </Space>
-    </div>
+    <Space className="d-flex-center">
+      <ButtonCustom
+        className="primary"
+        onClick={() => {
+          handleSubmit()
+        }}
+      >
+        Ghi lại
+      </ButtonCustom>
+      <ButtonCustom btnType="cancel" onClick={onCancel}>
+        Đóng
+      </ButtonCustom>
+    </Space>
   )
 
 

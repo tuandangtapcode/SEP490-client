@@ -3,7 +3,7 @@
   --color-background: #73b3a8;
   --color-primary-hover: #6fafa3;
   --color-text-default: #404040;
-  --color-border-matte: #eaeaea;
+  --color-border-matte: #e3e0e0;
   --color-yellow: #FFDA32;
   --color-yellow-hover: #d7b933;
 }
@@ -75,4 +75,8 @@ body {
 
 .ant-rate .ant-rate-star {
   margin-inline-end: 2px !important
+}
+
+.rbc-event {
+  left: 6px !important;
 }

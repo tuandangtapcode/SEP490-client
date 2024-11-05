@@ -111,6 +111,7 @@ const InsertUpdateBlog = ({ open, onCancel, onOk }) => {
           }}
         >
           Đăng bài
+          Đăng bài
         </ButtonCustom>
         <ButtonCustom btntype="cancel" onClick={onCancel}>
           Hủy
@@ -126,12 +127,20 @@ const InsertUpdateBlog = ({ open, onCancel, onOk }) => {
     <ModalCustom
       title={!open?._id ? "Đăng bài tìm giáo viên" : "Cập nhật bài viết"}
       width={1000}
+      title={!open?._id ? "Đăng bài tìm giáo viên" : "Cập nhật bài viết"}
+      width={1000}
       open={open}
       onCancel={onCancel}
       footer={renderFooter()}
     >
       <SpinCustom spinning={loading}>
         <StyleModal>
+        
+              <h2>Mô tả yêu cầu tìm giáo viên</h2>
+              <Col span={7}>
+              <div style={{ borderBottom: "2px solid #000", margin: "10px 0" }}></div>
+            </Col>
+        
           <Form form={form} layout="vertical" initialValues={{}}>
             <Row gutter={16}>
               <Col span={24}>
@@ -306,6 +315,20 @@ const InsertUpdateBlog = ({ open, onCancel, onOk }) => {
                 ))}
               </Col>
             </Row>
+            <div>
+              <h2>Yêu cầu giáo viên</h2>
+            </div>
+            <Col span={4}>
+              <div style={{ borderBottom: "2px solid #000", margin: "10px 0" }}></div>
+            </Col>
+        <Row gutter={16}>
+        <Col span={24}>
+
+        </Col>
+
+        </Row>
+
+
           </Form>
         </StyleModal>
       </SpinCustom>
@@ -314,3 +337,4 @@ const InsertUpdateBlog = ({ open, onCancel, onOk }) => {
 }
 
 export default InsertUpdateBlog;
+

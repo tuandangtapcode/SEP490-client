@@ -11,16 +11,23 @@ import { getListComboKey } from "src/lib/commonFunction"
 import TableCustom from "src/components/TableCustom"
 import ListIcons from "src/components/ListIcons"
 import ButtonCircle from "src/components/MyButton/ButtonCircle"
+import ModalViewBooking from "./components/ModalViewBooking"
+import ModalUpdateBooking from "./components/ModalUpdateBooking"
+import SpinCustom from "src/components/SpinCustom"
+import ConfirmModal from "src/components/ModalCustom/ConfirmModal"
+import NotificationService from "src/services/NotificationService"
+import socket from "src/utils/socket"
 
 
 const BookingHistory = () => {
 
-  const { user, listSystemKey } = useSelector(globalSelector)
   const navigate = useNavigate()
+  const { user, listSystemKey } = useSelector(globalSelector)
   const [loading, setLoading] = useState(false)
   const [confirms, setConfirms] = useState([])
   const [total, setTotal] = useState(0)
-  const [openModalViewOrUpdate, setOpenModalViewOrUpdate] = useState(false)
+  const [openModalViewBooking, setOpenModalViewBooking] = useState(false)
+  const [openModalUpdateBooking, setOpenModalUpdateBooking] = useState(false)
   const [pagination, setPagination] = useState({
     CurrentPage: 1,
     PageSize: 10,
@@ -39,6 +46,43 @@ const BookingHistory = () => {
     }
   }
 
+  const changeConfirmStatus = async (record, confirmStatus) => {
+    try {
+      setLoading(true)
+      if (confirmStatus === 3) {
+        const resNotiffication = await NotificationService.createNotification({
+          Content: `Giáo viên ${user?.FullName} đã hủy xác nhận booking của bạn`,
+          Type: "lich-su-booking",
+          Receiver: record?.Sender?._id
+        })
+        if (!!resNotiffication?.isError) return toast.error(res?.msg)
+        socket.emit('send-notification',
+          {
+            Content: resNotiffication?.data?.Content,
+            IsSeen: resNotiffication?.IsSeen,
+            _id: resNotiffication?.data?._id,
+            Type: resNotiffication?.data?.Type,
+            IsNew: resNotiffication?.data?.IsNew,
+            Receiver: record?.Sender?._id,
+            createdAt: resNotiffication?.data?.createdAt
+          })
+      }
+      const res = await ConfirmService.changeConfirmStatus({
+        ConfirmID: record?._id,
+        ConfirmStatus: confirmStatus,
+        Recevier: record?.Receiver,
+        RecevierName: user?.FullName,
+        SenderName: record?.Sender?.FullName,
+        SenderEmail: record?.Sender?.Email
+      })
+      if (!!res?.isError) return toast.error(res?.msg)
+      getListConfirm()
+      toast.success(res?.msg)
+    } finally {
+      setLoading(false)
+    }
+  }
+
   useEffect(() => {
     getListConfirm()
   }, [pagination])
@@ -48,37 +92,48 @@ const BookingHistory = () => {
       title: "Xem chi tiết",
       isView: record?.IsView,
       icon: ListIcons?.ICON_VIEW,
-      onClick: () => setOpenModalViewOrUpdate({
-        isUpdate: false,
-        data: record
-      })
+      onClick: () => setOpenModalViewBooking(record)
     },
     {
       title: "Chỉnh sửa",
       isView: record?.IsUpdate,
       icon: ListIcons?.ICON_EDIT,
-      onClick: () => setOpenModalViewOrUpdate({
-        isUpdate: true,
-        data: record
-      })
+      onClick: () => setOpenModalUpdateBooking(record)
     },
     {
       title: "Duyệt",
       isView: record?.IsAccept,
       icon: ListIcons?.ICON_CONFIRM,
-      onClick: () => setOpenModalViewOrUpdate({
-        isUpdate: true,
-        data: record
-      })
+      onClick: () => {
+        ConfirmModal({
+          icon: "ICON_SUSCESS_MODAL",
+          description: `Bạn có chắc chắn xác nhận booking không?`,
+          onOk: async close => {
+            changeConfirmStatus(record, 2)
+            close()
+          }
+        })
+      }
+    },
+    {
+      title: "Thanh toán",
+      isView: record?.IsPaid,
+      icon: ListIcons?.ICON_PAYMENT_BOOKING,
+      onClick: () => navigate(`/user/checkout/${record?._id}`)
     },
     {
       title: "Hủy",
       isView: record?.IsReject,
       icon: ListIcons?.ICON_CLOSE,
-      onClick: () => setOpenModalViewOrUpdate({
-        isUpdate: true,
-        data: record
-      })
+      onClick: () => {
+        ConfirmModal({
+          description: `Bạn có chắc chắn hủy xác nhận booking không?`,
+          onOk: async close => {
+            changeConfirmStatus(record, 3)
+            close()
+          }
+        })
+      }
     },
   ]
 
@@ -98,7 +153,7 @@ const BookingHistory = () => {
       render: (_, record, index) => (
         <div className="text-center">
           {
-            !!record?.Receiver ? record?.Receiver?.FullName : record?.Sender?.FullName
+            !!record?.Receiver?._id ? record?.Receiver?.FullName : record?.Sender?.FullName
           }
         </div>
       ),
@@ -138,7 +193,7 @@ const BookingHistory = () => {
       width: 70,
       align: "center",
       render: (_, record) => (
-        <div className="text-center">{dayjs(record?.createdAt).format("DD/MM/YYYY")}</div>
+        <div className="text-center">{dayjs(record?.createdAt).format("DD/MM/YYYY HH:mm")}</div>
       ),
     },
     {
@@ -180,47 +235,66 @@ const BookingHistory = () => {
 
 
   return (
-    <Row gutter={[16, 16]}>
-      <Col span={24} className="d-flex-sb mb-12">
-        <div className="title-type-1">
-          Lịch sử booking
-        </div>
-      </Col>
-      <Col>
-        <TableCustom
-          isPrimary
-          bordered
-          noMrb
-          showPagination
-          loading={loading}
-          dataSource={confirms}
-          columns={columns}
-          editableCell
-          sticky={{ offsetHeader: -12 }}
-          textEmpty="Không có dữ liệu"
-          rowKey="key"
-          pagination={
-            !!pagination?.PageSize
-              ? {
-                hideOnSinglePage: total <= 10,
-                current: pagination?.CurrentPage,
-                pageSize: pagination?.PageSize,
-                responsive: true,
-                total,
-                showSizeChanger: total > 10,
-                locale: { items_per_page: "" },
-                onChange: (CurrentPage, PageSize) =>
-                  setPagination(pre => ({
-                    ...pre,
-                    CurrentPage,
-                    PageSize,
-                  })),
-              }
-              : false
-          }
-        />
-      </Col>
-    </Row>
+    <SpinCustom spinning={loading}>
+      <Row gutter={[16, 16]}>
+        <Col span={24} className="d-flex-sb mb-12">
+          <div className="title-type-1">
+            Lịch sử booking
+          </div>
+        </Col>
+        <Col>
+          <TableCustom
+            isPrimary
+            bordered
+            noMrb
+            showPagination
+            dataSource={confirms}
+            columns={columns}
+            editableCell
+            sticky={{ offsetHeader: -12 }}
+            textEmpty="Không có dữ liệu"
+            rowKey="key"
+            pagination={
+              !!pagination?.PageSize
+                ? {
+                  hideOnSinglePage: total <= 10,
+                  current: pagination?.CurrentPage,
+                  pageSize: pagination?.PageSize,
+                  responsive: true,
+                  total,
+                  showSizeChanger: total > 10,
+                  locale: { items_per_page: "" },
+                  onChange: (CurrentPage, PageSize) =>
+                    setPagination(pre => ({
+                      ...pre,
+                      CurrentPage,
+                      PageSize,
+                    })),
+                }
+                : false
+            }
+          />
+        </Col>
+
+        {
+          !!openModalViewBooking &&
+          <ModalViewBooking
+            open={openModalViewBooking}
+            onCancel={() => setOpenModalViewBooking(false)}
+          />
+        }
+
+        {
+          !!openModalUpdateBooking &&
+          <ModalUpdateBooking
+            open={openModalUpdateBooking}
+            onCancel={() => setOpenModalUpdateBooking(false)}
+            onOk={getListConfirm}
+          />
+        }
+
+      </Row>
+    </SpinCustom>
   )
 }
 

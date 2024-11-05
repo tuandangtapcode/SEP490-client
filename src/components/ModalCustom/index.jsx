@@ -6,6 +6,7 @@ const ModalCustom = (props) => {
   return (
     <ModalCustomStyled
       {...props}
+      centered={true}
     >
       {props?.children}
     </ModalCustomStyled>

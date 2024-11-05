@@ -14,10 +14,11 @@ import { toast } from 'react-toastify'
 
 
 const localizer = momentLocalizer(moment)
+moment.updateLocale('en', { week: { dow: 1 } })
 
 const formats = {
   monthHeaderFormat: () => { }, // Định dạng tiêu đề tháng
-  dayFormat: "ddd", // Định dạng hiển thị ngày trong ngày
+  dayFormat: "dddd", // Định dạng hiển thị ngày trong ngày
   dayHeaderFormat: () => { }, // Tiêu đề nagyf
   dayRangeHeaderFormat: () => { }, // Định dạng tiêu đề ngày khi chọn khoảng thời gian
   agendaDateFormat: () => { }, //Cột trong lịch làm việc
@@ -45,21 +46,17 @@ const ModalTimeTable = ({
     setSchedules(newData)
   }
 
-  console.log("schedules", schedules);
-
-
   const handleChangeSchedules = async () => {
     try {
       setLoading(true)
       if (!schedules.length)
         return message.error("Hãy chọn lịch dạy cho bạn")
       const res = await UserService.changeProfile({
-        Schedules:
-          schedules?.map(i => ({
-            DateAt: dayjs(i?.start).format("dddd"),
-            StartTime: dayjs(i?.start),
-            EndTime: dayjs(i?.end),
-          }))
+        Schedules: schedules?.map(i => ({
+          DateAt: dayjs(i?.start).format("dddd"),
+          StartTime: dayjs(i?.start),
+          EndTime: dayjs(i?.end),
+        }))
       })
       if (!!res?.isError) return
       toast.success("Lịch học đã được cập nhật thành công")
@@ -77,8 +74,8 @@ const ModalTimeTable = ({
       title="Cài đặt lịch học"
       width="80vw"
       footer={
-        <Space direction="horizontal" className="d-flex-end">
-          <ButtonCustom btnType="cancel" onClick={onCancel}>
+        <Space className="d-flex-end">
+          <ButtonCustom className="third" onClick={onCancel}>
             Đóng
           </ButtonCustom>
           <ButtonCustom
@@ -107,6 +104,7 @@ const ModalTimeTable = ({
             toolbar={false}
             defaultView={Views.WEEK}
             formats={formats}
+            firstDayOfWeek={2}
             selectable
             onSelectSlot={handleSelectSlot}
             onSelectEvent={handleSelectEvent}

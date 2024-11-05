@@ -1,0 +1,6 @@
+export const apiCreateCourse = "course/createCourse"
+export const apiUpdateCourse = "course/updateCourse"
+export const apiDeleteCourse = "course/deleteCourse"
+export const apiGetListCourse = "course/getListCourse"
+export const apiGetListCourseByTeacher = "course/getListCourseByTeacher"
+export const apiGetListCourseOfTeacher = "course/getListCourseOfTeacher"
