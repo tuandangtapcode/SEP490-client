@@ -21,6 +21,7 @@ export const MenuCommon = () => [
     label: "Cách hoạt động"
   }
   // {
+  //   isView: user?.RoleID === Roles.ROLE_STUDENT,
   //   key: Router.POST_BAI_TIM_GIAO_VIEN,
   //   label: "Đăng bài tìm giáo viên"
   // },
@@ -66,10 +67,15 @@ export const MenuUser = (user) => [
     label: "Lịch sử booking",
   },
   // {
-  //   isview: !!(user?.RoleID === Roles.ROLE_STUDENT),
-  //   key: Router.DANG_BAI_VIET,
+  //   isview: user?.RoleID === Roles.ROLE_STUDENT,
+  //   key: Router.POST_BAI_TIM_GIAO_VIEN,
   //   label: "Bài viết đã đăng",
   // },
+  {
+    isView: user?.RoleID === Roles.ROLE_STUDENT,
+    key: Router.DANG_BAI_VIET,
+    label: "Đăng bài",
+  },
   {
     isView: true,
     key: Router.HOP_THU_DEN,

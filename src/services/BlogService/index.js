@@ -4,7 +4,7 @@ import {
   apiDeleteBlog,
   apiGetBlogDetail,
   apiGetListBlog,
-  apiGetListBlogOfTeacher,
+  apiGetListBlogOfUser,
   apiUpdateBlog
 } from "./urls"
 
@@ -14,7 +14,7 @@ const getListBlog = body => http.post(apiGetListBlog, body)
 const getDetailBlog = params => http.get(`${apiGetBlogDetail}/${params}`)
 const deleteBlog = params => http.get(`${apiDeleteBlog}/${params}`)
 const followBlog = body => http.post(apiGetListBlog, body)
-const getListBlogOfTeacher = body => http.post(apiGetListBlogOfTeacher, body)
+const getListBlogOfUser = body => http.post(apiGetListBlogOfUser, body)
 
 const BlogService = {
   createBlog,
@@ -23,7 +23,7 @@ const BlogService = {
   getDetailBlog,
   deleteBlog,
   followBlog,
-  getListBlogOfTeacher,
+  getListBlogOfUser,
 }
 
 export default BlogService

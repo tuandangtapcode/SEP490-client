@@ -1,41 +1,47 @@
-import { Card, Col, Popover, Row, Select, Space } from "antd"
+import { Table, Button, Row, Col, Slider } from "antd"
 import { useEffect, useState } from "react"
 import ButtonCustom from "src/components/MyButton/ButtonCustom"
-import TableCustom from "src/components/TableCustom"
-import InsertUpdateBlog from "./components/InsertUpdateBlog"
 import BlogService from "src/services/BlogService"
 import { toast } from "react-toastify"
-import ButtonCircle from "src/components/MyButton/ButtonCircle"
 import ListIcons from "src/components/ListIcons"
-import { CardContent, CardDescription, CardImage, StyledButton } from "src/pages/ANONYMOUS/BlogPage/styled"
 import CB1 from "src/components/Modal/CB1"
 import { useNavigate } from "react-router-dom"
+import InsertUpdateBlog from "./components/InsertUpdateBlog" 
+import moment from 'moment';
+import TableCustom from "src/components/TableCustom"
+import { TableCustomStyled } from "src/components/TableCustom/styled"
+import ConfirmModal from "src/components/ModalCustom/ConfirmModal"
 
 
 const BlogPosting = () => {
-
   const navigate = useNavigate()
   const [loading, setLoading] = useState(false)
   const [modalBlog, setModalBlog] = useState(false)
   const [listData, setListData] = useState([])
   const [total, setTotal] = useState(0)
+  const [detailBlogModal, setDetailBlogModal] = useState(false);
+const [selectedBlog, setSelectedBlog] = useState(null);
   const [pagination, setPagination] = useState({
     CurrentPage: 1,
-    PageSize: 10,
+    PageSize: 10
   })
-
-
-  const getListBlogOfTeacher = async () => {
+  const getListBlogOfUser = async () => {
     try {
-      setLoading(true)
-      const res = await BlogService.getListBlogOfTeacher(pagination)
-      if (!!res?.isError) return toast.error(res?.msg)
-      setListData(res?.data?.List)
-      setTotal(res?.data?.Total)
+      setLoading(true);
+      const res = await BlogService.getListBlogOfUser(pagination);
+      if (!!res?.isError) return toast.error(res?.msg);
+
+      const updatedList = res.data.List.map((blog, index) => ({
+        ...blog,
+        index: index + 1,
+      }));
+
+      setListData(updatedList);
+      setTotal(res?.data?.Total);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const handleDeleteBlog = async (id) => {
     try {
@@ -43,6 +49,7 @@ const BlogPosting = () => {
       const res = await BlogService.deleteBlog(id)
       if (!!res?.isError) return toast.error(res?.msg)
       toast.success(res?.msg)
+      getListBlogOfUser() 
     } catch (error) {
       console.log("Error:", error)
     } finally {
@@ -50,98 +57,115 @@ const BlogPosting = () => {
     }
   }
 
-
+  const handleViewBlogDetail = async (blogId) => {
+    setLoading(true);
+    const res = await BlogService.getDetailBlog(blogId); // Lấy thông tin chi tiết của blog
+    if (res?.isError) {
+      toast.error(res?.msg);
+    } else {
+      setSelectedBlog(res.data); // Lưu thông tin vào state
+      setDetailBlogModal(true); // Mở modal
+    }
+  };
 
   useEffect(() => {
-    if (pagination.PageSize) getListBlogOfTeacher()
-  }, [pagination])
+    getListBlogOfUser(pagination)
+  }, [])
+
+  const columns = [
+    { title: 'STT',align: "center", dataIndex: 'index', key: 'index' },
+    { title: 'Tiêu đề',align: "center", dataIndex: 'Title', key: 'Title' },
+    { title: 'Ngày đăng',align: "center", dataIndex: 'createdAt', key: 'createdAt', render: date => moment(date).format('DD/MM/YYYY') }, // Đảm bảo đã import moment
+    { title: 'Ngày nhận',align: "center", dataIndex: 'receiveDate', key: 'receiveDate', render: date => moment(date).format('DD/MM/YYYY') }, // Giả sử bạn có trường này trong dữ liệu
+    {
+          title: 'Chức năng',
+          align: "center",
+          render: (text, record) => (
+            <>
+            <Button icon={ListIcons?.ICON_VIEW} onClick={() => handleViewBlogDetail(record._id)}></Button>
+                
+              <Button type="link" icon={ListIcons?.ICON_EDIT} onClick={() => setModalBlog(record)}></Button>
+              <Button
+                type="link"
+                danger
+                icon={ListIcons?.ICON_DELETE}
+                onClick={() => {
+                  ConfirmModal({
+                    description: `Bạn có chắc chắn muốn xoá bài viết "${record.Title}" không?`,
+                    okText: "Đồng ý",
+                    cancelText: "Đóng",
+                    onOk: async close => {
+                      handleDeleteBlog(record._id)
+                      close()
+                    },
+                  })
+                }}
+              >
+              </Button>
+            </>
+          ),
+        },
+  ];
 
 
-  return (
-    <Row gutter={[16, 16]}>
-      <Col span={24} className="d-flex-sb">
-        <div className="title-type-1">
-          DANH SÁCH BÀI VIẾT ĐÃ ĐĂNG
-        </div>
-        <ButtonCustom
-          className="third-type-2"
-          onClick={() => setModalBlog(true)}
-        >
-          Thêm mới
-        </ButtonCustom>
-      </Col>
-      {listData?.map((blog) => (
-        <>
-          <Col span={12} className="mt-10">
-            <Card
-              className="mt-10"
-              hoverable
-              title={blog?.Title}
-              extra={
-                <Popover
-                  placement="topRight"
-                  trigger="click"
-                  content={(
-                    <Space>
-                      < ButtonCircle
-                        title="Xoá"
-                        icon={ListIcons?.ICON_DELETE}
-                        onClick={() => {
-                          CB1({
-                            title: `Bạn có chắc chắn muốn xoá bài viết "${blog?.Title}" không?`,
-                            // icon: "trashRed",
-                            okText: "Đồng ý",
-                            cancelText: "Đóng",
-                            onOk: async close => {
-                              handleDeleteBlog(blog?._id)
-                              getListBlogOfTeacher()
-                              close()
-                            },
-                          })
-                        }
-                        }
-                      />
-                      < ButtonCircle
-                        title="Chỉnh sửa"
-                        icon={ListIcons?.ICON_EDIT}
-                        onClick={() => setModalBlog(blog)}
-                      />
-                    </Space>
-                  )}
-                >
-                  < ButtonCircle
-                    icon={ListIcons?.ICON_ELLIP}
-
-                  />
-                </Popover>
+return (
+  <Row gutter={[16, 16]}>
+    <Col span={24} className="d-flex-sb">
+      <div className="title-type-1">
+        DANH SÁCH BÀI VIẾT ĐÃ ĐĂNG
+      </div>
+      <ButtonCustom
+        className="third-type-2"
+        onClick={() => setModalBlog(true)}
+      >
+        Thêm mới
+      </ButtonCustom>
+    </Col>
+    <Col span={24}>
+      <TableCustom
+        loading={loading}
+        isPrimary
+          bordered
+          noMrb
+          showPagination
+          editableCell
+          sticky={{ offsetHeader: -12 }}
+          textEmpty="Không có dữ liệu"
+        dataSource={listData.map(blog => ({ ...blog, key: blog._id }))} 
+        columns={columns}
+        pagination={
+            !!pagination?.PageSize
+              ? {
+                hideOnSinglePage: total <= 10,
+                current: pagination?.CurrentPage,
+                pageSize: pagination?.PageSize,
+                responsive: true,
+                total,
+                showSizeChanger: total > 10,
+                locale: { items_per_page: "" },
+                onChange: (CurrentPage, PageSize) =>
+                  setPagination(pre => ({
+                    ...pre,
+                    CurrentPage,
+                    PageSize,
+                  })),
               }
-            >
-              <CardImage src={blog?.AvatarPath} />
-              <CardContent>
-                <CardDescription>
-                  {blog?.Description}
-                </CardDescription>
-                <StyledButton
-                  type="primary"
-                  onClick={() => navigate(`/blog/${blog?._id}`)}
-                >
-                  Đọc thêm
-                </StyledButton>
-              </CardContent>
-            </Card>
-          </Col>
-        </>
-      ))
-      }
-      {!!modalBlog && (
-        <InsertUpdateBlog
-          open={modalBlog}
-          onCancel={() => setModalBlog(false)}
-          onOk={() => getListBlogOfTeacher()}
-        />
-      )}
-    </Row>
-  )
-}
+              : false
+          }
+      />
+    </Col>
+    {!!modalBlog && (
+      <InsertUpdateBlog
+        open={modalBlog}
+        onCancel={() => setModalBlog(false)}
+        onOk={async () => {
+    await getListBlogOfUser(); 
+    setModalBlog(false);
+  }}
+      />
+    )}
+  </Row>
+);
+};
 
 export default BlogPosting;

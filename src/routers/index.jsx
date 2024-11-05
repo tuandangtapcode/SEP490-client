@@ -6,7 +6,6 @@ const Router = {
   BLOG: "/blog",
   BLOG_DETAIL: "/blog/:BlogID",
   CACH_HOAT_DONG: "/cach-hoat-dong",
-  // DAY_VOI_CHUNG_TOI: "/day-voi-chung-toi",
   DANG_NHAP: "/dang-nhap",
   DANG_KY: "/dang-ky",
   CHU_DE: "/chu-de",
@@ -16,10 +15,12 @@ const Router = {
   TIM_KIEM_MON_HOC: "/tim-kiem-mon-hoc",
   TIM_KIEM_GIAO_VIEN: "/tim-kiem-giao-vien",
   MEETING_ROOM: `/meeting-room/:RoomID`,
+  // CHATBOXAI: `/generate/generateText`,
 
   // USER
   PROFILE: `${USER}/profile`,
-  POST_BAI_TIM_GIAO_VIEN: "/dang-bai-tim-giao-vien",
+  DANG_BAI_VIET: `${USER}/dang-bai-viet`,
+  // POST_BAI_TIM_GIAO_VIEN: `${USER}/dang-bai-tim-giao-vien`,
   SUBJECT_SETTING: `${USER}/cai-dat-mon-hoc`,
   LICH_HOC: `${USER}/lich-hoc`,
   CAI_DAT_MAT_KHAU: `${USER}/cai-dat-mat-khau`,
