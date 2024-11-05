@@ -127,8 +127,7 @@ const InsertUpdateBlog = ({ open, onCancel, onOk }) => {
     <ModalCustom
       title={!open?._id ? "Đăng bài tìm giáo viên" : "Cập nhật bài viết"}
       width={1000}
-      title={!open?._id ? "Đăng bài tìm giáo viên" : "Cập nhật bài viết"}
-      width={1000}
+      
       open={open}
       onCancel={onCancel}
       footer={renderFooter()}
