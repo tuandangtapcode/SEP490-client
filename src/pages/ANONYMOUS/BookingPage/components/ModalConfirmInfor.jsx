@@ -11,14 +11,15 @@ import { useState } from "react"
 import ConfirmService from "src/services/ConfirmService"
 import { toast } from "react-toastify"
 import { useNavigate } from "react-router-dom"
-import Router from "src/routers"
+import Notice from "src/components/Notice"
 
-const MOdalConfirmInfor = ({
+const ModalConfirmInfor = ({
   open,
   onCancel,
   teacher,
   bookingInfor,
-  selectedTimes
+  selectedTimes,
+  course
 }) => {
 
   const { listSystemKey, user, profitPercent } = useSelector(globalSelector)
@@ -28,6 +29,12 @@ const MOdalConfirmInfor = ({
   const sendRequestBooking = async () => {
     try {
       setLoading(true)
+      if (bookingInfor?.LearnType === 2 && !bookingInfor?.Address) {
+        return Notice({
+          isSuccess: false,
+          msg: "Hãy nhập địa chỉ"
+        })
+      }
       const res = await ConfirmService.createConfirm({
         Sender: user?._id,
         StudentName: user?.FullName,
@@ -36,13 +43,17 @@ const MOdalConfirmInfor = ({
         TeacherEmail: teacher?.Teacher?.Email,
         Subject: teacher?.Subject?._id,
         SubjectName: teacher?.Subject?.SubjectName,
-        TotalFee: teacher?.Price * selectedTimes.length * 1000 * (1 + profitPercent),
+        TotalFee: !!course
+          ? course?.Price * (1 + profitPercent)
+          : teacher?.Price * selectedTimes.length * 1000 * (1 + profitPercent),
         LearnType: bookingInfor?.LearnType,
+        Address: bookingInfor?.LearnType === 2
+          ? bookingInfor?.Address
+          : undefined,
         Times: selectedTimes?.map(i =>
-          `Ngày ${dayjs(i?.StartTime).format("DD/MM/YYYY")} ${dayjs(i?.StartTime).format("HH:ss")} - ${dayjs(i?.EndTime).format("HH:ss")}`
+          `Ngày ${dayjs(i?.StartTime).format("DD/MM/YYYY")} ${dayjs(i?.StartTime).format("HH:mm")} - ${dayjs(i?.EndTime).format("HH:mm")}`
         ),
         Schedules: selectedTimes?.map(i => ({
-          DateAt: dayjs(i?.StartTime),
           StartTime: dayjs(i?.StartTime),
           EndTime: dayjs(i?.EndTime),
         }))
@@ -50,7 +61,7 @@ const MOdalConfirmInfor = ({
       if (!!res?.isError) return toast.error(res?.msg)
       toast.success(res?.msg)
       onCancel()
-      navigate(`${Router.GIAO_VIEN}/${teacher?.Teacher?._id}${Router.MON_HOC}/${teacher?.Subject?._id}`)
+      navigate(`/user/lich-su-booking`)
     } finally {
       setLoading(false)
     }
@@ -65,6 +76,7 @@ const MOdalConfirmInfor = ({
       footer={
         <Space className="d-flex-end">
           <ButtonCustom
+            className="third"
             onClick={() => onCancel()}
           >
             Đóng
@@ -116,9 +128,9 @@ const MOdalConfirmInfor = ({
                 <div key={idx} className="mb-4">
                   <span className="mr-2">Ngày</span>
                   <span className="mr-4">{dayjs(i?.StartTime).format("DD/MM/YYYY")}:</span>
-                  <span className="mr-2">{dayjs(i?.StartTime).format("HH:ss")}</span>
+                  <span className="mr-2">{dayjs(i?.StartTime).format("HH:mm")}</span>
                   <span className="mr-2">-</span>
-                  <span>{dayjs(i?.EndTime).format("HH:ss")}</span>
+                  <span>{dayjs(i?.EndTime).format("HH:mm")}</span>
                 </div>
               )
             }
@@ -127,7 +139,7 @@ const MOdalConfirmInfor = ({
             <p>Số tiền thanh toán:</p>
           </Col>
           <Col span={14}>
-            <p>{formatMoney(teacher?.Price * selectedTimes.length * 1000 * (1 + profitPercent))} VNĐ</p>
+            <p className="primary-text fw-700 fs-16">{formatMoney(teacher?.Price * selectedTimes.length * 1000 * (1 + profitPercent))} VNĐ</p>
           </Col>
         </Row>
       </div>
@@ -135,4 +147,4 @@ const MOdalConfirmInfor = ({
   )
 }
 
-export default MOdalConfirmInfor
+export default ModalConfirmInfor

@@ -29,7 +29,7 @@ const SubjectcateDetail = () => {
     try {
       setLoading(true)
       const res = await SubjectCateService.getDetailSubjectCate(pagination)
-      if (!!res?.isError) return toast.error(res?.msg)
+      if (!!res?.isError) return navigate("/not-found")
       setListSubject(res?.data?.ListSubject)
       setSubjectCate(res?.data?.SubjectCate)
     } finally {

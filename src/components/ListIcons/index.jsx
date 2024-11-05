@@ -41,7 +41,9 @@ import {
   AiFillStar,
   AiFillPayCircle,
   AiFillCaretDown,
-  AiFillCaretUp
+  AiFillCaretUp,
+  AiOutlineQuestionCircle,
+  AiFillPlusCircle
 } from "react-icons/ai"
 
 import {
@@ -101,6 +103,7 @@ const ListIcons = {
   ICON_MUSIC: <BsFileMusicFill className="fs-18" />,
   ICON_LANGUAGE: <FaLanguage className="fs-18" />,
   ICON_PAYMENT: <FaMoneyCheckAlt className="fs-18" />,
+  ICON_PAYMENT_BOOKING: <FaMoneyCheckAlt className="fs-18 green-text" />,
   ICON_TEACHER: <FaChalkboardTeacher className="fs-18" />,
   ICON_STAFF: <FaUserCog className="fs-18" />,
   ICON_STUDENT: <FaUserGraduate className="fs-18" />,
@@ -111,6 +114,7 @@ const ListIcons = {
   ICON_DELETE: <BsFillTrash3Fill className="red-text fs-18" />,
   ICON_WARNING: <AiOutlineWarning className="burlywood-text fs-20" />,
   ICON_WARNING_MODAL: <AiOutlineWarning className="burlywood-text" />,
+  ICON_SUSCESS_MODAL: <AiOutlineCheckCircle className="green-text" />,
   ICON_TRASH:
     <BsTrash2
       style={{
@@ -147,7 +151,7 @@ const ListIcons = {
   ICON_MESSAGE_DOT: <BiMessageAltDots className="white-text fs-17" />,
   ICON_SEND: <BsSend className="white-text fs-17" />,
   ICON_TELEPHONE: <BsTelephone className="white-text fs-17" />,
-  ICON_RATE: <AiFillStar className="fs-18" />,
+  ICON_RATE: <AiFillStar className="fs-18 burlywood-text" />,
   ICON_PAYMENT_MENTOR: <AiFillPayCircle className="fs-18" />,
   ICON_DOWN: <AiFillCaretDown className="fs-18" />,
   ICON_UP: <AiFillCaretUp className="fs-18" />,
@@ -160,7 +164,9 @@ const ListIcons = {
   ICON_DATE_OF_BIRTH: <BsCake2 />,
   ICON_PERCENT: <FaPercent className="fs-18" />,
   ICON_LEVEL: <BsBarChartFill className="fs-18" />,
-  ICON_LEARN_TYPE: <MdClass className="fs-18" />
+  ICON_LEARN_TYPE: <MdClass className="fs-18" />,
+  ICON_QUESTION: <AiOutlineQuestionCircle />,
+  ICON_PLUS: <AiFillPlusCircle className="fs-18" />
 }
 
 export default ListIcons

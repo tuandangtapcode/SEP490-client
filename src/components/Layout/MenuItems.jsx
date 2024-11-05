@@ -33,19 +33,32 @@ export const MenuUser = (user) => [
     label: "Profile",
   },
   {
-    isView: user?.RoleID === Roles.ROLE_TEACHER,
-    key: Router.SUBJECT_SETTING,
-    label: "Cài đặt môn học",
-  },
-  {
     isView: !user?.IsByGoogle,
     key: Router.CAI_DAT_MAT_KHAU,
     label: "Cài đặt mật khẩu"
   },
   {
+    isView: user?.RoleID === Roles.ROLE_TEACHER,
+    key: Router.SUBJECT_SETTING,
+    label: "Cài đặt môn học",
+  },
+  {
     isView: true,
     key: Router.LICH_HOC,
     label: "Lịch học",
+  },
+  {
+    isView: true,
+    key: Router.DANH_SACH_MON_DA_HOC,
+    label: user?.RoleID === Roles.ROLE_TEACHER ?
+      "Danh sách các môn đã dạy"
+      :
+      "Danh sách các môn đã tham gia"
+  },
+  {
+    isView: user?.RoleID === Roles.ROLE_TEACHER,
+    key: Router.KHOA_HOC,
+    label: "Khóa học",
   },
   {
     isView: true,
@@ -66,14 +79,6 @@ export const MenuUser = (user) => [
     isView: true,
     key: Router.LICH_SU_GIAO_DICH,
     label: "Lịch sử giao dịch"
-  },
-  {
-    isView: true,
-    key: Router.DANH_SACH_MON_DA_HOC,
-    label: user?.RoleID === Roles.ROLE_TEACHER ?
-      "Danh sách các môn đã dạy"
-      :
-      "Danh sách các môn đã tham gia"
   },
   {
     isView: true,
@@ -114,18 +119,6 @@ export const MenuAdmin = () => [
     RoleID: [1, 2],
   },
   {
-    icon: ListIcons.ICON_MESSAGE,
-    label: "Quản lý hộp thư đến",
-    key: Router.QUAN_LY_HOP_THU_DEN,
-    RoleID: [1, 2],
-  },
-  {
-    icon: ListIcons.ICON_REPORT,
-    label: "Issue",
-    key: Router.QUAN_LY_REPORT,
-    RoleID: [1, 2]
-  },
-  {
     icon: ListIcons.ICON_PAYMENT,
     label: "Quản lý lịch sử giao dịch",
     key: Router.QUAN_LY_GIAO_DICH,
@@ -136,6 +129,24 @@ export const MenuAdmin = () => [
     label: "Quản lý chuyển khoản",
     key: Router.QUAN_LY_CHUYEN_KHOAN,
     RoleID: [1]
+  },
+  {
+    icon: ListIcons.ICON_REPORT,
+    label: "Report",
+    key: Router.QUAN_LY_REPORT,
+    RoleID: [1, 2]
+  },
+  {
+    icon: ListIcons.ICON_REPORT,
+    label: "Issue",
+    key: Router.QUAN_LY_ISSUE,
+    RoleID: [1, 2]
+  },
+  {
+    icon: ListIcons.ICON_MESSAGE,
+    label: "Quản lý hộp thư đến",
+    key: Router.QUAN_LY_HOP_THU_DEN,
+    RoleID: [1, 2],
   },
   {
     icon: <div style={{ marginLeft: '-5px' }}>{ListIcons.ICON_LOGOUT}</div>,

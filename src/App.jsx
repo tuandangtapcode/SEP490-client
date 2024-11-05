@@ -11,6 +11,7 @@ import socket from './utils/socket'
 import InactiveModal from './components/Layout/components/ModalInactiveAccount'
 import { decodeData } from './lib/commonFunction'
 import { globalSelector } from './redux/selector'
+import ScrollToTop from './components/ScrollToTop'
 
 // ADMIN
 const AdminRoutes = React.lazy(() => import("src/pages/ADMIN/AdminRoutes"))
@@ -47,12 +48,13 @@ const UserProfile = React.lazy(() => import("src/pages/USER/UserProfile"))
 const SubjectSetting = React.lazy(() => import("src/pages/USER/SubjectSetting"))
 const InboxPage = React.lazy(() => import("src/pages/USER/InboxPage"))
 const BillingPage = React.lazy(() => import("src/pages/USER/BillingPage"))
-const JournalPage = React.lazy(() => import("src/pages/USER/JournalPage"))
 const SchedulePage = React.lazy(() => import("src/pages/USER/SchedulePage"))
 const BookingHistory = React.lazy(() => import("src/pages/USER/BookingHistory"))
 const AccountUser = React.lazy(() => import("src/pages/USER/AccountUser"))
 const StudiedSubject = React.lazy(() => import("src/pages/USER/StudiedSubject"))
 const BankInfor = React.lazy(() => import("src/pages/USER/BankInfor"))
+const CheckoutPage = React.lazy(() => import("src/pages/USER/CheckoutPage"))
+const MyCourse = React.lazy(() => import("src/pages/USER/MyCourse"))
 
 // ERROR
 const NotFoundPage = React.lazy(() => import("src/pages/ErrorPage/NotFoundPage"))
@@ -64,7 +66,7 @@ const LazyLoadingComponent = ({ children }) => {
     <React.Suspense
       fallback={
         <div className="loading-center" style={{ display: 'flex', justifyContent: 'center', height: '100vh', alignItems: 'center' }}>
-          <SpinCustom />
+          {/* <SpinCustom /> */}
         </div>
       }
     >
@@ -202,10 +204,10 @@ const App = () => {
           )
         },
         {
-          path: Router.TAP_CHI,
+          path: Router.KHOA_HOC,
           element: (
             <LazyLoadingComponent>
-              <JournalPage />
+              <MyCourse />
             </LazyLoadingComponent>
           )
         },
@@ -246,6 +248,14 @@ const App = () => {
           element: (
             <LazyLoadingComponent>
               <BankInfor />
+            </LazyLoadingComponent>
+          )
+        },
+        {
+          path: `${Router.CHECKOUT}/:ConfirmID`,
+          element: (
+            <LazyLoadingComponent>
+              <CheckoutPage />
             </LazyLoadingComponent>
           )
         },
@@ -440,6 +450,7 @@ const App = () => {
 
   return (
     <div className="App">
+      <ScrollToTop />
       <ToastContainer
         autoClose={1500}
         hideProgressBar={true}
@@ -453,6 +464,7 @@ const App = () => {
           onCancel={() => setModalInactiveAccount(false)}
         />
       }
+
     </div>
   )
 }

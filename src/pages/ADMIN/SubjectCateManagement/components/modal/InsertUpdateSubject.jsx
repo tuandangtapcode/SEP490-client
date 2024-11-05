@@ -38,6 +38,8 @@ const InsertUpdateSubject = ({ open, onCancel, onOk }) => {
     const isAllowedType = allowedImageTypes.includes(file.type)
     if (!isAllowedType) {
       message.error("Yêu cầu chọn file ảnh (jpg, png, gif)")
+    } else if (file.size > 5 * 1024 * 1024) {
+      message.error("Dung lượng file tải lên phải nhỏ 5MB")
     } else {
       setPreview(URL.createObjectURL(file))
     }
@@ -58,7 +60,7 @@ const InsertUpdateSubject = ({ open, onCancel, onOk }) => {
       const body = {
         SubjectID: !!open?._id ? open?._id : undefined,
         SubjectCateID: open?.SubjectCateID,
-        Avatar: !!resFile ? resFile?.data : open?.AvatarPath,
+        AvatarPath: !!resFile ? resFile?.data : open?.AvatarPath,
         SubjectName: values?.SubjectName,
       }
       const res = !!open?._id
@@ -75,21 +77,19 @@ const InsertUpdateSubject = ({ open, onCancel, onOk }) => {
 
 
   const renderFooter = () => (
-    <div className="d-flex-center">
-      <Space direction="horizontal">
-        <ButtonCustom
-          className="primary"
-          onClick={() => {
-            handleSubmit()
-          }}
-        >
-          Ghi lại
-        </ButtonCustom>
-        <ButtonCustom btnType="cancel" onClick={onCancel}>
-          Đóng
-        </ButtonCustom>
-      </Space>
-    </div>
+    <Space className="d-flex-center">
+      <ButtonCustom
+        className="primary"
+        onClick={() => {
+          handleSubmit()
+        }}
+      >
+        Ghi lại
+      </ButtonCustom>
+      <ButtonCustom btnType="cancel" onClick={onCancel}>
+        Đóng
+      </ButtonCustom>
+    </Space>
   )
 
 

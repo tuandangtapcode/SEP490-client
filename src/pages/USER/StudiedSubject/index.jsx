@@ -50,7 +50,7 @@ const StudiedSubject = () => {
 
 
 
-  const columns = [
+  const commonColumns = [
     {
       title: 'STT',
       width: 35,
@@ -112,6 +112,9 @@ const StudiedSubject = () => {
         </Tag>
       )
     },
+  ]
+
+  const actionColumn = [
     {
       title: 'Chức năng',
       width: 40,
@@ -119,24 +122,13 @@ const StudiedSubject = () => {
       dataIndex: 'function',
       key: 'function',
       render: (_, record) => (
-        <>
-          {record?.LearnedStatus === 1 &&
-            <ButtonCircle
-              key={record?.LearnedStatus}
-              title="Báo cáo giáo viên"
-              icon={ListIcons?.ICON_WARNING}
-              onClick={() => setModalIssueMentor(record)}
-            />
-          }
-          {record?.LearnedStatus === 2 &&
-            <ButtonCircle
-              key={record?.LearnedStatus}
-              title="Đánh giá giáo viên"
-              icon={ListIcons?.ICON_RATE}
-              onClick={() => setOpenModalSendFeedback(record)}
-            />
-          }
-        </>
+        <ButtonCircle
+          key={record?.LearnedStatus}
+          disabled={!!record?.isFeedback ? false : true}
+          title="Đánh giá giáo viên"
+          icon={ListIcons?.ICON_RATE}
+          onClick={() => setOpenModalSendFeedback(record)}
+        />
       ),
     },
   ]
@@ -181,7 +173,11 @@ const StudiedSubject = () => {
             noMrb
             showPagination
             dataSource={listSubject}
-            columns={columns}
+            columns={
+              user?.RoleID === Roles.ROLE_STUDENT
+                ? [...commonColumns, ...actionColumn]
+                : commonColumns
+            }
             editableCell
             sticky={{ offsetHeader: -12 }}
             textEmpty="Không có dữ liệu"

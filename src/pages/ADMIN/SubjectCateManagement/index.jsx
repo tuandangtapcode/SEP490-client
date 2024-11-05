@@ -108,7 +108,7 @@ const SubjectCateManagement = () => {
       key: "Function",
       align: "center",
       render: (_, record) => (
-        <Space direction="horizontal">
+        <Space>
           {
             listBtn(record)?.map((i, idx) =>
               <ButtonCircle

@@ -1,7 +1,6 @@
 import { Col, Dropdown, Empty, Menu, Row } from "antd"
 import { BadgeStyled, HeaderContainerStyled, HeaderStyled } from "../styled"
 import logo from '/logo.png'
-import tatuboo from '/tatuboo.png'
 import { MenuCommon } from "../MenuItems"
 import { useLocation, useNavigate } from "react-router-dom"
 import { useDispatch, useSelector } from "react-redux"
@@ -47,7 +46,7 @@ const NotificationItem = ({
 }
 
 
-const Header = () => {
+const HeaderCommon = () => {
 
   const { user, isLogin } = useSelector(globalSelector)
   const dispatch = useDispatch()
@@ -144,14 +143,7 @@ const Header = () => {
               onClick={() => navigate("/")}
               src={logo}
               alt=""
-              style={{ width: '35px', height: "50px", marginTop: '5px', marginRight: "12px" }}
-            />
-            <img
-              className="cursor-pointer"
-              onClick={() => navigate("/")}
-              src={tatuboo}
-              alt=""
-              style={{ width: '115px', height: "25px", marginTop: '5px' }}
+              style={{ width: '100%', height: "80px", marginTop: '5px', marginRight: "12px" }}
             />
           </Col>
           <Col span={18} className="d-flex-end">
@@ -225,4 +217,4 @@ const Header = () => {
   )
 }
 
-export default Header
+export default HeaderCommon

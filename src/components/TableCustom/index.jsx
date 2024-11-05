@@ -9,7 +9,7 @@ function TableCustom(props) {
       showPagination={props?.showPagination}
     >
       <Table
-        bordered
+        bordered={props?.bordered}
         locale={{
           emptyText: (
             <Empty

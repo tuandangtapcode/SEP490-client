@@ -22,7 +22,9 @@ const ModalUpdateProfile = ({ open, onCancel }) => {
     const allowedImageTypes = ["image/jpeg", "image/png", "image/gif"]
     const isAllowedType = allowedImageTypes.includes(file.type)
     if (!isAllowedType) {
-      message.error("Yêu cầu chọn file ảnh (jpg, png, gif)")
+      return message.error("Yêu cầu chọn file ảnh (jpg, png, gif)")
+    } else if (file.size > 5 * 1024 * 1024) {
+      return message.error("Dung lượng file tải lên phải nhỏ 5MB")
     } else {
       setPreview(URL.createObjectURL(file))
     }
@@ -63,36 +65,34 @@ const ModalUpdateProfile = ({ open, onCancel }) => {
       open={open}
       onCancel={onCancel}
       title="Chỉnh sửa thông tin cá nhân"
-      width="70vw"
+      width="50vw"
       footer={
-        <div className="d-flex-end">
-          <Space>
-            <ButtonCustom
-              onClick={() => onCancel()}
-              className="third"
-            >
-              Đóng
-            </ButtonCustom>
-            <ButtonCustom
-              loading={loading}
-              className="primary"
-              onClick={() => changeProfile()}
-            >
-              Cập nhật
-            </ButtonCustom>
-          </Space>
-        </div >
+        <Space className="d-flex-end">
+          <ButtonCustom
+            onClick={() => onCancel()}
+            className="third"
+          >
+            Đóng
+          </ButtonCustom>
+          <ButtonCustom
+            loading={loading}
+            className="primary"
+            onClick={() => changeProfile()}
+          >
+            Cập nhật
+          </ButtonCustom>
+        </Space>
       }
     >
       <Form form={form}>
-        <Row>
+        <Row gutter={[12, 0]}>
           <Col span={8}>
             <Form.Item
               name='image'
             >
               <Upload.Dragger
                 beforeUpload={file => handleBeforeUpload(file)}
-                style={{ width: '250px' }}
+                // style={{ width: '250px' }}
                 accept="image/*"
                 multiple={false}
                 maxCount={1}
