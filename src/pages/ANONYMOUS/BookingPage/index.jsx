@@ -554,6 +554,8 @@ const BookingPage = () => {
           bookingInfor={bookingInfor}
           selectedTimes={selectedTimes}
           course={course}
+          timeTablesStudent={timeTablesStudent}
+          timeTablesTeacher={timeTablesTeacher}
         />
       }
 

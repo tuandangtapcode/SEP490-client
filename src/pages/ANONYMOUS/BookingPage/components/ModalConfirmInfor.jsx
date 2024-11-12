@@ -12,6 +12,7 @@ import ConfirmService from "src/services/ConfirmService"
 import { toast } from "react-toastify"
 import { useNavigate } from "react-router-dom"
 import Notice from "src/components/Notice"
+import ConfirmModal from "src/components/ModalCustom/ConfirmModal"
 
 const ModalConfirmInfor = ({
   open,
@@ -19,7 +20,9 @@ const ModalConfirmInfor = ({
   teacher,
   bookingInfor,
   selectedTimes,
-  course
+  course,
+  timeTablesStudent,
+  timeTablesTeacher
 }) => {
 
   const { listSystemKey, user, profitPercent } = useSelector(globalSelector)
@@ -33,6 +36,27 @@ const ModalConfirmInfor = ({
         return Notice({
           isSuccess: false,
           msg: "Hãy nhập địa chỉ"
+        })
+      }
+      const selectTimesArray = selectedTimes.map(i => dayjs(i.StartTime).format("DD/MM/YYYY HH:mm"))
+      const timeTablesStudentArray = timeTablesStudent.map(i => dayjs(i.StartTime).format("DD/MM/YYYY HH:mm"))
+      const timeTablesTeacherArray = timeTablesTeacher.map(i => dayjs(i.StartTime).format("DD/MM/YYYY HH:mm"))
+      const checkExistTimeTablesStudent = selectTimesArray.filter(i => timeTablesStudentArray.includes(i))
+      const checkExistTimeTablesTeacher = selectTimesArray.filter(i => timeTablesTeacherArray.includes(i))
+      if (!!checkExistTimeTablesStudent.length) {
+        return ConfirmModal({
+          description: `Bạn đã có lịch học vào ngày ${checkExistTimeTablesStudent.map(i => i).join()}`,
+          onOk: async close => {
+            close()
+          }
+        })
+      }
+      if (!!checkExistTimeTablesTeacher.length) {
+        return ConfirmModal({
+          description: `Giáo viên đã có lịch dạy vào ngày ${checkExistTimeTablesTeacher.map(i => i).join()}`,
+          onOk: async close => {
+            close()
+          }
         })
       }
       const res = await ConfirmService.createConfirm({
@@ -70,9 +94,12 @@ const ModalConfirmInfor = ({
   return (
     <ModalCustom
       open={open}
-      onCanel={onCancel}
+      onCancel={onCancel}
       title="Xác nhận thông tin booking"
       width="50vw"
+      style={{
+        height: "70px"
+      }}
       footer={
         <Space className="d-flex-end">
           <ButtonCustom

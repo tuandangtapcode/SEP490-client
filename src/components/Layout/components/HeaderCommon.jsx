@@ -143,7 +143,7 @@ const HeaderCommon = () => {
               onClick={() => navigate("/")}
               src={logo}
               alt=""
-              style={{ width: '100%', height: "80px", marginTop: '5px', marginRight: "12px" }}
+              style={{ width: '100%', height: "50px", marginTop: '5px', marginRight: "12px" }}
             />
           </Col>
           <Col span={18} className="d-flex-end">

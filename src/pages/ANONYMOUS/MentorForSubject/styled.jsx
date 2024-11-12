@@ -1,16 +1,17 @@
-import { Button, Card, Checkbox, Space, Typography } from "antd"
+import { Button, Card, Space, Typography } from "antd"
 import styled from "styled-components"
 
 const { Title } = Typography
 
 export const MentorForSubjectContainer = styled.div`
   /* text-align: center; */
-  padding: 50px 20px;
+  padding-top: 20px;
 `
 
 export const Sidebar = styled.div`
   padding: 20px;
-  background-color: #eaf3ff;
+  background-color: #e8eff9;
+  border-radius: 8px;
 `
 
 export const FilterTitle = styled(Title)`
@@ -18,6 +19,7 @@ export const FilterTitle = styled(Title)`
 `
 
 export const FilterSection = styled.div`
+  padding-top: 20px;
   margin-bottom: 20px;
 `
 
