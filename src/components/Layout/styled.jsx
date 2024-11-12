@@ -83,16 +83,16 @@ export const LayoutUserStyled = styled.div`
   height: calc(100vh - 116px);
   overflow: hidden auto;
   padding: 12px 0;
-  /* display: flex;
+   display: flex;
   flex-direction: column;
-  justify-content: space-between; */
+  justify-content: space-between; 
 }
 .menu-antd-user {
-  /* padding-left: 11px;
+  padding-left: 11px;
   height: auto;
   overflow: hidden auto;
   margin-right: unset;
-  border: unset; */
+  border: unset; 
 }
 .content-container {
   padding: 0px 20px; 

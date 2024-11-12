@@ -25,7 +25,7 @@ const LayoutUser = ({ children }) => {
 
 
   return (
-    <LayoutUserStyled>
+    <LayoutUserStyled >
       <Row>
         <Col span={5} className="menu-container">
           <div className="mb-20">
@@ -72,7 +72,7 @@ const LayoutUser = ({ children }) => {
           </div>
         </Col>
       </Row>
-    </LayoutUserStyled >
+      </LayoutUserStyled>
   )
 }
 
