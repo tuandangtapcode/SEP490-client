@@ -11,19 +11,19 @@ import {
   apiSendRequestExplanation
 } from "./urls"
 
-const CLIENTID = import.meta.env.VITE_BANK_CLIENTID
-const APIKEY = import.meta.env.VITE_BANK_APIKEY
+const ClientID = import.meta.env.VITE_PAYOS_CLIENT_ID
+const APIKey = import.meta.env.VITE_PAYOS_API_KEY
 
 const createPaymentLink = body => axios.post(apiCreatePaymentLink, body, {
   headers: {
-    "x-client-id": CLIENTID,
-    "x-api-key": APIKEY
+    "x-client-id": ClientID,
+    "x-api-key": APIKey
   }
 })
 const getDetailPaymentLink = PaymentLinkID => axios.get(`${apiCreatePaymentLink}/${PaymentLinkID}`, {
   headers: {
-    "x-client-id": CLIENTID,
-    "x-api-key": APIKEY
+    "x-client-id": ClientID,
+    "x-api-key": APIKey
   }
 })
 const createPayment = body => http.post(apiCreatePayment, body)

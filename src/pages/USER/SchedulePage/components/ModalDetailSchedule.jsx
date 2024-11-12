@@ -147,10 +147,11 @@ const ModalDetailSchedule = ({
               <Col span={25}>
                 <div>Tài liệu:</div>
               </Col>
-              {
-                open?.Documents?.map((i, idx) =>
-                  <Col key={idx} span={24}>
+              <Col span={24}>
+                {
+                  open?.Documents?.map((i, idx) =>
                     <div
+                      key={idx}
                       className="primary-text cursor-pointer"
                       onClick={() => {
                         saveAs(i?.DocPath, i?.DocName)
@@ -158,9 +159,9 @@ const ModalDetailSchedule = ({
                     >
                       {i?.DocName}
                     </div>
-                  </Col>
-                )
-              }
+                  )
+                }
+              </Col>
             </>
           }
         </Row>

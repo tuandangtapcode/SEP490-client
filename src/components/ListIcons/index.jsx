@@ -15,7 +15,8 @@ import {
   BsTelephone,
   BsFillPlayFill,
   BsCake2,
-  BsBarChartFill
+  BsBarChartFill,
+  BsCurrencyDollar
 } from "react-icons/bs"
 
 import {
@@ -166,7 +167,8 @@ const ListIcons = {
   ICON_LEVEL: <BsBarChartFill className="fs-18" />,
   ICON_LEARN_TYPE: <MdClass className="fs-18" />,
   ICON_QUESTION: <AiOutlineQuestionCircle />,
-  ICON_PLUS: <AiFillPlusCircle className="fs-18" />
+  ICON_PLUS: <AiFillPlusCircle className="fs-18" />,
+  ICON_DOLLAR: <BsCurrencyDollar />
 }
 
 export default ListIcons

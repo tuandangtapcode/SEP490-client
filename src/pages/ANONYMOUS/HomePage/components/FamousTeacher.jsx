@@ -102,7 +102,8 @@ const FamoursTeacher = ({
                           }}
                         />
                       </Col>
-                      <Col span={12} className="d-flex-end">
+                      <Col span={12} className="d-flex-end align-items-center">
+                        <p className="primary-text fs-17 mt-4">{ListIcons.ICON_DOLLAR}</p>
                         <p className="primary-text fs-17 fw-700">
                           {formatMoney(getRealFee(i?.SubjectSetting?.Price, profitPercent))}
                         </p>
