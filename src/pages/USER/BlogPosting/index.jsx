@@ -63,8 +63,8 @@ const [selectedBlog, setSelectedBlog] = useState(null);
     if (res?.isError) {
       toast.error(res?.msg);
     } else {
-      setSelectedBlog(res.data); // Lưu thông tin vào state
-      setDetailBlogModal(true); // Mở modal
+      setSelectedBlog(res.data); 
+      setDetailBlogModal(true); 
     }
   };
 

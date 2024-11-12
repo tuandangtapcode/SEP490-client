@@ -111,7 +111,6 @@ const InsertUpdateBlog = ({ open, onCancel, onOk }) => {
           }}
         >
           Đăng bài
-          Đăng bài
         </ButtonCustom>
         <ButtonCustom btntype="cancel" onClick={onCancel}>
           Hủy
@@ -314,18 +313,7 @@ const InsertUpdateBlog = ({ open, onCancel, onOk }) => {
                 ))}
               </Col>
             </Row>
-            <div>
-              <h2>Yêu cầu giáo viên</h2>
-            </div>
-            <Col span={4}>
-              <div style={{ borderBottom: "2px solid #000", margin: "10px 0" }}></div>
-            </Col>
-        <Row gutter={16}>
-        <Col span={24}>
-
-        </Col>
-
-        </Row>
+            
 
 
           </Form>
