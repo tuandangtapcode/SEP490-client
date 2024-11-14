@@ -1,4 +1,4 @@
-import { Col, Form, message, Row, Space, Upload, Radio, Slider, Select, Input, DatePicker, Button, InputNumber, TimePicker } from "antd"
+import { Col, Form, message,Empty, Row, Space, Upload, Radio, Slider, Select, Input, DatePicker, Button, InputNumber, TimePicker } from "antd"
 import { useEffect, useState } from "react"
 import { toast } from "react-toastify"
 import InputCustom from "src/components/InputCustom"
@@ -24,6 +24,11 @@ const InsertUpdateBlog = ({ open, onCancel, onOk }) => {
   const [loading, setLoading] = useState(false)
   const [subjects, setSubjects] = useState([]);
   const [priceRange, setPriceRange] = useState([0, 1000000]);
+
+  const [slotInWeek, setSlotInWeek] = useState(0)
+  const [scheduleInWeek, setScheduleInWeek] = useState([])
+  const [selectedTimes, setSelectedTimes] = useState([])
+
   const [price, setPrice] = useState(0);
   const [showAddress, setShowAddress] = useState(false);
 
@@ -156,7 +161,7 @@ const InsertUpdateBlog = ({ open, onCancel, onOk }) => {
                     ))}
                   </Select>
                 </Form.Item>
-                <Form.Item name="Title" label="Tóm tắt yêu cầu:" rules={[{ required: true, message: 'Vui lòng nhập tiêu đề!' }]}>
+                <Form.Item name="Title" label="Tiêu đề:" rules={[{ required: true, message: 'Vui lòng nhập tiêu đề!' }]}>
                   <Input onChange={(e) => {
                     const value = e.target.value;
                     const wordCount = value.trim().split(/\s+/).length;
@@ -168,7 +173,7 @@ const InsertUpdateBlog = ({ open, onCancel, onOk }) => {
                   }} />
                 </Form.Item>
 
-                <Form.Item name="Content" label="Mô tả chi tiết yêu cầu:" rules={[{ required: true, message: 'Vui lòng nhập nội dung!' }]}>
+                <Form.Item name="Content" label="Mô tả chi tiết:" rules={[{ required: true, message: 'Vui lòng nhập nội dung!' }]}>
                   <InputCustom type="isTextArea"
                     onChange={(e) => {
                       const value = e.target.value;
@@ -227,6 +232,7 @@ const InsertUpdateBlog = ({ open, onCancel, onOk }) => {
                         }
                       ]}
                       >
+                      
                         <InputNumber min={1} />
                       </Form.Item>
                     </Col>
@@ -239,6 +245,76 @@ const InsertUpdateBlog = ({ open, onCancel, onOk }) => {
                     </Form.Item>
                   </Col>
                 </Row>
+                <InputCustom
+                  type="isNumber"
+                  placeholder="Bạn muốn học bao nhiêu buổi 1 tuần?"
+                  style={{
+                    width: "350px",
+                    marginBottom: "12px"
+                  }}
+                  value={!!slotInWeek ? slotInWeek : ""}
+                  onChange={e => {
+                    setSlotInWeek(e)
+                    const newArray = Array.from({ length: e }, (_, index) => ({
+                      id: index + 1,
+                      DateAt: "",
+                      StartTime: "",
+                      EndTime: "",
+                      Times: []
+                    }))
+                    setScheduleInWeek(newArray)
+                    setSelectedTimes([])
+                  }}
+                />
+                {
+                  !!slotInWeek &&
+                  scheduleInWeek.map((i, idxScheduleInWeek) =>
+                    <Row className="mb-12" key={idxScheduleInWeek}>
+                      <Col span={12}>
+                        <DatePicker
+                          placeholder="Bạn muốn bắt đầu học vào thời điểm nào?"
+                          format="DD/MM/YYYY"
+                          style={{
+                            width: "350px",
+                          }}
+                          value={i?.DateAt}
+                          disabledDate={current => disabledBeforeDate(current)}
+                          onChange={e => {
+                            const copyScheduleInWeek = [...scheduleInWeek]
+                            copyScheduleInWeek.splice(idxScheduleInWeek, 1, {
+                              ...i,
+                              DateAt: e,
+                              Times: getFreeTimeOfTeacher(e, true)
+                            })
+                            setScheduleInWeek(copyScheduleInWeek)
+                          }}
+                        />
+                      </Col>
+                      <Col span={12}>
+                        <Row gutter={[16, 8]}>
+                          {!!i?.DateAt &&
+                            (
+                              !!i?.Times.length ?
+                                i?.Times?.map((item, idx) =>
+                                  <Col span={12} key={idx}>
+                                    <TimeItem
+                                      timeItem={item}
+                                      selectedTimes={selectedTimes}
+                                      scheduleInWeek={scheduleInWeek}
+                                      timeTablesStudent={timeTablesStudent}
+                                      handleSelectedTimes={handleSelectedTimes}
+                                      handleSetScheduleInWeek={() => handleSetScheduleInWeek(idxScheduleInWeek, i, item)}
+                                      isFixedSchedule={true}
+                                    />
+                                  </Col>
+                                )
+                                : <Empty description="Không có thời gian học" />
+                            )}
+                        </Row>
+                      </Col>
+                    </Row>
+                  )
+                }
                 <Row gutter={16}>
 
                   
@@ -270,7 +346,7 @@ const InsertUpdateBlog = ({ open, onCancel, onOk }) => {
                   </Col>
                 </Row>
                 <h3>Thời gian học</h3>
-                <Button onClick={addSchedule}>Thêm lịch</Button>
+                {/* <Button onClick={addSchedule}>Thêm lịch</Button> */}
                 {schedules.map((schedule, index) => (
                   <Row key={index} gutter={16}>
                     <Col span={6}>
