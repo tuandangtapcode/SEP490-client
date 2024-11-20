@@ -78,6 +78,9 @@ const InsertUpdateSubject = ({ open, onCancel, onOk }) => {
 
   const renderFooter = () => (
     <Space className="d-flex-center">
+      <ButtonCustom btnType="cancel" onClick={onCancel}>
+        Đóng
+      </ButtonCustom>
       <ButtonCustom
         className="primary"
         onClick={() => {
@@ -85,9 +88,6 @@ const InsertUpdateSubject = ({ open, onCancel, onOk }) => {
         }}
       >
         Ghi lại
-      </ButtonCustom>
-      <ButtonCustom btnType="cancel" onClick={onCancel}>
-        Đóng
       </ButtonCustom>
     </Space>
   )

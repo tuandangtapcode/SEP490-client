@@ -4,6 +4,7 @@ import { Calendar, Views, momentLocalizer } from 'react-big-calendar'
 import "react-big-calendar/lib/css/react-big-calendar.css"
 
 const localizer = momentLocalizer(moment)
+moment.updateLocale('en', { week: { dow: 1 } })
 
 const formats = {
   monthHeaderFormat: () => { }, // Định dạng tiêu đề tháng
@@ -25,7 +26,7 @@ const TimeTableComponent = ({ schedules }) => {
         endAccessor={event => {
           return new Date(event.end)
         }}
-        style={{ width: "100%", height: 700 }}
+        style={{ width: "100%", height: 540 }}
         toolbar={false}
         defaultView={Views.WEEK}
         formats={formats}

@@ -40,6 +40,7 @@ export const handleLogout = async (UserID, dispatch, navigate) => {
   socket.emit("user-logout", UserID)
   socket.disconnect()
   dispatch(globalSlice.actions.setIsLogin(false))
+  dispatch(globalSlice.actions.setIsCheckAuth(false))
   dispatch(globalSlice.actions.setUser({}))
   navigate('/dang-nhap')
 }

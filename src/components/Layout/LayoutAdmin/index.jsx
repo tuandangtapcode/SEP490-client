@@ -31,7 +31,10 @@ const LayoutAdmin = ({ children }) => {
           <div
             className="menu-container"
             style={{
-              width: collapsed ? "90px" : "100%"
+              width: collapsed ? "90px" : "100%",
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "space-between"
             }}
           >
             <Menu

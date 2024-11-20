@@ -8,6 +8,7 @@ const IntroVideo = ({
   form,
   filesIntroVideo,
   setFilesIntroVideo,
+  subjectSetting
 }) => {
 
   const [previewVideo, setPreviewVideo] = useState()
@@ -44,6 +45,7 @@ const IntroVideo = ({
           >
             <Upload.Dragger
               listType="picture-card"
+              disabled={subjectSetting?.RegisterStatus === 2 ? true : false}
               beforeUpload={file => handleBeforeUpload(file)}
               onPreview={file => setPreviewVideo(file?.url.replace("jpg", "mp4"))}
               accept="video/*"
