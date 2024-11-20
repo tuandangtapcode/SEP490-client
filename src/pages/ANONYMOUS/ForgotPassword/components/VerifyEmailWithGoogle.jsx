@@ -1,9 +1,7 @@
 import { useGoogleLogin } from "@react-oauth/google"
 import { Col, Row } from "antd"
-import { Link } from "react-router-dom"
 import { toast } from "react-toastify"
 import ButtonCustom from "src/components/MyButton/ButtonCustom"
-import Router from "src/routers"
 import UserService from "src/services/UserService"
 
 const VerifyEmailWithGoogle = ({ email, setCurrent }) => {

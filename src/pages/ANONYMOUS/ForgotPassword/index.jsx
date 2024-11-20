@@ -1,23 +1,13 @@
-import { Col, Form, Row, Space, Steps } from "antd"
+import { Steps } from "antd"
 import { MainProfileWrapper } from "../TeacherDetail/styled"
 import { ForgotPasswordStyled } from "./styled"
-import { getRegexEmail } from "src/lib/stringUtils"
-import InputCustom from "src/components/InputCustom"
-import ButtonCustom from "src/components/MyButton/ButtonCustom"
 import { useState } from "react"
-import { useNavigate } from "react-router-dom"
-import Router from "src/routers"
-import UserService from "src/services/UserService"
-import { toast } from "react-toastify"
 import CheckEmailExist from "./components/CheckEmailExist"
 import VerifyEmailWithGoogle from "./components/VerifyEmailWithGoogle"
 import EnterNewPassword from "./components/EnterNewPassword"
 
 const ForgotPassword = () => {
 
-  const [form] = Form.useForm()
-  const navigate = useNavigate()
-  const [loading, setLoading] = useState(false)
   const [current, setCurrent] = useState(0)
   const [email, setEmail] = useState("")
 
@@ -43,9 +33,7 @@ const ForgotPassword = () => {
     {
       title: "Nhập mật khẩu với",
       content: (
-        <EnterNewPassword
-
-        />
+        <EnterNewPassword email={email} />
       )
     },
   ]
