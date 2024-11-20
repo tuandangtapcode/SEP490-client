@@ -50,7 +50,7 @@ const SignupPage = () => {
           const dataFromGoogle = userInfor?.data
           const res = await UserService.register({
             Email: dataFromGoogle.email,
-            FullName: dataFromGoogle.given_name,
+            FullName: dataFromGoogle.name,
             AvatarPath: dataFromGoogle.picture,
             IsByGoogle: true,
             RoleID: roleID
