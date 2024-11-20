@@ -32,7 +32,7 @@ const ModalChangeProfile = ({ open, onCancel, isFromProfilePage }) => {
       }
       const res = await UserService.changeProfile({
         ...remainValues,
-        Avatar: !!resFile ? resFile?.data : open?.AvatarPath
+        AvatarPath: !!resFile ? resFile?.data : open?.AvatarPath
       })
       if (!!res?.isError) return toast.error(res?.msg)
       toast.success(res?.msg)

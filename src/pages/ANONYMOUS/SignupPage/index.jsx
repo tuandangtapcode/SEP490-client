@@ -58,7 +58,7 @@ const SignupPage = () => {
           if (!!res?.isError) return toast.error(res?.msg)
           const user = decodeData(res?.data)
           if (!!user.ID) {
-            dispatch(globalSlice.actions.setIsLogin(true))
+            dispatch(globalSlice.actions.setIsCheckAuth(true))
             if (user.RoleID === Roles.ROLE_ADMIN) {
               navigate("/dashboard")
             } else {
