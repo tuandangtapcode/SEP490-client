@@ -13,6 +13,7 @@ import { toast } from "react-toastify"
 import { useNavigate } from "react-router-dom"
 import Notice from "src/components/Notice"
 import ConfirmModal from "src/components/ModalCustom/ConfirmModal"
+import Router from "src/routers"
 
 const ModalConfirmInfor = ({
   open,
@@ -85,7 +86,7 @@ const ModalConfirmInfor = ({
       if (!!res?.isError) return toast.error(res?.msg)
       toast.success(res?.msg)
       onCancel()
-      navigate(`/user/lich-su-booking`)
+      navigate(`${Router.LICH_SU_BOOKING}`)
     } finally {
       setLoading(false)
     }
@@ -97,9 +98,6 @@ const ModalConfirmInfor = ({
       onCancel={onCancel}
       title="Xác nhận thông tin booking"
       width="50vw"
-      style={{
-        height: "70px"
-      }}
       footer={
         <Space className="d-flex-end">
           <ButtonCustom
@@ -167,6 +165,10 @@ const ModalConfirmInfor = ({
           </Col>
           <Col span={14}>
             <p className="primary-text fw-700 fs-16">{formatMoney(teacher?.Price * selectedTimes.length * 1000 * (1 + profitPercent))} VNĐ</p>
+          </Col>
+          <Col span={24}>
+            <span className="red-text mr-6">LƯU Ý:</span>
+            <span>Khi giáo viên đã ghi nhận booking của bạn và xử lý booking bạn sẽ không được chỉnh sửa hoặc hủy booking của mình nữa. </span>
           </Col>
         </Row>
       </div>

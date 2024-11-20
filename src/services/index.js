@@ -25,6 +25,7 @@ instance.interceptors.request.use(
 instance.interceptors.response.use(
   response => parseBody(response),
   error => {
+    console.log("error", error);
     if (+error?.response?.status >= 500) {
       Notice({
         msg: `Hệ thống đang tạm thời gián đoạn. Xin vui lòng trở lại sau hoặc thông báo với ban quản trị để được hỗ trợ`,

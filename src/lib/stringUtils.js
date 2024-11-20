@@ -6,7 +6,7 @@ export const getRegexEmail = () => {
 }
 
 export const getRegexPassowrd = () => {
-  const re = /^[A-Z][a-zA-Z0-9]{5,}$/
+  const re = /^[A-Z][a-zA-Z0-9]{8,}$/
   return re
 }
 

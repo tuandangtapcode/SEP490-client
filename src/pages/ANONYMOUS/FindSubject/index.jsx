@@ -75,7 +75,7 @@ const FindSubject = () => {
               <Col span={24}>
                 <ButtonCustom
                   className="primary medium-size"
-                  onClick={() => navigate(`/danh-muc/${i?._id}`)}
+                  onClick={() => navigate(`${Router.DANH_MUC}/${i?._id}`)}
                 >
                   Xem tất cả {">>"}
                 </ButtonCustom>

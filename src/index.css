@@ -56,6 +56,10 @@
   cursor: pointer;
 }
 
+.cursor-disabled {
+  cursor: not-allowed;
+}
+
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',

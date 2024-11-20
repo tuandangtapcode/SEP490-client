@@ -100,16 +100,22 @@ export const MenuAdmin = () => [
     key: Router.QUAN_LY_THONG_KE,
     RoleID: [1, 2]
   },
-  // {
-  //   icon: ListIcons.ICON_STAFF,
-  //   label: "Quản trị hệ thống",
-  //   key: Router.QUAN_LY_STAFF,
-  //   RoleID: [1]
-  // },
+  {
+    icon: ListIcons.ICON_STAFF,
+    label: "Quản trị hệ thống",
+    key: Router.QUAN_LY_STAFF,
+    RoleID: [1]
+  },
   {
     icon: ListIcons.ICON_TEACHER,
     label: "Giáo viên",
     key: Router.QUAN_LY_GIAO_VIEN,
+    RoleID: [1, 2]
+  },
+  {
+    icon: ListIcons.ICON_SUBJECT_SETTING,
+    label: "Môn học của giáo viên",
+    key: Router.QUAN_LY_SUBJECT_SETTING,
     RoleID: [1, 2]
   },
   {

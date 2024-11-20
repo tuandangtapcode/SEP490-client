@@ -30,7 +30,7 @@ const ModalSendMessage = ({ open, onCancel, onOk }) => {
     try {
       setLoading(true)
       const res = await MessageService.getChatWithUser({ Receiver: open?._id })
-      if (!!res?.isError) return toast.error(res?.msg) 
+      if (!!res?.isError) return toast.error(res?.msg)
       setChat(res?.data)
     } finally {
       setLoading(false)
@@ -44,7 +44,7 @@ const ModalSendMessage = ({ open, onCancel, onOk }) => {
         ...pagination,
         ChatID: !!chat ? chat?._id : undefined
       })
-      if (!!res?.isError) return toast.error(res?.msg) 
+      if (!!res?.isError) return toast.error(res?.msg)
       setMessages(res?.data?.List)
       setTotal(res?.data?.Total)
     } finally {
@@ -102,7 +102,7 @@ const ModalSendMessage = ({ open, onCancel, onOk }) => {
           _id: result[1]?.data?._id,
           Type: result[1]?.data?.Type,
           IsNew: result[1]?.data?.IsNew,
-          Receiver: open?._id,
+          Receiver: result[1]?.Receiver,
           createdAt: result[1]?.data?.createdAt
         })
       setMessages([...messages, {

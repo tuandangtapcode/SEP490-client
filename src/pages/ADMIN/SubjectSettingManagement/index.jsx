@@ -9,33 +9,34 @@ import { getListComboKey } from "src/lib/commonFunction"
 import { SYSTEM_KEY } from "src/lib/constant"
 import { globalSelector } from "src/redux/selector"
 import UserService from "src/services/UserService"
-import ViewProfileTeacher from "./modal/ViewProfileTeacher"
 import InputCustom from "src/components/InputCustom"
 import socket from "src/utils/socket"
 import SpinCustom from "src/components/SpinCustom"
 import { toast } from "react-toastify"
 import SubjectService from "src/services/SubjectService"
-import ModalReasonReject from "./modal/ModalReasonReject"
+import { formatMoney } from "src/lib/stringUtils"
+import ModalViewSubjectSetting from "./components/ModalViewSubjectSetting"
+import ModalReasonReject from "./components/ModalReasonReject"
 
 const { Option } = Select
 
-const TeacherManagement = () => {
+const SubjectSettingManagement = () => {
 
   const [loading, setLoading] = useState(false)
-  const [teachers, setTeachers] = useState([])
+  const [subjectSettings, setSubjectSettings] = useState([])
   const [total, setTotal] = useState(0)
-  const [openViewProfile, setOpenViewProfile] = useState(false)
+  const [openViewSubjectSetting, setOpenViewSubjectSetting] = useState(false)
+  const [openModalReasonReject, setOpenModalReasonReject] = useState(false)
   const [pagination, setPagination] = useState({
     TextSearch: "",
     CurrentPage: 1,
     PageSize: 10,
     SubjectID: "",
     Level: [],
-    RegisterStatus: 0
+    LearnType: 0,
   })
   const { listSystemKey } = useSelector(globalSelector)
   const [subjects, setSubjects] = useState([])
-  const [openModalReasonReject, setOpenModalReasonReject] = useState(false)
 
   const getListSubject = async () => {
     try {
@@ -52,12 +53,12 @@ const TeacherManagement = () => {
     }
   }
 
-  const getListTeacher = async () => {
+  const getListSubjectSetting = async () => {
     try {
       setLoading(true)
-      const res = await UserService.getListTeacher(pagination)
+      const res = await UserService.getListSubjectSetting(pagination)
       if (!!res?.isError) return toast.error(res?.msg)
-      setTeachers(res?.data?.List)
+      setSubjectSettings(res?.data?.List)
       setTotal(res?.data?.Total)
     } finally {
       setLoading(false)
@@ -69,43 +70,32 @@ const TeacherManagement = () => {
   }, [])
 
   useEffect(() => {
-    getListTeacher()
+    getListSubjectSetting()
   }, [pagination])
 
-  const handleConfirmRegister = async (record) => {
+  const handleConfirmSubjectSetting = async (record) => {
     try {
       setLoading(true)
-      const res = await UserService.responseConfirmRegister({
-        FullName: record?.FullName,
-        TeacherID: record?._id,
+      const res = await UserService.responseConfirmSubjectSetting({
+        SubjectSettingID: record?._id,
+        FullName: record?.Teacher?.FullName,
         RegisterStatus: 3,
-        Email: record?.Account?.Email
+        Email: record?.Teacher?.Email
       })
       if (!!res?.isError) return toast.error(res?.msg)
-      getListTeacher()
+      getListSubjectSetting()
     } finally {
       setLoading(false)
     }
   }
 
-  const handleInactiveOrActiveAccount = async (body) => {
-    try {
-      setLoading(true)
-      const res = await UserService.inactiveOrActiveAccount(body)
-      if (!!res?.isError) return
-      socket.emit("inactive-account", body?.UserID)
-      getListTeacher()
-    } finally {
-      setLoading(false)
-    }
-  }
 
   const listBtn = record => [
     {
       title: "Xem chi tiết",
       disabled: false,
       icon: ListIcons?.ICON_VIEW,
-      onClick: () => setOpenViewProfile(record)
+      onClick: () => setOpenViewSubjectSetting(record)
     },
     {
       title: "Duyệt",
@@ -115,7 +105,7 @@ const TeacherManagement = () => {
         ConfirmModal({
           description: `Bạn có chắc chắn duyệt tài khoản ${record?.FullName} không?`,
           onOk: async close => {
-            handleConfirmRegister(record)
+            handleConfirmSubjectSetting(record)
             close()
           }
         })
@@ -126,16 +116,6 @@ const TeacherManagement = () => {
       icon: ListIcons?.ICON_CLOSE,
       disabled: record?.IsReject,
       onClick: () => setOpenModalReasonReject(record)
-    },
-    {
-      title: !!record?.Account?.IsActive ? "Khóa tài khoản" : "Mở khóa tài khoản",
-      icon: !!record?.Account?.IsActive ? ListIcons?.ICON_BLOCK : ListIcons?.ICON_UNBLOCK,
-      disabled: record?.IsLockUnLock,
-      onClick: () => handleInactiveOrActiveAccount({
-        UserID: record?._id,
-        IsActive: !!record?.Account?.IsActive ? false : true,
-        RegisterStatus: !!record?.Account?.IsActive ? 4 : 3
-      })
     },
   ]
 
@@ -154,15 +134,34 @@ const TeacherManagement = () => {
       dataIndex: "FullName",
       align: "center",
       key: "FullName",
+      render: (_, record, index) => (
+        <div className="text-center">{record?.Teacher?.FullName}</div>
+      ),
     },
     {
-      title: "Email",
+      title: "Môn học",
       width: 80,
       align: "center",
-      key: "Email",
-      dataIndex: "Email",
+      key: "SubjectName",
+      dataIndex: "SubjectName",
       render: (_, record, index) => (
-        <div className="text-center">{record?.Account?.Email}</div>
+        <div className="text-center">{record?.Subject?.SubjectName}</div>
+      ),
+    },
+    {
+      title: "Giá",
+      width: 80,
+      align: "center",
+      key: "Price",
+      dataIndex: "Price",
+      render: (_, record, index) => (
+        <div className="text-center">
+          {
+            !!record?.Price
+              ? `${formatMoney(record?.Price * 1000)} VNĐ`
+              : ""
+          }
+        </div>
       ),
     },
     {
@@ -176,20 +175,6 @@ const TeacherManagement = () => {
           {
             getListComboKey(SYSTEM_KEY.REGISTER_STATUS, listSystemKey)
               ?.find(i => i?.ParentID === val)?.ParentName
-          }
-        </Tag>
-      )
-    },
-    {
-      title: "Trạng thái tài khoản",
-      width: 60,
-      dataIndex: "IsActive",
-      align: "center",
-      key: "IsActive",
-      render: (val, record) => (
-        <Tag color={!!record?.Account?.IsActive ? "success" : "error"} className="p-5 fs-16">
-          {
-            !!record?.Account?.IsActive ? "Đang sử dụng" : "Đã bị khóa"
           }
         </Tag>
       )
@@ -295,7 +280,7 @@ const TeacherManagement = () => {
             bordered
             noMrb
             showPagination
-            dataSource={teachers}
+            dataSource={subjectSettings}
             columns={column}
             editableCell
             sticky={{ offsetHeader: -12 }}
@@ -324,10 +309,10 @@ const TeacherManagement = () => {
         </Col>
 
         {
-          !!openViewProfile &&
-          <ViewProfileTeacher
-            open={openViewProfile}
-            onCancel={() => setOpenViewProfile(false)}
+          !!openViewSubjectSetting &&
+          <ModalViewSubjectSetting
+            open={openViewSubjectSetting}
+            onCancel={() => setOpenViewSubjectSetting(false)}
           />
         }
 
@@ -336,7 +321,7 @@ const TeacherManagement = () => {
           <ModalReasonReject
             open={openModalReasonReject}
             onCancel={() => setOpenModalReasonReject(false)}
-            onOk={getListTeacher}
+            onOk={getListSubjectSetting}
           />
         }
 
@@ -346,4 +331,4 @@ const TeacherManagement = () => {
   )
 }
 
-export default TeacherManagement
+export default SubjectSettingManagement

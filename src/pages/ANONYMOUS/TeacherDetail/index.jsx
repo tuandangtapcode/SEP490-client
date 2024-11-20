@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import { useNavigate, useParams } from "react-router-dom"
+import { useLocation, useNavigate, useParams } from "react-router-dom"
 import SpinCustom from "src/components/SpinCustom"
 import UserService from "src/services/UserService"
 import { DivTimeContainer, MainProfileWrapper } from "./styled"
@@ -9,7 +9,7 @@ import Router from "src/routers"
 import { PatentChildBorder, TabStyled } from "src/pages/ADMIN/TeacherManagement/styled"
 import moment from "moment"
 import { formatMoney, getRealFee } from "src/lib/stringUtils"
-import { useSelector } from "react-redux"
+import { useDispatch, useSelector } from "react-redux"
 import { globalSelector } from "src/redux/selector"
 import { toast } from "react-toastify"
 import socket from "src/utils/socket"
@@ -25,6 +25,7 @@ import { getListComboKey } from "src/lib/commonFunction"
 import { SYSTEM_KEY } from "src/lib/constant"
 import dayjs from "dayjs"
 import Feedback from "./components/Feedback"
+import globalSlice from "src/redux/globalSlice"
 
 const { Option } = Select
 
@@ -32,6 +33,8 @@ const TeacherDetail = () => {
 
   const { TeacherID, SubjectID } = useParams()
   const navigate = useNavigate()
+  const dispatch = useDispatch()
+  const location = useLocation()
   const [loading, setLoading] = useState(false)
   const [teacher, setTeacher] = useState()
   const [subjects, setSubjects] = useState([])
@@ -311,9 +314,13 @@ const TeacherDetail = () => {
                     className="primary submit-btn"
                     onClick={() => {
                       if (!!user?._id) {
-                        navigate(`${Router.GIAO_VIEN}/${TeacherID}${Router.MON_HOC}/${SubjectID}/booking`)
+                        navigate(
+                          `${Router.GIAO_VIEN}/${TeacherID}${Router.MON_HOC}/${SubjectID}/booking`,
+                          { state: teacher }
+                        )
                       } else {
-                        return toast.warning("Hãy đăng nhập để tiến hành đặt lịch")
+                        dispatch(globalSlice.actions.setRouterBeforeLogin(location.pathname))
+                        navigate("/dang-nhap")
                       }
                     }}
                   >

@@ -18,9 +18,7 @@ import { ADMIN_ID } from "src/lib/constant"
 import { useSelector } from "react-redux"
 import { globalSelector } from "src/redux/selector"
 import socket from "src/utils/socket"
-import ModalTimeTable from "./modal/ModalTimeTable"
 import { getRealFee } from "src/lib/stringUtils"
-import { convertToCurrentEquivalent } from "src/lib/dateUtils"
 
 const SubjectSetting = () => {
 
@@ -32,8 +30,6 @@ const SubjectSetting = () => {
   const [filesCertificate, setFilesCertificate] = useState([])
   const [filesIntroVideo, setFilesIntroVideo] = useState([])
   const { user, profitPercent } = useSelector(globalSelector)
-  const [openModalTimeTable, setOpenModalTimeTable] = useState(false)
-  const [schedules, setSchedules] = useState([])
   const [totalFee, setTotalFee] = useState(0)
 
   const getListSubjectSetting = async () => {
@@ -51,16 +47,21 @@ const SubjectSetting = () => {
     try {
       setLoading(true)
       const values = await form.validateFields()
-      if (!schedules.length)
-        return message.error("Bạn chưa cài đặt lịch dạy")
-      const resCertificate = FileService.uploadFileList({
-        FileList: values?.Certificates?.map(i => i?.originFileObj)
-      })
-      const resIntroVideo = FileService.uploadFileList({
-        FileList: values?.IntroVideos?.map(i => i?.originFileObj)
-      })
+      let resCertificate, resIntroVideo
+      if (!!values?.Certificates?.some(i => !!i?.originFileObj)) {
+        resCertificate = FileService.uploadFileList({
+          FileList: values?.Certificates?.map(i => i?.originFileObj)
+        })
+      }
+      if (!!values?.IntroVideos?.some(i => !!i?.originFileObj)) {
+        resIntroVideo = FileService.uploadFileList({
+          FileList: values?.IntroVideos?.map(i => i?.originFileObj)
+        })
+      }
       const resultFile = await Promise.all([resCertificate, resIntroVideo])
       if (!!resultFile[0]?.isError || !!resultFile[1]?.isError) return
+      const dataCertificate = resultFile[0]?.data
+      const dataIntroVideo = resultFile[1]?.data
       const resSubjectSetting = await UserService.updateSubjectSetting({
         SubjectSettingID: subjectSetting?._id,
         SubjectID: subjectSetting?.Subject?._id,
@@ -68,8 +69,12 @@ const SubjectSetting = () => {
           Title: values?.TitleQuote,
           Content: values?.ContentQuote
         },
-        Certificates: resultFile[0]?.data,
-        IntroVideos: resultFile[1]?.data,
+        Certificates: !!dataCertificate?.length
+          ? [...filesCertificate, ...dataCertificate]
+          : filesCertificate,
+        IntroVideos: !!dataIntroVideo?.length
+          ? [...filesIntroVideo, ...dataIntroVideo]
+          : filesIntroVideo,
         Levels: values?.Levels,
         Experiences: !!values?.experiences
           ? values?.experiences?.map(i => ({
@@ -89,26 +94,21 @@ const SubjectSetting = () => {
         LearnTypes: values?.LearnTypes
       })
       if (!!resSubjectSetting?.isError) return toast.error(resSubjectSetting?.msg)
-      let resChangeRegisterStatus
-      if (user?.RegisterStatus === 1) {
-        resChangeRegisterStatus = UserService.requestConfirmRegister()
-      }
-      const resNotification = NotificationService.createNotification({
+      const resNotification = await NotificationService.createNotification({
         Content: `${user?.FullName} đã gửi yêu cầu duyệt profile cho bạn`,
         Type: "teacher",
         Receiver: ADMIN_ID
       })
-      const result = await Promise.all([resChangeRegisterStatus, resNotification])
-      if (!!result[0]?.isError || !!result[1]?.isError) return
+      if (!!resNotification?.isError) return
       socket.emit('send-notification',
         {
-          Content: result[1]?.data?.Content,
-          IsSeen: result[1]?.IsSeen,
-          _id: result[1]?.data?._id,
-          Type: result[1]?.data?.Type,
-          IsNew: result[1]?.data?.IsNew,
+          Content: resNotification?.data?.Content,
+          IsSeen: resNotification?.IsSeen,
+          _id: resNotification?.data?._id,
+          Type: resNotification?.data?.Type,
+          IsNew: resNotification?.data?.IsNew,
           Receiver: ADMIN_ID,
-          createdAt: result[1]?.data?.createdAt
+          createdAt: resNotification?.data?.createdAt
         })
       toast.success("Yêu cầu kiểm duyệt đã được gửi")
       setSubjectSetting(resSubjectSetting?.data)
@@ -151,24 +151,11 @@ const SubjectSetting = () => {
         }))
       })
       setTotalFee(getRealFee(subjectSetting?.Price, profitPercent))
+      setFilesCertificate(subjectSetting?.Certificates)
+      setFilesIntroVideo(subjectSetting?.IntroVideos)
     }
   }, [subjectSetting?.Subject?._id])
 
-  useEffect(() => {
-    if (!!user?.Schedules?.length) {
-      setSchedules(
-        user?.Schedules?.map(i => {
-          const dayGap = dayjs().startOf("day").diff(dayjs(user?.Schedules[0]?.StartTime).startOf("day"), "days")
-          console.log('convertToCurrentEquivalent(new Date(i?.StartTime))', convertToCurrentEquivalent(new Date(i?.StartTime)));
-          return {
-            start: convertToCurrentEquivalent(new Date(i?.StartTime)),
-            end: convertToCurrentEquivalent(new Date(i?.EndTime)),
-            title: ""
-          }
-        })
-      )
-    }
-  }, [user?.Schedules])
 
   return (
     <SpinCustom spinning={loading}>
@@ -182,12 +169,6 @@ const SubjectSetting = () => {
                 onClick={() => setOpenModalSubject(true)}
               >
                 Thêm Môn học
-              </ButtonCustom>
-              <ButtonCustom
-                className="third-type-2"
-                onClick={() => setOpenModalTimeTable(true)}
-              >
-                Cài đặt lịch dạy
               </ButtonCustom>
             </Space>
           </Col>
@@ -218,37 +199,33 @@ const SubjectSetting = () => {
                 setTotalFee={setTotalFee}
                 subjectSetting={subjectSetting}
               />
-              <Experiences />
-              <Educations />
+              <Experiences subjectSetting={subjectSetting} />
+              <Educations subjectSetting={subjectSetting} />
               <Certificates
                 form={form}
                 setFilesCertificate={setFilesCertificate}
                 filesCertificate={filesCertificate}
+                subjectSetting={subjectSetting}
               />
               <IntroVideo
                 form={form}
                 setFilesIntroVideo={setFilesIntroVideo}
                 filesIntroVideo={filesIntroVideo}
+                subjectSetting={subjectSetting}
               />
-              <Col span={24}>
-                <ButtonCustom
-                  className="big-size primary fw-700"
-                  onClick={() => {
-                    if (!subjectSetting?.IsActive) {
+              {
+                subjectSetting?.RegisterStatus !== 2 &&
+                <Col span={24}>
+                  <ButtonCustom
+                    className="medium-size primary fw-700 mb-12"
+                    onClick={() => {
                       handleSubmit()
-                    }
-                  }}
-                >
-                  {/* {
-                user?.RegisterStatus !== 3
-                  ? !!user?.IntroVideos?.length
-                    ? "Hoàn thành"
-                    : "Lưu"
-                  : "Cập nhật"
-              } */}
-                  Gửi yêu cầu kiểm duyệt
-                </ButtonCustom>
-              </Col>
+                    }}
+                  >
+                    Gửi yêu cầu kiểm duyệt
+                  </ButtonCustom>
+                </Col>
+              }
             </>
           }
         </Row>
@@ -264,15 +241,6 @@ const SubjectSetting = () => {
         />
       }
 
-      {
-        !!openModalTimeTable &&
-        <ModalTimeTable
-          open={openModalTimeTable}
-          onCancel={() => setOpenModalTimeTable(false)}
-          schedules={schedules}
-          setSchedules={setSchedules}
-        />
-      }
     </SpinCustom >
   )
 }

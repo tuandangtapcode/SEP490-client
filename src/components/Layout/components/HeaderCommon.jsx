@@ -89,7 +89,7 @@ const HeaderCommon = () => {
       key: Router.PROFILE,
       isView: true,
       label: (
-        <div>Quản trị</div>
+        <div>Hồ sơ</div>
       ),
       onClick: () => navigate(Router.PROFILE)
     },

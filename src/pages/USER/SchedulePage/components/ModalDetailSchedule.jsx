@@ -44,8 +44,6 @@ const ModalDetailSchedule = ({
     }
   }
 
-  console.log("buttonShow", !buttonShow?.isShowBtnAttendance);
-
 
   return (
     <ModalCustom
