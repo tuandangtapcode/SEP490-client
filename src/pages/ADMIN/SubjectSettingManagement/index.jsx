@@ -219,6 +219,7 @@ const SubjectSettingManagement = () => {
         <Col span={4}>
           <Select
             placeholder="Chọn môn học"
+            allowClear
             onChange={e => setPagination(pre => ({ ...pre, SubjectID: e }))}
           >
             {
@@ -236,6 +237,7 @@ const SubjectSettingManagement = () => {
         <Col span={4}>
           <Select
             mode="multiple"
+            allowClear
             placeholder="Chọn level"
             onChange={e => setPagination(pre => ({ ...pre, Level: e }))}
           >
@@ -254,14 +256,9 @@ const SubjectSettingManagement = () => {
         <Col span={4}>
           <Select
             placeholder="Tình trạng đăng ký"
+            allowClear
             onChange={e => setPagination(pre => ({ ...pre, RegisterStatus: e }))}
           >
-            <Option
-              key={0}
-              value={0}
-            >
-              Tất cả
-            </Option>
             {
               getListComboKey(SYSTEM_KEY.REGISTER_STATUS, listSystemKey)?.map(i =>
                 <Option
