@@ -301,7 +301,7 @@ const TeacherDetail = () => {
                 </TabStyled>
               </div>
               <div className="mb-12">
-                <span className="gray-text mr-4">Giá tiền/Buổi học: </span>
+                <span className="gray-text mr-4">Học phí/Buổi học: </span>
                 <span className="primary-text fw-700 fs-17">{formatMoney(getRealFee(teacher?.Price, profitPercent))} VNĐ</span>
               </div>
               {

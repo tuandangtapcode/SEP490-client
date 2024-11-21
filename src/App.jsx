@@ -46,7 +46,7 @@ const SubjectcateDetail = React.lazy(() => import("src/pages/ANONYMOUS/Subjectca
 
 // USER
 const UserRoutes = React.lazy(() => import("src/pages/USER/UserRoutes"))
-const BlogPosting = React.lazy(() => import( "./pages/USER/BlogPosting"))
+const BlogPosting = React.lazy(() => import("./pages/USER/BlogPosting"))
 const UserProfile = React.lazy(() => import("src/pages/USER/UserProfile"))
 const SubjectSetting = React.lazy(() => import("src/pages/USER/SubjectSetting"))
 const InboxPage = React.lazy(() => import("src/pages/USER/InboxPage"))
@@ -69,7 +69,7 @@ const LazyLoadingComponent = ({ children }) => {
     <React.Suspense
       fallback={
         <div className="loading-center" style={{ display: 'flex', justifyContent: 'center', height: '100vh', alignItems: 'center' }}>
-          {/* <SpinCustom /> */}
+          <SpinCustom />
         </div>
       }
     >
