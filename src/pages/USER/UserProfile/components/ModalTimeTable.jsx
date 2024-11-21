@@ -16,7 +16,6 @@ import { convertToCurrentEquivalent } from 'src/lib/dateUtils'
 
 
 const localizer = momentLocalizer(moment)
-moment.updateLocale('en', { week: { dow: 1 } })
 
 const formats = {
   monthHeaderFormat: () => { }, // Định dạng tiêu đề tháng

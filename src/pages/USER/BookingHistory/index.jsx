@@ -98,12 +98,12 @@ const BookingHistory = () => {
       icon: ListIcons?.ICON_VIEW,
       onClick: () => setOpenModalViewBooking(record)
     },
-    {
-      title: "Chỉnh sửa",
-      isView: record?.IsUpdate,
-      icon: ListIcons?.ICON_EDIT,
-      onClick: () => setOpenModalUpdateBooking(record)
-    },
+    // {
+    //   title: "Chỉnh sửa",
+    //   isView: record?.IsUpdate,
+    //   icon: ListIcons?.ICON_EDIT,
+    //   onClick: () => setOpenModalUpdateBooking(record)
+    // },
     {
       title: "Duyệt",
       isView: record?.IsConfirm,

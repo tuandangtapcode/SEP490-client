@@ -83,7 +83,6 @@ const ModalChangeCareerInfor = ({ open, onCancel }) => {
         Certificates: !!dataCertificate?.length
           ? [...filesCertificate, ...dataCertificate]
           : filesCertificate,
-        Email: user?.Email,
         Description: values?.Description
       })
       if (!!res?.isError) return toast.error(res?.msg)
@@ -111,7 +110,8 @@ const ModalChangeCareerInfor = ({ open, onCancel }) => {
         url: i,
         id: idx
       })),
-      Description: user?.Description
+      Description: user?.Description,
+      Subjects: user?.SubjectSettings?.map(i => i?.Subject?._id)
     })
     setFilesCertificate(user?.Certificates)
   }, [])
