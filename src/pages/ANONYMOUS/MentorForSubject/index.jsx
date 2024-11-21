@@ -117,8 +117,8 @@ const MentorForSubject = () => {
                   onChangeComplete={(e) =>
                     setPagination({
                       ...pagination,
-                      FromPrice: e[0],
-                      ToPrice: e[1],
+                      FromPrice: e[0] / 1000,
+                      ToPrice: e[1] / 1000,
                     })
                   }
                 />

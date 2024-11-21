@@ -58,6 +58,7 @@ const Search = () => {
             <Select
               style={{ width: "100%" }}
               showSearch
+              allowClear
               placeholder="Chọn môn học"
               onChange={e => setSearchData(pre => ({ ...pre, Subject: e }))}
               onPopupScroll={e => {
@@ -99,6 +100,7 @@ const Search = () => {
             <Select
               style={{ width: "100%" }}
               mode="multiple"
+              allowClear
               placeholder="Chọn môn học"
               onChange={e => setSearchData(pre => ({ ...pre, Level: e }))}
             >
@@ -123,6 +125,7 @@ const Search = () => {
           <div className="ml-24">
             <Select
               mode="multiple"
+              allowClear
               placeholder="Chọn hình thức học"
               onChange={e => setSearchData(pre => ({ ...pre, LearnType: e }))}
             >

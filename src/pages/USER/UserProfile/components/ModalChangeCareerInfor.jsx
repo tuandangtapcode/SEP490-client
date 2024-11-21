@@ -71,6 +71,7 @@ const ModalChangeCareerInfor = ({ open, onCancel }) => {
         })
         if (!!resCertificate?.isError) return toast.error(resCertificate?.msg)
       }
+      const dataCertificate = resCertificate?.data
       const res = await UserService.changeCareerInformation({
         Subjects: values?.Subjects,
         Experiences: values?.experiences?.map(i =>
@@ -79,7 +80,9 @@ const ModalChangeCareerInfor = ({ open, onCancel }) => {
         Educations: values?.educations?.map(i =>
           i?.Content
         ),
-        Certificates: resCertificate?.data,
+        Certificates: !!dataCertificate?.length
+          ? [...filesCertificate, ...dataCertificate]
+          : filesCertificate,
         Email: user?.Email,
         Description: values?.Description
       })
@@ -110,6 +113,7 @@ const ModalChangeCareerInfor = ({ open, onCancel }) => {
       })),
       Description: user?.Description
     })
+    setFilesCertificate(user?.Certificates)
   }, [])
 
   useEffect(() => {
