@@ -95,7 +95,7 @@ export const LayoutUserStyled = styled.div`
     background: #c5ced9;
     border-radius: 30px;
   }
-  /* display: flex;
+   display: flex;
   flex-direction: column;
   justify-content: space-between; 
 }
