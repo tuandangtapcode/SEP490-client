@@ -4,7 +4,6 @@ import { Calendar, Views, momentLocalizer } from 'react-big-calendar'
 import "react-big-calendar/lib/css/react-big-calendar.css"
 
 const localizer = momentLocalizer(moment)
-moment.updateLocale('en', { week: { dow: 1 } })
 
 const formats = {
   monthHeaderFormat: () => { }, // Định dạng tiêu đề tháng

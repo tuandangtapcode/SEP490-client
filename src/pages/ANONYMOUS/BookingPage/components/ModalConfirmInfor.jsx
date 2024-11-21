@@ -62,6 +62,7 @@ const ModalConfirmInfor = ({
       }
       const res = await ConfirmService.createConfirm({
         Sender: user?._id,
+        CourseID: !!course ? course?._id : undefined,
         StudentName: user?.FullName,
         Receiver: teacher?.Teacher?._id,
         TeacherName: teacher?.Teacher?.FullName,
