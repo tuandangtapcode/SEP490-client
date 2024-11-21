@@ -1,10 +1,9 @@
-import { Col, DatePicker, Empty, Radio, Row, Space } from "antd"
+import { Col, Radio, Row, Space } from "antd"
 import { useEffect, useState } from "react"
 import { useSelector } from "react-redux"
 import { useNavigate } from "react-router-dom"
 import InputCustom from "src/components/InputCustom"
 import ModalCustom from "src/components/ModalCustom"
-import SpinCustom from "src/components/SpinCustom"
 import { getListComboKey } from "src/lib/commonFunction"
 import { SYSTEM_KEY } from "src/lib/constant"
 import { globalSelector } from "src/redux/selector"
@@ -12,14 +11,14 @@ import UserService from "src/services/UserService"
 import dayjs from "dayjs"
 import { formatMoney } from "src/lib/stringUtils"
 import ButtonCustom from "src/components/MyButton/ButtonCustom"
-import { disabledBeforeDate } from "src/lib/dateUtils"
 import ListIcons from "src/components/ListIcons"
 import TimeTableService from "src/services/TimeTableService"
 import { toast } from "react-toastify"
-import { TimeItemStyled } from "src/pages/ANONYMOUS/BookingPage/styled"
 import ConfirmService from "src/services/ConfirmService"
+import ModalChangeSchedule from "src/pages/ANONYMOUS/BookingPage/components/ModalChangeSchedule"
+import socket from "src/utils/socket"
 
-const ModalUpdateBooking = ({ open, onCancel, onOk }) => {
+const ModalUpdateBooking = ({ open, onCancel, onOk, setOpenModalUpdateBooking }) => {
 
   const navigate = useNavigate()
   const { listSystemKey, profitPercent } = useSelector(globalSelector)
@@ -29,8 +28,8 @@ const ModalUpdateBooking = ({ open, onCancel, onOk }) => {
   const [bookingInfor, setBookingInfor] = useState()
   const [isEditLearnType, setIsEditLearnType] = useState(false)
   const [isEditSchedules, setIsEditSchedules] = useState(false)
-  const [timeTables, SetTimeTables] = useState([])
-  const [times, setTimes] = useState([])
+  const [timeTablesTeacher, SetTimeTablesTeacher] = useState([])
+  const [timeTablesStudent, SetTimeTablesStudent] = useState([])
 
   const getDetailTeacher = async () => {
     try {
@@ -46,50 +45,51 @@ const ModalUpdateBooking = ({ open, onCancel, onOk }) => {
     }
   }
 
-  const getTimeTable = async () => {
+  const getTimeTableOfStudent = async () => {
     try {
       setLoading(true)
       const res = await TimeTableService.getTimeTableByUser()
       if (!!res?.isError) return toast.error(res?.msg)
-      SetTimeTables(res?.data)
+      SetTimeTablesStudent(res?.data?.List)
     } finally {
       setLoading(false)
     }
   }
 
-  const handleSelectedTimes = (date) => {
-    const checkExistTime = selectedTimes?.find(i =>
-      dayjs(i?.StartTime).format("DD/MM/YYYY") ===
-      dayjs(date?.StartTime).format("DD/MM/YYYY")
-    )
-    if (!!checkExistTime) {
-      const copySelectedTimes = [...selectedTimes]
-      const indexExsitTime = selectedTimes?.findIndex(i =>
-        dayjs(i?.StartTime).format("DD/MM/YYYY HH:ss") ===
-        dayjs(date?.StartTime).format("DD/MM/YYYY HH:ss")
-      )
-      if (indexExsitTime >= 0) {
-        copySelectedTimes.splice(indexExsitTime, 1)
-      } else if (indexExsitTime < 0) {
-        const index = selectedTimes?.findIndex(i =>
-          dayjs(i?.StartTime).format("DD/MM/YYYY") ===
-          dayjs(date?.StartTime).format("DD/MM/YYYY")
-        )
-        copySelectedTimes.splice(index, 1, {
-          StartTime: dayjs(date?.StartTime),
-          EndTime: dayjs(date?.EndTime),
-        })
-      }
-      setSelectedTimes(copySelectedTimes)
-    } else {
-      setSelectedTimes(pre => [
-        ...pre,
-        {
-          StartTime: dayjs(date?.StartTime),
-          EndTime: dayjs(date?.EndTime),
-        }
-      ])
+
+  const getTimeTableOfTeacher = async () => {
+    try {
+      setLoading(true)
+      const res = await TimeTableService.getTimeTableOfTeacherOrStudent(open?.Receiver?._id)
+      if (!!res?.isError) return toast.error(res?.msg)
+      SetTimeTablesTeacher(res?.data)
+    } finally {
+      setLoading(false)
     }
+  }
+
+  const getFreeTimeOfTeacher = (e) => {
+    const daysFromTimeTable = !!timeTablesTeacher?.length
+      ? timeTablesTeacher
+        ?.filter(i => dayjs(i?.StartTime).format("DD/MM/YYYY") === dayjs(e).format("DD/MM/YYYY"))
+        ?.map(item => dayjs(item?.StartTime).format("HH:mm"))
+      : []
+    const times = !!daysFromTimeTable?.length
+      ? teacher?.Teacher?.Schedules?.filter(i =>
+        i?.DateAt === dayjs(e).format("dddd") &&
+        !daysFromTimeTable?.includes(dayjs(i?.StartTime).format("HH:mm"))
+      )
+      : teacher?.Teacher?.Schedules?.filter(i =>
+        i?.DateAt === dayjs(e).format("dddd")
+      )
+    const timesResult = times?.map(i => {
+      const dayGap = dayjs(e).startOf("day").diff(dayjs(i?.StartTime).startOf("day"), "days")
+      return {
+        StartTime: dayjs(i?.StartTime).add(dayGap, "days"),
+        EndTime: dayjs(i?.EndTime).add(dayGap, "days"),
+      }
+    })
+    return timesResult
   }
 
   const updateConfirm = async () => {
@@ -126,10 +126,16 @@ const ModalUpdateBooking = ({ open, onCancel, onOk }) => {
       })
       setSelectedTimes(open?.Schedules)
       getDetailTeacher()
-      getTimeTable()
+      getTimeTableOfStudent()
+      getTimeTableOfTeacher()
     }
   }, [open])
 
+  useEffect(() => {
+    socket.on("listen-noted-confirm", data => {
+      setOpenModalUpdateBooking(data)
+    })
+  }, [])
 
   return (
     <ModalCustom
@@ -148,6 +154,7 @@ const ModalUpdateBooking = ({ open, onCancel, onOk }) => {
           <ButtonCustom
             className="primary"
             loading={loading}
+            disabled={open?.ConfirmStatus === 4 ? true : false}
             onClick={() => updateConfirm()}
           >
             Lưu
@@ -182,8 +189,12 @@ const ModalUpdateBooking = ({ open, onCancel, onOk }) => {
                   }
                 </span>
                 <span
-                  className="mt-4 cursor-pointer"
-                  onClick={() => setIsEditLearnType(true)}
+                  className={`mt-4 ${open?.ConfirmStatus !== 4 ? "cursor-pointer" : "cursor-disabled"}`}
+                  onClick={() => {
+                    if (open?.ConfirmStatus !== 4) {
+                      setIsEditLearnType(true)
+                    }
+                  }}
                 >
                   {ListIcons.ICON_EDIT}
                 </span>
@@ -192,6 +203,7 @@ const ModalUpdateBooking = ({ open, onCancel, onOk }) => {
               <div className="d-flex align-items-center">
                 <Radio.Group
                   className="mb-8"
+                  disabled={open?.ConfirmStatus === 4 ? true : false}
                   value={bookingInfor?.LearnType}
                   onChange={e => setBookingInfor(pre => ({ ...pre, LearnType: e.target.value }))}
                 >
@@ -207,8 +219,12 @@ const ModalUpdateBooking = ({ open, onCancel, onOk }) => {
                   }
                 </Radio.Group>
                 <span
-                  className="cursor-pointer"
-                  onClick={() => setIsEditLearnType(false)}
+                  className={`${open?.ConfirmStatus !== 4 ? "cursor-pointer" : "cursor-disabled"}`}
+                  onClick={() => {
+                    if (open?.ConfirmStatus !== 4) {
+                      setIsEditLearnType(true)
+                    }
+                  }}
                 >
                   {ListIcons.ICON_CONFIRM}
                 </span>
@@ -225,6 +241,7 @@ const ModalUpdateBooking = ({ open, onCancel, onOk }) => {
             <Col span={20}>
               <InputCustom
                 placeholder="Nhập vào địa chỉ"
+                disabled={open?.ConfirmStatus === 4 ? true : false}
                 value={bookingInfor?.Address}
                 onChange={e => setBookingInfor(pre => ({ ...pre, Address: e.target.value }))}
               />
@@ -246,85 +263,21 @@ const ModalUpdateBooking = ({ open, onCancel, onOk }) => {
               </div>
             )
           }
-          {
-            !isEditSchedules ?
-              <span
-                className="cursor-pointer"
-                onClick={() => setIsEditSchedules(true)}
-              >
-                {ListIcons.ICON_EDIT}
-              </span>
-              :
-              <span
-                className="cursor-pointer"
-                onClick={() => setIsEditSchedules(false)}
-              >
-                {ListIcons.ICON_CONFIRM}
-              </span>
-          }
+          <span
+            className={`${open?.ConfirmStatus !== 4 ? "cursor-pointer" : "cursor-disabled"}`}
+            onClick={() => {
+              const copySelectTimes = selectedTimes.map(i => ({
+                ...i,
+                DateAt: dayjs(i?.StartTime),
+                Times: getFreeTimeOfTeacher(dayjs(i?.StartTime))
+              }))
+              setSelectedTimes(copySelectTimes)
+              setIsEditSchedules(true)
+            }}
+          >
+            {ListIcons.ICON_EDIT}
+          </span>
         </Col>
-        {
-          !!isEditSchedules &&
-          <>
-            <Col span={12}>
-              <DatePicker
-                style={{ width: "100%" }}
-                format="DD/MM/YYYY"
-                disabledDate={current => disabledBeforeDate(current)}
-                onChange={e => {
-                  const daysFromTimeTable = !!timeTables?.length
-                    ? timeTables
-                      ?.filter(i =>
-                        dayjs(i?.DateAt).format("DD/MM/YYYY") === dayjs(e).format("DD/MM/YYYY") &&
-                        i?.Teacher?._id === open?.Receiver?._id)
-                      ?.map(item => dayjs(item?.StartTime).format("HH:ss"))
-                    : []
-                  const times = !!daysFromTimeTable?.length
-                    ? teacher?.Teacher?.Schedules?.filter(i =>
-                      i?.DateAt === dayjs(e).format("dddd") &&
-                      !daysFromTimeTable?.includes(dayjs(i?.StartTime).format("HH:ss"))
-                    )
-                    : teacher?.Teacher?.Schedules?.filter(i =>
-                      i?.DateAt === dayjs(e).format("dddd")
-                    )
-                  setTimes(
-                    times?.map(i => {
-                      const dayGap = dayjs(e).startOf("day").diff(dayjs(i?.StartTime).startOf("day"), "days")
-                      return {
-                        StartTime: dayjs(i?.StartTime).add(dayGap, "days"),
-                        EndTime: dayjs(i?.EndTime).add(dayGap, "days"),
-                      }
-                    })
-                  )
-                }}
-              />
-            </Col>
-            <Col span={12}>
-              <Row gutter={[16, 8]}>
-                {
-                  !!times.length ?
-                    times?.map((i, idx) =>
-                      <Col span={12} key={idx}>
-                        <TimeItemStyled
-                          className={
-                            !!selectedTimes?.some(item =>
-                              dayjs(item?.StartTime).format("DD/MM/YYYY HH:ss") ===
-                              dayjs(i?.StartTime).format("DD/MM/YYYY HH:ss"))
-                              ? "active"
-                              : ""
-                          }
-                          onClick={() => handleSelectedTimes(i)}
-                        >
-                          {dayjs(i?.StartTime).format("HH:mm")} - {dayjs(i?.EndTime).format("HH:mm")}
-                        </TimeItemStyled>
-                      </Col>
-                    )
-                    : <Empty description="Không có thời gian học học" />
-                }
-              </Row>
-            </Col>
-          </>
-        }
         <Col span={24} className="d-flex align-items-center">
           <span className="fw-600 fw-16 mr-4">Tổng giá:</span>
           <span className="fs-17 fw-700 primary-text">
@@ -336,6 +289,19 @@ const ModalUpdateBooking = ({ open, onCancel, onOk }) => {
           </span>
         </Col>
       </Row>
+
+      {
+        !!isEditSchedules &&
+        <ModalChangeSchedule
+          open={isEditSchedules}
+          onCancel={() => setIsEditSchedules(false)}
+          selectedTimes={selectedTimes}
+          timeTablesStudent={timeTablesStudent}
+          getFreeTimeOfTeacher={getFreeTimeOfTeacher}
+          setSelectedTimes={setSelectedTimes}
+        />
+      }
+
     </ModalCustom >
   )
 }

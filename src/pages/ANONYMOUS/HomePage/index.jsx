@@ -1,7 +1,6 @@
 import { HomeContainerStyled } from "./styled"
 import { toast } from "react-toastify"
 import { useEffect, useState } from "react"
-import { useNavigate } from "react-router-dom"
 import SubjectService from "src/services/SubjectService"
 import { Col, Row } from "antd"
 import SpinCustom from "src/components/SpinCustom"
@@ -15,27 +14,10 @@ import BecomeTeacher from "./components/BecomeTeacher"
 
 const HomePage = () => {
 
-  const navigate = useNavigate()
   const [loading, setLoading] = useState(false)
-  const [subjects, setSubjects] = useState([])
   const [recommendSubjects, setRecommendSSubjects] = useState([])
   const [subject, setSubject] = useState()
   const [teachers, setTeachers] = useState([])
-
-  const getListSubject = async () => {
-    try {
-      setLoading(true)
-      const res = await SubjectService.getListSubject({
-        TextSearch: "",
-        CurrentPage: 0,
-        PageSize: 0
-      })
-      if (!!res?.isError) return toast.error(res?.msg)
-      setSubjects(res?.data?.List)
-    } finally {
-      setLoading(false)
-    }
-  }
 
   const getListRecommendSubject = async () => {
     try {
@@ -61,7 +43,6 @@ const HomePage = () => {
   }
 
   useEffect(() => {
-    getListSubject()
     getListRecommendSubject()
   }, [])
 
@@ -75,15 +56,15 @@ const HomePage = () => {
       <HomeContainerStyled>
         <Row gutter={[0, 16]}>
           <Col span={24} className="d-flex-center mb-70">
-            <Search subjects={subjects} />
+            <Search />
           </Col>
           <Col span={24} className="d-flex-center mb-50">
-            <FamoursTeacher
+            {/* <FamoursTeacher
               recommendSubjects={recommendSubjects}
               teachers={teachers}
               subject={subject}
               setSubject={setSubject}
-            />
+            /> */}
           </Col>
           <Col span={24} className="mb-50">
             <BackgroundChooseTeacher />
@@ -99,6 +80,7 @@ const HomePage = () => {
           </Col>
         </Row>
       </HomeContainerStyled>
+
     </SpinCustom>
   )
 }

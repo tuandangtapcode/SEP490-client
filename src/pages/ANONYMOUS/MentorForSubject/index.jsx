@@ -16,6 +16,7 @@ import SpinCustom from 'src/components/SpinCustom'
 import UserService from 'src/services/UserService'
 import { useNavigate, useParams } from 'react-router-dom'
 import TeacherItem from './components/TeacherItem'
+import Router from "src/routers"
 
 const MentorForSubject = () => {
 
@@ -162,7 +163,11 @@ const MentorForSubject = () => {
             {
               !!teachers.length ?
                 teachers?.map((i, idx) =>
-                  <TeacherItem key={idx} teacherItem={i} />
+                  <TeacherItem
+                    key={idx}
+                    teacherItem={i}
+                    subjectID={SubjectID}
+                  />
                 )
                 :
                 <h2 className='center-text'>Không có giáo viên nào!</h2>

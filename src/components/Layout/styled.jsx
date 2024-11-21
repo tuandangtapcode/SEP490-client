@@ -80,10 +80,22 @@ export const ChatBoxContainerStyled = styled.div`
 export const LayoutUserStyled = styled.div`
 .menu-container {
   border: 1px solid #ddd;
-  height: calc(100vh - 116px);
+  height: calc(100vh - 86px);
   overflow: hidden auto;
   padding: 12px 0;
-   display: flex;
+  &::-webkit-scrollbar {
+      width: 0px;
+    }
+  &::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    box-shadow: unset;
+    margin: 5px 0px;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: #c5ced9;
+    border-radius: 30px;
+  }
+  /* display: flex;
   flex-direction: column;
   justify-content: space-between; 
 }
@@ -97,7 +109,7 @@ export const LayoutUserStyled = styled.div`
 .content-container {
   padding: 0px 20px; 
   overflow-y: auto; 
-  height: calc(100vh - 116px);
+  height: calc(100vh - 86px);
   border-top: 1px solid var(--color-border-matte);
   &::-webkit-scrollbar {
       width: 0px;

@@ -20,7 +20,7 @@ const ModalChangeSchedule = ({
       open={open}
       onCancel={onCancel}
       title="Thay đổi lịch học"
-      width="70vw"
+      width="60vw"
       footer={
         <Space className="d-flex-end">
           <ButtonCustom

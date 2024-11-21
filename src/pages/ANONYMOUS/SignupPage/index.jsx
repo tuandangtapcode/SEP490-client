@@ -1,4 +1,4 @@
-import { Col, DatePicker, Form, Radio, Row, Select } from "antd"
+import { Col, Form, Radio, Row } from "antd"
 import { useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { SignupContainerStyled } from "./styled"
@@ -9,28 +9,30 @@ import { getRegexEmail, getRegexPhoneNumber } from "src/lib/stringUtils"
 import SubjectService from "src/services/SubjectService"
 import ButtonCustom from "src/components/MyButton/ButtonCustom"
 import { useGoogleLogin } from "@react-oauth/google"
-import { disabledBeforeDate } from "src/lib/dateUtils"
-import { useSelector } from "react-redux"
+import { useDispatch, useSelector } from "react-redux"
 import { globalSelector } from "src/redux/selector"
-import { getListComboKey } from "src/lib/commonFunction"
-import { SYSTEM_KEY } from "src/lib/constant"
+import { decodeData } from "src/lib/commonFunction"
+import { Roles } from "src/lib/constant"
+import globalSlice from "src/redux/globalSlice"
 
-const { Option } = Select
 
 const SignupPage = () => {
 
   const [form] = Form.useForm()
   const navigate = useNavigate()
+  const dispatch = useDispatch()
   const [loading, setLoading] = useState(false)
-  const [subjects, setSubjects] = useState([])
   const [roleID, setRoleID] = useState()
-  const { user, listSystemKey } = useSelector(globalSelector)
+  const { user } = useSelector(globalSelector)
 
   const handleRegister = async () => {
     try {
       setLoading(true)
       const values = await form.validateFields()
-      const res = await UserService.register(values)
+      const res = await UserService.register({
+        ...values,
+        IsByGoogle: false
+      })
       if (!!res?.isError) return toast.error(res?.msg)
       toast.success(res?.msg)
       navigate('/dang-nhap')
@@ -41,38 +43,38 @@ const SignupPage = () => {
 
   const validateByGoogle = useGoogleLogin({
     onSuccess: async (tokenResponse) => {
-      const userInfor = await UserService.getInforByGoogleLogin(tokenResponse?.access_token)
-      if (!!userInfor) {
-        const dataFromGoogle = userInfor?.data
-        form.setFieldsValue({
-          Email: dataFromGoogle.email,
-          FullName: dataFromGoogle.given_name,
-          AvatarPath: dataFromGoogle.picture,
-          IsByGoogle: true
-        })
-      } else {
-        return toast.error("Have something error")
+      try {
+        setLoading(true)
+        const userInfor = await UserService.getInforByGoogleLogin(tokenResponse?.access_token)
+        if (!!userInfor) {
+          const dataFromGoogle = userInfor?.data
+          const res = await UserService.register({
+            Email: dataFromGoogle.email,
+            FullName: dataFromGoogle.name,
+            AvatarPath: dataFromGoogle.picture,
+            IsByGoogle: true,
+            RoleID: roleID
+          })
+          if (!!res?.isError) return toast.error(res?.msg)
+          const user = decodeData(res?.data)
+          if (!!user.ID) {
+            dispatch(globalSlice.actions.setIsCheckAuth(true))
+            if (user.RoleID === Roles.ROLE_ADMIN) {
+              navigate("/dashboard")
+            } else {
+              navigate('/')
+            }
+          } else {
+            navigate('/forbidden')
+          }
+        } else {
+          return toast.error("Have something error")
+        }
+      } finally {
+        setLoading(false)
       }
     },
   })
-
-  const getListSubject = async () => {
-    try {
-      const res = await SubjectService.getListSubject({
-        TextSearch: "",
-        CurrentPage: 0,
-        PageSize: 0
-      })
-      if (!!res?.isError) return toast.error(res?.msg)
-      setSubjects(res?.data?.List)
-    } finally {
-      console.log("")
-    }
-  }
-
-  useEffect(() => {
-    getListSubject()
-  }, [])
 
   useEffect(() => {
     if (!!user?._id) navigate("/")
@@ -139,108 +141,6 @@ const SignupPage = () => {
               <InputCustom placeholder="Email" />
             </Form.Item>
           </Col>
-          <Col span={12}>
-            <Form.Item
-              name="Phone"
-              rules={[
-                { required: true, message: "Hãy nhập vào số diện thoại của bạn" },
-                { pattern: getRegexPhoneNumber(), message: "Số điện thoại sai định dạng" }
-              ]}
-            >
-              <InputCustom style={{ width: "100%" }} placeholder="Số điện thoại" />
-            </Form.Item>
-          </Col>
-          <Col span={12}>
-            <Form.Item
-              name="DateOfBirth"
-              rules={[
-                { required: true, message: "Hãy nhập vào số diện thoại của bạn" },
-              ]}
-            >
-              <DatePicker
-                style={{ width: "100%" }}
-                placeholder="Chọn ngày sinh của bạn"
-                format="DD/MM/YYYY"
-              />
-            </Form.Item>
-          </Col>
-          <Col span={24}>
-            <Form.Item
-              name="Address"
-              rules={[
-                { required: true, message: "Hãy nhập vào địa chỉ của bạn" },
-              ]}
-            >
-              <InputCustom placeholder="Địa chỉ" />
-            </Form.Item>
-          </Col>
-          <Col span={24} className="d-flex-center">
-            <Form.Item
-              name="Gender"
-              rules={[
-                { required: true, message: "Hãy chọn giới tính của bạn" },
-              ]}
-            >
-              <Radio.Group>
-                {
-                  getListComboKey(SYSTEM_KEY.GENDER, listSystemKey).map((i, idx) =>
-                    <Radio
-                      className="border-radio"
-                      key={idx}
-                      value={i?.ParentID}
-                    >
-                      {i?.ParentName}
-                    </Radio>
-                  )
-                }
-              </Radio.Group>
-            </Form.Item>
-          </Col>
-          {
-            roleID === 4 &&
-            <Col Col span={24}>
-              <Form.Item name="Subjects">
-                <Select
-                  mode="multiple"
-                  placeholder="Chọn môn học mà bạn quan tâm"
-                  style={{ width: "100%" }}
-                >
-                  {
-                    subjects?.map(i =>
-                      <Option
-                        key={i?._id}
-                        value={i?._id}
-                      >
-                        {i?.SubjectName}
-                      </Option>
-                    )
-                  }
-                </Select>
-              </Form.Item>
-            </Col>
-          }
-          {
-            roleID === 3 &&
-            <Col Col span={24}>
-              <Form.Item name="Subject">
-                <Select
-                  placeholder="Chọn môn học mà bạn dạy"
-                  style={{ width: "100%" }}
-                >
-                  {
-                    subjects?.map(i =>
-                      <Option
-                        key={i?._id}
-                        value={i?._id}
-                      >
-                        {i?.SubjectName}
-                      </Option>
-                    )
-                  }
-                </Select>
-              </Form.Item>
-            </Col>
-          }
           <Col span={24}>
             <ButtonCustom
               className="primary submit-btn fs-18"
@@ -259,7 +159,8 @@ const SignupPage = () => {
           <Col span={24}>
             <ButtonCustom
               className="d-flex-center login-google mb-15"
-              onClick={() => {
+              onClick={async () => {
+                await form.validateFields(["RoleID"])
                 validateByGoogle()
               }}
             >

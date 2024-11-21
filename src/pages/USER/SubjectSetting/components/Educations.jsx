@@ -4,7 +4,7 @@ import ListIcons from "src/components/ListIcons"
 import ButtonCircle from "src/components/MyButton/ButtonCircle"
 import ButtonCustom from "src/components/MyButton/ButtonCustom"
 
-const Educations = () => {
+const Educations = ({ subjectSetting }) => {
 
 
   return (
@@ -17,6 +17,7 @@ const Educations = () => {
                 <div className="fs-18 fw-600">Trình độ học vấn</div>
                 <ButtonCustom
                   className="third-type-2"
+                  disabled={subjectSetting?.RegisterStatus === 2 ? true : false}
                   onClick={() => add()}
                 >
                   Thêm mô tả mới
@@ -37,7 +38,10 @@ const Educations = () => {
                           { required: true, message: "Thông tin không được để trống" },
                         ]}
                       >
-                        <InputCustom placeHolder="Mô tả một chút về học vấn của bạn" />
+                        <InputCustom
+                          placeHolder="Mô tả một chút về học vấn của bạn"
+                          disabled={subjectSetting?.RegisterStatus === 2 ? true : false}
+                        />
                       </Form.Item>
                     </Col>
                     <Col span={10}>
@@ -51,6 +55,7 @@ const Educations = () => {
                       >
                         <DatePicker.RangePicker
                           style={{ width: "100%" }}
+                          disabled={subjectSetting?.RegisterStatus === 2 ? true : false}
                           format="DD/MM/YYYY"
                         />
                       </Form.Item>

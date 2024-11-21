@@ -4,13 +4,19 @@ import ListIcons from "src/components/ListIcons"
 import { formatMoney, getRealFee } from "src/lib/stringUtils"
 import { globalSelector } from "src/redux/selector"
 import { MainProfileWrapper } from "../../TeacherDetail/styled"
+import { useNavigate } from "react-router-dom"
+import Router from "src/routers"
 
-const TeacherItem = ({ teacherItem }) => {
+const TeacherItem = ({ teacherItem, subjectID }) => {
 
   const { profitPercent } = useSelector(globalSelector)
+  const navigate = useNavigate()
 
   return (
-    <MainProfileWrapper className="mb-10 cursor-pointer">
+    <MainProfileWrapper
+      className="mb-10 cursor-pointer"
+      onClick={() => navigate(`${Router.GIAO_VIEN}/${teacherItem?.Teacher?._id}${Router.MON_HOC}/${subjectID}`)}
+    >
       <Row>
         <Col span={22}>
           <Row gutter={[8, 0]}>
