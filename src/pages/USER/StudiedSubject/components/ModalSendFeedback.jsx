@@ -63,7 +63,7 @@ const ModalSendFeedback = ({ open, onCancel }) => {
         </Space>
       }
     >
-      <Form form={form}>
+      <Form form={form} layout="vertical">
         <Row>
           <Col span={24}>
             <Form.Item

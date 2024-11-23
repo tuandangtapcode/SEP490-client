@@ -49,7 +49,7 @@ const ModalReasonReject = ({ open, onCancel, onOk }) => {
             loading={loading}
             onClick={() => handleRejectRegister()}
           >
-            Lưu
+            Gửi
           </ButtonCustom>
         </Space>
       }
