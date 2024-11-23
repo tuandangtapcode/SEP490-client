@@ -51,7 +51,7 @@ const ModalChangeProfile = ({ open, onCancel, isFromProfilePage }) => {
       open={open}
       onCancel={!!isFromProfilePage ? onCancel : null}
       closable={!!isFromProfilePage ? true : false}
-      title="Hoàn thiện thông tin cá nhân"
+      title={!!isFromProfilePage ? "Chỉnh sửa thông tin cá nhân" : "Hoàn thiện thông tin cá nhân"}
       width="50vw"
       footer={
         <Space className="d-flex-end">
@@ -74,7 +74,10 @@ const ModalChangeProfile = ({ open, onCancel, isFromProfilePage }) => {
         </Space>
       }
     >
-      <p className="center-text fs-20 fw-600 mb-16">Hãy hoàn thiện thông tin cá nhân để sử dụng hệ thống</p>
+      {
+        !isFromProfilePage &&
+        <p className="center-text fs-20 fw-600 mb-16">Hãy hoàn thiện thông tin cá nhân để sử dụng hệ thống</p>
+      }
       <UpdateProfile form={form} />
     </ModalCustom >
   )

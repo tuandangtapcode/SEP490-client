@@ -13,9 +13,7 @@ import { useDispatch, useSelector } from "react-redux"
 import { globalSelector } from "src/redux/selector"
 import { toast } from "react-toastify"
 import socket from "src/utils/socket"
-import ModalSendFeedback from "./modal/ModalSendFeedback"
 import FeedbackService from "src/services/FeedbackService"
-import ModalSendMessage from "./modal/ModalSendMessage"
 import 'swiper/css'
 import { convertSchedules } from "src/lib/dateUtils"
 import ListIcons from "src/components/ListIcons"
@@ -41,8 +39,6 @@ const TeacherDetail = () => {
   const [feedbacks, setFeedbacks] = useState([])
   const [totalFeedback, setTotalFeedback] = useState(0)
   const { user, profitPercent, listSystemKey } = useSelector(globalSelector)
-  const [openModalSendFeedback, setOpenModalSendFeedback] = useState(false)
-  const [openModalSendMessage, setOpenModalSendMessage] = useState(false)
   const [openModalPreviewVideo, setOpenModalPreviewVideo] = useState(false)
 
 
@@ -331,22 +327,6 @@ const TeacherDetail = () => {
             </div>
           </MainProfileWrapper>
         </Col>
-
-        {
-          !!openModalSendFeedback &&
-          <ModalSendFeedback
-            open={openModalSendFeedback}
-            onCancel={() => setOpenModalSendFeedback(false)}
-          />
-        }
-
-        {
-          !!openModalSendMessage &&
-          <ModalSendMessage
-            open={openModalSendMessage}
-            onCancel={() => setOpenModalSendMessage(false)}
-          />
-        }
 
         {
           !!openModalPreviewVideo &&

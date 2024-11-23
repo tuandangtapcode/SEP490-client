@@ -1,28 +1,53 @@
 import { Form, Space } from "antd"
 import { useState } from "react"
+import { useSelector } from "react-redux"
 import { toast } from "react-toastify"
 import InputCustom from "src/components/InputCustom"
 import ModalCustom from "src/components/ModalCustom"
 import ButtonCustom from "src/components/MyButton/ButtonCustom"
-import UserService from "src/services/UserService"
+import { globalSelector } from "src/redux/selector"
+import ConfirmService from "src/services/ConfirmService"
+import NotificationService from "src/services/NotificationService"
+import socket from "src/utils/socket"
 
 const ModalReasonReject = ({ open, onCancel, onOk }) => {
 
   const [loading, setLoading] = useState(false)
   const [form] = Form.useForm()
+  const { user } = useSelector(globalSelector)
 
-  const handleRejectSubjectSetting = async () => {
+  const changeConfirmStatus = async () => {
     try {
       setLoading(true)
+      const resNotiffication = await NotificationService.createNotification({
+        Content: `Giáo viên ${user?.FullName} đã hủy xác nhận booking của bạn`,
+        Type: "lich-su-booking",
+        Receiver: open?.Sender?._id
+      })
+      if (!!resNotiffication?.isError) return toast.error(res?.msg)
+      socket.emit('send-notification',
+        {
+          Content: resNotiffication?.data?.Content,
+          IsSeen: resNotiffication?.IsSeen,
+          _id: resNotiffication?.data?._id,
+          Type: resNotiffication?.data?.Type,
+          IsNew: resNotiffication?.data?.IsNew,
+          Receiver: resNotiffication?.data?.Receiver,
+          createdAt: resNotiffication?.data?.createdAt
+        })
       const values = await form.validateFields()
-      const res = await UserService.responseConfirmSubjectSetting({
-        SubjectSettingID: open?._id,
-        FullName: open?.Teacher?.FullName,
-        RegisterStatus: 4,
-        Email: open?.Teacher?.Email,
+      const res = await ConfirmService.changeConfirmStatus({
+        ConfirmID: open?._id,
+        ConfirmStatus: 3,
+        Recevier: open?.Receiver,
+        RecevierName: user?.FullName,
+        SenderName: open?.Sender?.FullName,
+        SenderEmail: open?.Sender?.Email,
         Reason: values?.Reason
       })
       if (!!res?.isError) return toast.error(res?.msg)
+      toast.success(res?.msg)
+      onCancel()
       onOk()
     } finally {
       setLoading(false)
@@ -46,7 +71,7 @@ const ModalReasonReject = ({ open, onCancel, onOk }) => {
           <ButtonCustom
             className="primary"
             loading={loading}
-            onClick={() => handleRejectSubjectSetting()}
+            onClick={() => changeConfirmStatus()}
           >
             Gửi
           </ButtonCustom>

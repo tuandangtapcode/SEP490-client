@@ -29,6 +29,7 @@ import {
   apiUpdateSchedule,
   apiGetListSubjectSetting,
   apiResponseConfirmSubjectSetting,
+  apiDisabledOrEnabledSubjectSetting,
 } from "./urls"
 
 const getInforByGoogleLogin = (access_token) => axios.get(apiGetInforByGoogleLogin, {
@@ -63,6 +64,7 @@ const getListTopTeacherBySubject = SubjectID => http.get(`${apiGetListTopTeacher
 const changeCareerInformation = body => http.post(apiChangeCareerInformation, body)
 const updateSchedule = body => http.post(apiUpdateSchedule, body)
 const getListSubjectSetting = body => http.post(apiGetListSubjectSetting, body)
+const disabledOrEnabledSubjectSetting = body => http.post(apiDisabledOrEnabledSubjectSetting, body)
 
 const UserService = {
   getInforByGoogleLogin,
@@ -92,7 +94,8 @@ const UserService = {
   getListTopTeacherBySubject,
   changeCareerInformation,
   updateSchedule,
-  getListSubjectSetting
+  getListSubjectSetting,
+  disabledOrEnabledSubjectSetting
 }
 
 export default UserService

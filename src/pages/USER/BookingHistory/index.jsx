@@ -18,6 +18,7 @@ import ConfirmModal from "src/components/ModalCustom/ConfirmModal"
 import NotificationService from "src/services/NotificationService"
 import socket from "src/utils/socket"
 import Router from "src/routers"
+import ModalReasonReject from "./components/ModalReasonReject"
 
 
 const BookingHistory = () => {
@@ -29,6 +30,7 @@ const BookingHistory = () => {
   const [total, setTotal] = useState(0)
   const [openModalViewBooking, setOpenModalViewBooking] = useState(false)
   const [openModalUpdateBooking, setOpenModalUpdateBooking] = useState(false)
+  const [openModalReasonReject, setOpenModalReasonReject] = useState(false)
   const [pagination, setPagination] = useState({
     CurrentPage: 1,
     PageSize: 10,
@@ -50,9 +52,9 @@ const BookingHistory = () => {
   const changeConfirmStatus = async (record, confirmStatus) => {
     try {
       setLoading(true)
-      if ([3, 4].includes(confirmStatus)) {
+      if (confirmStatus === 4) {
         const resNotiffication = await NotificationService.createNotification({
-          Content: `Giáo viên ${user?.FullName} đã ${confirmStatus === 3 ? "hủy" : "ghi nhận"} xác nhận booking của bạn`,
+          Content: `Giáo viên ${user?.FullName} đã ghi nhận xác nhận booking của bạn`,
           Type: "lich-su-booking",
           Receiver: record?.Sender?._id
         })
@@ -105,7 +107,8 @@ const BookingHistory = () => {
     //   onClick: () => setOpenModalUpdateBooking(record)
     // },
     {
-      title: "Duyệt",
+      title: !!record?.IsDisabledConfirm ? "Bạn đã có lịch trùng với booking này" : "Duyệt",
+      isDisabled: record?.IsDisabledConfirm,
       isView: record?.IsConfirm,
       icon: ListIcons?.ICON_CONFIRM,
       onClick: () => {
@@ -129,15 +132,7 @@ const BookingHistory = () => {
       title: "Hủy",
       isView: record?.IsReject,
       icon: ListIcons?.ICON_CLOSE,
-      onClick: () => {
-        ConfirmModal({
-          description: `Bạn có chắc chắn hủy xác nhận booking không?`,
-          onOk: async close => {
-            changeConfirmStatus(record, 3)
-            close()
-          }
-        })
-      }
+      onClick: () => setOpenModalReasonReject(record)
     },
     {
       title: "Ghi nhận",
@@ -234,6 +229,7 @@ const BookingHistory = () => {
                 key={idx}
                 title={i?.title}
                 icon={i?.icon}
+                disabled={i?.isDisabled}
                 onClick={i?.onClick}
               />
             )
@@ -310,6 +306,15 @@ const BookingHistory = () => {
             onCancel={() => setOpenModalUpdateBooking(false)}
             onOk={getListConfirm}
             setOpenModalUpdateBooking={setOpenModalUpdateBooking}
+          />
+        }
+
+        {
+          !!openModalReasonReject &&
+          <ModalReasonReject
+            open={openModalReasonReject}
+            onCancel={() => setOpenModalReasonReject(false)}
+            onOk={getListConfirm}
           />
         }
 

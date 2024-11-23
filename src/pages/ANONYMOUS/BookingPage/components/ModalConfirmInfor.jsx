@@ -5,7 +5,7 @@ import { getListComboKey } from "src/lib/commonFunction"
 import { SYSTEM_KEY } from "src/lib/constant"
 import { globalSelector } from "src/redux/selector"
 import dayjs from "dayjs"
-import { formatMoney } from "src/lib/stringUtils"
+import { formatMoney, getRealFee } from "src/lib/stringUtils"
 import ButtonCustom from "src/components/MyButton/ButtonCustom"
 import { useState } from "react"
 import ConfirmService from "src/services/ConfirmService"
@@ -70,8 +70,8 @@ const ModalConfirmInfor = ({
         Subject: teacher?.Subject?._id,
         SubjectName: teacher?.Subject?.SubjectName,
         TotalFee: !!course
-          ? course?.Price * (1 + profitPercent)
-          : teacher?.Price * selectedTimes.length * 1000 * (1 + profitPercent),
+          ? getRealFee(course?.Price, profitPercent)
+          : getRealFee(teacher?.Price * selectedTimes.length, profitPercent),
         LearnType: bookingInfor?.LearnType,
         Address: bookingInfor?.LearnType === 2
           ? bookingInfor?.Address

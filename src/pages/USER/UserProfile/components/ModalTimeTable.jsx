@@ -13,6 +13,7 @@ import globalSlice from 'src/redux/globalSlice'
 import { toast } from 'react-toastify'
 import { globalSelector } from 'src/redux/selector'
 import { convertToCurrentEquivalent } from 'src/lib/dateUtils'
+import Notice from 'src/components/Notice'
 
 
 const localizer = momentLocalizer(moment)
@@ -53,8 +54,13 @@ const ModalTimeTable = ({
       setLoading(true)
       if (!schedules.length)
         return message.error("Hãy chọn lịch dạy cho bạn")
+      if (schedules?.some(i => dayjs(i.end).diff(dayjs(i.start)) < 90)) {
+        return Notice({
+          msg: "Thời gian 1 buổi học không được dưới 90 phút",
+          isSuccess: false
+        })
+      }
       const res = await UserService.updateSchedule({
-        Email: user?.Email,
         Schedules: schedules?.map(i => ({
           DateAt: dayjs(i?.start).format("dddd"),
           StartTime: dayjs(i?.start),

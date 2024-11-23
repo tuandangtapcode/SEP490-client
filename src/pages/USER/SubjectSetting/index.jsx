@@ -1,4 +1,4 @@
-import { Col, Form, message, Row, Space } from "antd"
+import { Col, Form, List, message, Row, Space } from "antd"
 import { useEffect, useState } from "react"
 import { toast } from "react-toastify"
 import ButtonCustom from "src/components/MyButton/ButtonCustom"
@@ -117,6 +117,21 @@ const SubjectSetting = () => {
     }
   }
 
+  const disabledOrEnabledSubjectSetting = async (SubjectSettingID, IsDisabled) => {
+    try {
+      setLoading(true)
+      const res = await UserService.disabledOrEnabledSubjectSetting({
+        SubjectSettingID,
+        IsDisabled
+      })
+      if (!!res?.isError) return toast.error(res?.msg)
+      toast.success(res?.msg)
+      getListSubjectSetting()
+    } finally {
+      setLoading(false)
+    }
+  }
+
   useEffect(() => {
     getListSubjectSetting()
   }, [])
@@ -173,7 +188,52 @@ const SubjectSetting = () => {
             </Space>
           </Col>
           <Col span={24} className="mb-20">
-            {
+            <List
+              dataSource={subjectSettings}
+              renderItem={i => (
+                <SubjectItemStyled
+                  className={!!i?.IsDisabled ? "disabled" : ""}
+                >
+                  <List.Item
+                    actions={[
+                      <ButtonCustom
+                        key={1}
+                        className={`${subjectSetting?.Subject?._id === i?.Subject?._id ? "primary" : "third"} mini-size`}
+                        onClick={() => {
+                          if (i?.Subject?._id !== subjectSetting?.Subject?._id) {
+                            setSubjectSetting(i)
+                          } else {
+                            setSubjectSetting()
+                          }
+                        }}
+                      >
+                        Chọn
+                      </ButtonCustom>,
+                      <ButtonCustom
+                        key={2}
+                        className={`third mini-size`}
+                        onClick={() => {
+                          if (!i?.IsDisabled) {
+                            disabledOrEnabledSubjectSetting(i, true)
+                          } else {
+                            disabledOrEnabledSubjectSetting(i, false)
+                          }
+                        }}
+                      >
+                        {
+                          !i?.IsDisabled
+                            ? "Ẩn môn học"
+                            : "Hiện môn học"
+                        }
+                      </ButtonCustom>
+                    ]}
+                  >
+                    {i?.Subject?.SubjectName}
+                  </List.Item>
+                </SubjectItemStyled>
+              )}
+            />
+            {/* {
               subjectSettings?.map((i, idx) =>
                 <SubjectItemStyled
                   className={subjectSetting?.Subject?._id === i?.Subject?._id ? "active" : ""}
@@ -189,7 +249,7 @@ const SubjectSetting = () => {
                   {i?.Subject?.SubjectName}
                 </SubjectItemStyled>
               )
-            }
+            } */}
           </Col>
           {
             !!subjectSetting &&
