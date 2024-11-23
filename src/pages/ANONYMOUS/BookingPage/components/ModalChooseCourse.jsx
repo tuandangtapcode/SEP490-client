@@ -68,7 +68,7 @@ const ModalChooseCourse = ({
       )
     },
     {
-      title: "Giá tiền",
+      title: "Học phí",
       width: 60,
       dataIndex: "Price",
       align: "center",

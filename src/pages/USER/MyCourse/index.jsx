@@ -86,6 +86,13 @@ const MyCourse = () => {
       ),
     },
     {
+      title: "Tiêu đề khóa học",
+      width: 100,
+      align: "center",
+      dataIndex: "Title",
+      key: "Title",
+    },
+    {
       title: "Tên môn học",
       width: 100,
       align: "center",

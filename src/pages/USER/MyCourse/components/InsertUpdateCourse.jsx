@@ -50,6 +50,7 @@ const InsertUpdateCourse = ({ open, onCancel, onOk }) => {
     if (!!open?._id) {
       form.setFieldsValue(open)
     }
+    setTotalFee()
   }, [open?._id])
 
   return (

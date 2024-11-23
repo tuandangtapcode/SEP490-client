@@ -15,6 +15,7 @@ import socket from "src/utils/socket"
 import SpinCustom from "src/components/SpinCustom"
 import { toast } from "react-toastify"
 import SubjectService from "src/services/SubjectService"
+import ModalReasonReject from "./modal/ModalReasonReject"
 
 const { Option } = Select
 
@@ -34,6 +35,7 @@ const TeacherManagement = () => {
   })
   const { listSystemKey } = useSelector(globalSelector)
   const [subjects, setSubjects] = useState([])
+  const [openModalReasonReject, setOpenModalReasonReject] = useState(false)
 
   const getListSubject = async () => {
     try {
@@ -70,13 +72,13 @@ const TeacherManagement = () => {
     getListTeacher()
   }, [pagination])
 
-  const handleResponseConfirmRegister = async (record, RegisterStatus) => {
+  const handleConfirmRegister = async (record) => {
     try {
       setLoading(true)
       const res = await UserService.responseConfirmRegister({
         FullName: record?.FullName,
         TeacherID: record?._id,
-        RegisterStatus,
+        RegisterStatus: 3,
         Email: record?.Account?.Email
       })
       if (!!res?.isError) return toast.error(res?.msg)
@@ -108,12 +110,12 @@ const TeacherManagement = () => {
     {
       title: "Duyệt",
       icon: ListIcons?.ICON_CONFIRM,
-      disabled: record?.RegisterStatus !== 2,
+      disabled: record?.IsConfirm,
       onClick: () => {
         ConfirmModal({
           description: `Bạn có chắc chắn duyệt tài khoản ${record?.FullName} không?`,
           onOk: async close => {
-            handleResponseConfirmRegister(record, 3)
+            handleConfirmRegister(record)
             close()
           }
         })
@@ -122,21 +124,13 @@ const TeacherManagement = () => {
     {
       title: "Không duyệt",
       icon: ListIcons?.ICON_CLOSE,
-      disabled: record?.RegisterStatus !== 2,
-      onClick: () => {
-        ConfirmModal({
-          description: `Bạn có chắc chắn không duyệt tài khoản ${record?.FullName} không?`,
-          onOk: async close => {
-            handleResponseConfirmRegister(record, 4)
-            close()
-          }
-        })
-      }
+      disabled: record?.IsReject,
+      onClick: () => setOpenModalReasonReject(record)
     },
     {
       title: !!record?.Account?.IsActive ? "Khóa tài khoản" : "Mở khóa tài khoản",
       icon: !!record?.Account?.IsActive ? ListIcons?.ICON_BLOCK : ListIcons?.ICON_UNBLOCK,
-      disabled: record?.RegisterStatus !== 3 && !!record?.Account?.IsActive,
+      disabled: record?.IsLockUnLock,
       onClick: () => handleInactiveOrActiveAccount({
         UserID: record?._id,
         IsActive: !!record?.Account?.IsActive ? false : true,
@@ -162,15 +156,14 @@ const TeacherManagement = () => {
       key: "FullName",
     },
     {
-      title: "Môn học",
+      title: "Email",
       width: 80,
       align: "center",
-      key: "Subjects",
-      render: (val, record) => (
-        record?.SubjectSettings?.map(i =>
-          <div key={i?._id}>{i?.Subject?.SubjectName}</div>
-        )
-      )
+      key: "Email",
+      dataIndex: "Email",
+      render: (_, record, index) => (
+        <div className="text-center">{record?.Account?.Email}</div>
+      ),
     },
     {
       title: "Trạng thái đăng ký",
@@ -226,11 +219,11 @@ const TeacherManagement = () => {
 
   return (
     <SpinCustom spinning={loading}>
-      <Row gutter={[16, 16]}>
+      <Row gutter={[8, 16]}>
         <Col span={24} className="mb-16">
           <div className="title-type-1"> QUẢN LÝ TÀI KHOẢN GIÁO VIÊN</div>
         </Col>
-        <Col span={24}>
+        <Col span={20}>
           <InputCustom
             type="isSearch"
             placeholder="Nhập vào tên giáo viên"
@@ -238,52 +231,12 @@ const TeacherManagement = () => {
             onSearch={e => setPagination(pre => ({ ...pre, TextSearch: e }))}
           />
         </Col>
-        <Col span={8}>
-          <Select
-            placeholder="Chọn môn học"
-            onChange={e => setPagination(pre => ({ ...pre, SubjectID: e }))}
-          >
-            {
-              subjects?.map(i =>
-                <Option
-                  key={i?._id}
-                  value={i?._id}
-                >
-                  {i?.SubjectName}
-                </Option>
-              )
-            }
-          </Select>
-        </Col>
-        <Col span={8}>
-          <Select
-            mode="multiple"
-            placeholder="Chọn level"
-            onChange={e => setPagination(pre => ({ ...pre, Level: e }))}
-          >
-            {
-              getListComboKey(SYSTEM_KEY.SKILL_LEVEL, listSystemKey)?.map(i =>
-                <Option
-                  key={i?.ParentID}
-                  value={i?.ParentID}
-                >
-                  {i?.ParentName}
-                </Option>
-              )
-            }
-          </Select>
-        </Col>
-        <Col span={8}>
+        <Col span={4}>
           <Select
             placeholder="Tình trạng đăng ký"
+            allowClear
             onChange={e => setPagination(pre => ({ ...pre, RegisterStatus: e }))}
           >
-            <Option
-              key={0}
-              value={0}
-            >
-              Tất cả
-            </Option>
             {
               getListComboKey(SYSTEM_KEY.REGISTER_STATUS, listSystemKey)?.map(i =>
                 <Option
@@ -330,13 +283,23 @@ const TeacherManagement = () => {
           />
         </Col>
 
-        {!!openViewProfile &&
+        {
+          !!openViewProfile &&
           <ViewProfileTeacher
             open={openViewProfile}
             onCancel={() => setOpenViewProfile(false)}
-            getListTeacher={getListTeacher}
           />
         }
+
+        {
+          !!openModalReasonReject &&
+          <ModalReasonReject
+            open={openModalReasonReject}
+            onCancel={() => setOpenModalReasonReject(false)}
+            onOk={getListTeacher}
+          />
+        }
+
       </Row>
 
     </SpinCustom>

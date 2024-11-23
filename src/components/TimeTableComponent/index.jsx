@@ -25,7 +25,7 @@ const TimeTableComponent = ({ schedules }) => {
         endAccessor={event => {
           return new Date(event.end)
         }}
-        style={{ width: "100%", height: 700 }}
+        style={{ width: "100%", height: 540 }}
         toolbar={false}
         defaultView={Views.WEEK}
         formats={formats}

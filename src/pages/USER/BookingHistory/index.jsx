@@ -17,6 +17,8 @@ import SpinCustom from "src/components/SpinCustom"
 import ConfirmModal from "src/components/ModalCustom/ConfirmModal"
 import NotificationService from "src/services/NotificationService"
 import socket from "src/utils/socket"
+import Router from "src/routers"
+import ModalReasonReject from "./components/ModalReasonReject"
 
 
 const BookingHistory = () => {
@@ -28,6 +30,7 @@ const BookingHistory = () => {
   const [total, setTotal] = useState(0)
   const [openModalViewBooking, setOpenModalViewBooking] = useState(false)
   const [openModalUpdateBooking, setOpenModalUpdateBooking] = useState(false)
+  const [openModalReasonReject, setOpenModalReasonReject] = useState(false)
   const [pagination, setPagination] = useState({
     CurrentPage: 1,
     PageSize: 10,
@@ -49,9 +52,9 @@ const BookingHistory = () => {
   const changeConfirmStatus = async (record, confirmStatus) => {
     try {
       setLoading(true)
-      if (confirmStatus === 3) {
+      if (confirmStatus === 4) {
         const resNotiffication = await NotificationService.createNotification({
-          Content: `Giáo viên ${user?.FullName} đã hủy xác nhận booking của bạn`,
+          Content: `Giáo viên ${user?.FullName} đã ghi nhận xác nhận booking của bạn`,
           Type: "lich-su-booking",
           Receiver: record?.Sender?._id
         })
@@ -63,7 +66,7 @@ const BookingHistory = () => {
             _id: resNotiffication?.data?._id,
             Type: resNotiffication?.data?.Type,
             IsNew: resNotiffication?.data?.IsNew,
-            Receiver: record?.Sender?._id,
+            Receiver: resNotiffication?.data?.Receiver,
             createdAt: resNotiffication?.data?.createdAt
           })
       }
@@ -76,6 +79,9 @@ const BookingHistory = () => {
         SenderEmail: record?.Sender?.Email
       })
       if (!!res?.isError) return toast.error(res?.msg)
+      if (confirmStatus === 4) {
+        socket.emit("send-noted-confirm", res?.data)
+      }
       getListConfirm()
       toast.success(res?.msg)
     } finally {
@@ -90,19 +96,20 @@ const BookingHistory = () => {
   const listBtn = record => [
     {
       title: "Xem chi tiết",
-      isView: record?.IsView,
+      isView: true,
       icon: ListIcons?.ICON_VIEW,
       onClick: () => setOpenModalViewBooking(record)
     },
+    // {
+    //   title: "Chỉnh sửa",
+    //   isView: record?.IsUpdate,
+    //   icon: ListIcons?.ICON_EDIT,
+    //   onClick: () => setOpenModalUpdateBooking(record)
+    // },
     {
-      title: "Chỉnh sửa",
-      isView: record?.IsUpdate,
-      icon: ListIcons?.ICON_EDIT,
-      onClick: () => setOpenModalUpdateBooking(record)
-    },
-    {
-      title: "Duyệt",
-      isView: record?.IsAccept,
+      title: !!record?.IsDisabledConfirm ? "Bạn đã có lịch trùng với booking này" : "Duyệt",
+      isDisabled: record?.IsDisabledConfirm,
+      isView: record?.IsConfirm,
       icon: ListIcons?.ICON_CONFIRM,
       onClick: () => {
         ConfirmModal({
@@ -119,21 +126,19 @@ const BookingHistory = () => {
       title: "Thanh toán",
       isView: record?.IsPaid,
       icon: ListIcons?.ICON_PAYMENT_BOOKING,
-      onClick: () => navigate(`/user/checkout/${record?._id}`)
+      onClick: () => navigate(`${Router.CHECKOUT}/${record?._id}`)
     },
     {
       title: "Hủy",
       isView: record?.IsReject,
       icon: ListIcons?.ICON_CLOSE,
-      onClick: () => {
-        ConfirmModal({
-          description: `Bạn có chắc chắn hủy xác nhận booking không?`,
-          onOk: async close => {
-            changeConfirmStatus(record, 3)
-            close()
-          }
-        })
-      }
+      onClick: () => setOpenModalReasonReject(record)
+    },
+    {
+      title: "Ghi nhận",
+      isView: record?.IsNoted,
+      icon: ListIcons?.ICON_NOTED,
+      onClick: () => changeConfirmStatus(record, 4)
     },
   ]
 
@@ -203,7 +208,7 @@ const BookingHistory = () => {
       dataIndex: "ConfirmStatus",
       align: "center",
       render: (val) => (
-        <Tag color={["warning", "success", "error"][val - 1]} className="p-5 fs-16">
+        <Tag color={["warning", "success", "error", "blue"][val - 1]} className="p-5 fs-16">
           {
             getListComboKey(SYSTEM_KEY.CONFIRM_STATUS, listSystemKey)?.find(i => i?.ParentID === val)?.ParentName
           }
@@ -224,6 +229,7 @@ const BookingHistory = () => {
                 key={idx}
                 title={i?.title}
                 icon={i?.icon}
+                disabled={i?.isDisabled}
                 onClick={i?.onClick}
               />
             )
@@ -232,6 +238,15 @@ const BookingHistory = () => {
       ),
     },
   ]
+
+  useEffect(() => {
+    socket.on("listen-noted-confirm", data => {
+      const copyConfirms = [...confirms]
+      const index = confirms?.findIndex(i => i?._id === data?._id)
+      copyConfirms.splice(index, 1, data)
+      setConfirms(copyConfirms)
+    })
+  }, [])
 
 
   return (
@@ -289,6 +304,16 @@ const BookingHistory = () => {
           <ModalUpdateBooking
             open={openModalUpdateBooking}
             onCancel={() => setOpenModalUpdateBooking(false)}
+            onOk={getListConfirm}
+            setOpenModalUpdateBooking={setOpenModalUpdateBooking}
+          />
+        }
+
+        {
+          !!openModalReasonReject &&
+          <ModalReasonReject
+            open={openModalReasonReject}
+            onCancel={() => setOpenModalReasonReject(false)}
             onOk={getListConfirm}
           />
         }

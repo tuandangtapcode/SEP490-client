@@ -4,10 +4,8 @@ import { useEffect, useState } from "react"
 import SpinCustom from "src/components/SpinCustom"
 import BankingService from "src/services/BankingService"
 import { toast } from "react-toastify"
-import { useSelector } from "react-redux"
-import { globalSelector } from "src/redux/selector"
 
-const BankInfor = () => {
+const BankInfor = ({ isProfilePage, setBankInfor }) => {
 
   const [form] = Form.useForm()
   const [loading, setLoading] = useState(false)
@@ -15,9 +13,6 @@ const BankInfor = () => {
   const [filteredBanks, setFilteredBanks] = useState([])
   const [bankingInfoAccount, setBankingInfoAccount] = useState([])
   const [disableInput, setDisableInput] = useState(false)
-
-  const { user } = useSelector(globalSelector)
-
 
   const getListBank = async () => {
     try {
@@ -41,8 +36,11 @@ const BankInfor = () => {
       }
       if (!body?.bin || !body?.accountNumber) return
       const res = await BankingService.getInforBankAccount(body)
-
-      if (!res?.data?.data) return toast.error(res?.data?.desc)
+      if (!res?.data?.data) {
+        form.setFieldValue("accountName", "")
+        return toast.error(res?.data?.desc)
+      }
+      toast.success(res?.data?.desc)
       form.setFieldValue("accountName", res?.data?.data?.accountName)
 
     } finally {
@@ -82,6 +80,9 @@ const BankInfor = () => {
         : await BankingService.createBankingInfor(body)
       if (!!res?.isError) return toast.error(res?.msg)
       toast.success(res?.msg)
+      if (!!isProfilePage) {
+        setBankInfor(res?.data)
+      }
       setDisableInput(true)
     } finally {
       setLoading(false)

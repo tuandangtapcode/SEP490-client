@@ -69,7 +69,7 @@ const CheckoutPage = () => {
       } else if (+localStorage.getItem("paymentMethod") === 1) {
         handleCreatePaymentVNPay(
           "Thanh toán book giáo viên",
-          confirm?.TotalFee,
+          confirm?.TotalFee * 100,
           `${RootURLWebsite}${location.pathname}`,
           "1.1.1.1"
         )
@@ -132,12 +132,14 @@ const CheckoutPage = () => {
   }, [ConfirmID])
 
   useEffect(() => {
-    if (
-      ((!!queryParams.get("status") && queryParams.get("status") === "PAID") ||
-        (!!queryParams.get("vnp_ResponseCode") && queryParams.get("vnp_ResponseCode") === "00")) &&
-      !!confirm
-    ) {
-      handleCompleteBooking()
+    if (!confirm?.IsPaid) {
+      if (
+        ((!!queryParams.get("status") && queryParams.get("status") === "PAID") ||
+          (!!queryParams.get("vnp_ResponseCode") && queryParams.get("vnp_ResponseCode") === "00")) &&
+        !!confirm
+      ) {
+        handleCompleteBooking()
+      }
     }
   }, [location.search, confirm])
 
@@ -153,7 +155,7 @@ const CheckoutPage = () => {
             <Col span={12}>
               <div className="mb-6">
                 <span className="mr-4 fs-15 fw-600">Giáo viên:</span>
-                <span>{user?.FullName}</span>
+                <span>{confirm?.Receiver?.FullName}</span>
               </div>
               <div className="mb-6">
                 <span className="mr-4 fs-15 fw-600">Môn học:</span>
@@ -187,6 +189,7 @@ const CheckoutPage = () => {
               <p className="fs-16 fw-600 mb-8">Phương thức thanh toán:</p>
               <Radio.Group
                 onChange={e => localStorage.setItem("paymentMethod", e.target.value)}
+                disabled={confirm?.IsPaid}
                 className="mb-12"
               >
                 <PaymentMethodStyled
@@ -232,12 +235,17 @@ const CheckoutPage = () => {
             <Col span={12}>
             </Col>
             <Col span={12} className="mt-12">
-              <ButtonCustom
-                className="medium-size primary"
-                onClick={() => createPaymentLink()}
-              >
-                Thanh toán
-              </ButtonCustom>
+              {
+                !confirm?.IsPaid
+                  ?
+                  <ButtonCustom
+                    className="medium-size primary"
+                    onClick={() => createPaymentLink()}
+                  >
+                    Thanh toán
+                  </ButtonCustom>
+                  : <p className="fs-16 fw-700">Booking đã được thanh toán</p>
+              }
             </Col>
           </Row>
 
@@ -248,6 +256,7 @@ const CheckoutPage = () => {
               onCancel={() => setOpenModalSuccessBooking(false)}
             />
           }
+
         </CheckoutPageStyled>
       </CheckoutPageContainerStyled>
     </SpinCustom >

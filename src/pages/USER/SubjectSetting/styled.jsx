@@ -4,10 +4,10 @@ import styled from "styled-components"
 export const SubjectItemStyled = styled.div`
   border: 1px solid #ccc;
   border-radius: 4px;
-  padding: 8px;
+  padding: 0px 12px;
   cursor: pointer;
-  &.active {
-    background-color: var(--color-primary-hover);
-    color: white
+  &.disabled {
+    background-color: #eee9e9;
+    color: #eee9e9
   }
 `

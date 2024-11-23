@@ -12,7 +12,7 @@ import { Roles, SYSTEM_KEY } from "src/lib/constant"
 import { globalSelector } from "src/redux/selector"
 import LearnHistoryService from "src/services/LearnHistoryService"
 import ModalIssueMentor from "../SchedulePage/components/ModalIssueMentor"
-import ModalSendFeedback from "src/pages/ANONYMOUS/TeacherDetail/modal/ModalSendFeedback"
+import ModalSendFeedback from "src/pages/USER/StudiedSubject/components/ModalSendFeedback"
 import SpinCustom from "src/components/SpinCustom"
 
 const StudiedSubject = () => {

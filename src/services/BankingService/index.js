@@ -9,14 +9,14 @@ import {
   apiUpdateBankingInfor
 } from "./urls"
 
-const CLIENTID = import.meta.env.VITE_VIETQR_CLIENTID
-const APIKEY = import.meta.env.VITE_VIETQR_APIKEY
+const ClientID = import.meta.env.VITE_VIETQR_CLIENT_ID
+const APIKey = import.meta.env.VITE_VIETQR_API_KEY
 
 const getListBank = () => axios.get(apiGetListBank)
 const getInforBankAccount = body => axios.post(apiGetInforBankAccount, body, {
   headers: {
-    "x-client-id": CLIENTID,
-    "x-api-key": APIKEY
+    "x-client-id": ClientID,
+    "x-api-key": APIKey
   }
 })
 const createBankingInfor = body => http.post(apiCreateBankingInfor, body)
