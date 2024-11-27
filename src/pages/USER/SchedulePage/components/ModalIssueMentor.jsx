@@ -20,7 +20,7 @@ const ModalIssueMentor = ({ open, onCancel }) => {
       const body = {
         ...values,
         Timetable: open?._id,
-        Teacher: open?.Teacher
+        Teacher: open?.Teacher?._id
       }
       const res = await IssueService.createIssue(body)
       if (!!res?.isError) return toast.error(res?.msg)

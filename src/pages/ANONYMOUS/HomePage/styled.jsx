@@ -16,6 +16,7 @@ export const SearchContainerStyled = styled.div`
 export const TopTeacherItemStyled = styled.div`
   box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
   padding: 12px;
+  height: 640px;
 `
 export const BackgroundImageStyled = styled.div`
   background-image: url(${props => props.bgImage});

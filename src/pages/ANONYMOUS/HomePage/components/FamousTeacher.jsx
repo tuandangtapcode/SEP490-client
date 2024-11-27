@@ -11,12 +11,7 @@ import Router from "src/routers"
 import { formatMoney, getRealFee } from "src/lib/stringUtils"
 const { Meta } = Card
 
-const FamoursTeacher = ({
-  recommendSubjects,
-  teachers,
-  subject,
-  setSubject
-}) => {
+const FamoursTeacher = ({ teachers, prompt }) => {
 
   const { listSystemKey, profitPercent } = useSelector(globalSelector)
   const navigate = useNavigate()
@@ -24,40 +19,13 @@ const FamoursTeacher = ({
   return (
     <Row gutter={[16]} style={{ width: "80%" }}>
       <Col span={24} className="d-flex-center">
-        <div className="fs-36 fw-700">Khám phá các giáo viên nổi tiếng</div>
-      </Col>
-      <Col span={24} className="d-flex-center mb-45">
-        <div
-          style={{
-            color: "#778088",
-            fontSize: "16px"
-          }}
-        >
-          Amet minim mollit non deserunt ullamco est sit aliqua dolor do amet sint. Velit officia consequat duis enim velit mollit
+        <div className="fs-36 fw-700 mb-12">
+          {
+            !!prompt
+              ? "Những giáo viên theo tìm kiếm của bạn"
+              : "Những giáo viên được đánh giá tốt nhất"
+          }
         </div>
-      </Col>
-      <Col span={24} className="d-flex-sa mb-30">
-        {
-          recommendSubjects?.map((i, idx) =>
-            <ButtonCustom
-              key={idx}
-              className={`${i?._id === subject?._id ? "primary" : "third"} submit-btn mr-8`}
-              onClick={() => setSubject(i)}
-            >
-              {i?.SubjectName}
-            </ButtonCustom>
-          )
-        }
-      </Col>
-      <Col span={24} className="d-flex-center mb-20">
-        <img
-          src={subject?.AvatarPath}
-          alt=""
-          style={{
-            width: "60%",
-            height: "400px"
-          }}
-        />
       </Col>
       <Col span={24}>
         <Row gutter={[8, 0]}>
@@ -67,16 +35,20 @@ const FamoursTeacher = ({
                 <TopTeacherItemStyled>
                   <Card
                     hoverable
-                    cover={<img alt="example" src={i?.AvatarPath} />}
-                    onClick={() => navigate(`${Router.GIAO_VIEN}/${i?._id}${Router.MON_HOC}/${subject?._id}`)}
+                    cover={<img alt="example" src={i?.Teacher?.AvatarPath} />}
+                    onClick={() => navigate(`${Router.GIAO_VIEN}/${i?.Teacher?._id}${Router.MON_HOC}/${i?.Subject?._id}`)}
                   >
-                    <Meta title={i?.FullName} className="mb-8" />
+                    <Meta title={i?.Teacher?.FullName} className="mb-8" />
+                    <div className="d-flex align-items-center">
+                      <span className="mt-6 mr-6">{ListIcons.ICON_SUBJECT_CATE}</span>
+                      {i?.Subject?.SubjectName}
+                    </div>
                     <div className="d-flex align-items-center">
                       <span className="mt-6 mr-6">{ListIcons.ICON_LEVEL}</span>
                       {
                         getListComboKey(SYSTEM_KEY.SKILL_LEVEL, listSystemKey)
                           ?.map((item, idx) => {
-                            if (i?.SubjectSetting?.Levels?.includes(item?.ParentID))
+                            if (i?.Levels?.includes(item?.ParentID))
                               return <span key={idx} className="mr-4">{item?.ParentName}</span>
                           })
                       }
@@ -86,7 +58,7 @@ const FamoursTeacher = ({
                       {
                         getListComboKey(SYSTEM_KEY.LEARN_TYPE, listSystemKey)
                           ?.map((item, idx) => {
-                            if (i?.SubjectSetting?.LearnTypes?.includes(item?.ParentID))
+                            if (i?.LearnTypes?.includes(item?.ParentID))
                               return <span key={idx} className="mr-4">{item?.ParentName}</span>
                           })
                       }
@@ -96,7 +68,7 @@ const FamoursTeacher = ({
                         <Rate
                           allowHalf
                           disabled
-                          value={!!i?.TotalVotes ? i?.TotalVotes / i?.Votes?.length : 0}
+                          value={!!i?.Teacher?.TotalVotes ? i?.Teacher?.TotalVotes / i?.Teacher?.Votes?.length : 0}
                           style={{
                             fontSize: "15px"
                           }}
@@ -105,11 +77,11 @@ const FamoursTeacher = ({
                       <Col span={12} className="d-flex-end align-items-center">
                         <p className="primary-text fs-17 mt-4">{ListIcons.ICON_DOLLAR}</p>
                         <p className="primary-text fs-17 fw-700">
-                          {formatMoney(getRealFee(i?.SubjectSetting?.Price, profitPercent))}
+                          {formatMoney(getRealFee(i?.Price, profitPercent))}
                         </p>
                       </Col>
                       <Col span={12}>
-                        <p>{i?.Votes?.length} đánh giá</p>
+                        <p>{i?.Teacher?.Votes?.length} đánh giá</p>
                       </Col>
                       <Col span={12} className="d-flex-end">
                         <p>1 buổi</p>

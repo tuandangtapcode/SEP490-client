@@ -80,6 +80,7 @@ const ModalChangeTimetable = ({
       })
       if (!!res?.isError) return toast.warning(res?.msg)
       toast.success(res?.msg)
+      setOpenModalDetailSchedule(res?.data)
       getTimeTable()
       onCancel()
     } finally {

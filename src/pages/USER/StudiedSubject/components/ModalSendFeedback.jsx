@@ -21,7 +21,8 @@ const ModalSendFeedback = ({ open, onCancel }) => {
       const values = await form.validateFields()
       const res = await FeedbackService.createFeedback({
         ...values,
-        Teacher: !!open?.Teacher?._id ? open?.Teacher?._id : open?._id
+        Teacher: open?.Teacher?._id,
+        LearnHistory: open?._id
       })
       if (!!res?.isError) return toast.error(res?.msg)
       socket.emit("send-feedback", {
@@ -33,6 +34,7 @@ const ModalSendFeedback = ({ open, onCancel }) => {
         RoomID: open?._id,
         createdAt: Date.now
       })
+      toast.success(res?.msg)
       onCancel()
     } finally {
       setLoading(false)

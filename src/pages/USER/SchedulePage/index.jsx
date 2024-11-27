@@ -21,7 +21,7 @@ const messages = {
   month: "Tháng",
   week: "Tuần",
   day: "Ngày",
-  agenda: "Lịch học hôm nay",
+  agenda: "Lịch dạy",
   date: "Ngày",
   time: "Thời gian",
   event: "Sự kiện",

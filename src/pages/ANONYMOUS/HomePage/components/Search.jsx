@@ -14,7 +14,7 @@ import Router from "src/routers"
 
 const { Option } = Select
 
-const Search = () => {
+const Search = ({ setPrompt }) => {
 
   const { listSystemKey } = useSelector(globalSelector)
   const [subjects, setSubjects] = useState([])
@@ -61,12 +61,19 @@ const Search = () => {
               allowClear
               placeholder="Chọn môn học"
               onChange={e => setSearchData(pre => ({ ...pre, Subject: e }))}
-              onPopupScroll={e => {
-                const target = e.currentTarget
-                if (target.scrollHeight + target.scrollTop >= target.clientHeight) {
-                  setPagination(pre => ({ ...pre, CurrentPage: pre.CurrentPage + 1 }))
-                }
-              }}
+              // onPopupScroll={e => {
+              //   const target = e.currentTarget
+              //   if (
+              //     !isLoadingMore &&
+              //     target.scrollHeight - target.scrollTop <= target.clientHeight + 1
+              //   ) {
+              //     setIsLoadingMore(true);
+              //     setPagination(prev => ({
+              //       ...prev,
+              //       CurrentPage: prev.CurrentPage + 1
+              //     }))
+              //   }
+              // }}
               onSearch={(e) => {
                 if (timeOutRef.current) {
                   clearTimeout(timeOutRef.current)

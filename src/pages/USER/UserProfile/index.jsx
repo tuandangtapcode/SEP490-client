@@ -40,10 +40,6 @@ const UserProfile = () => {
       message = "Bạn chưa bổ sung môn học đăng ký"
     } else if (!user?.Certificates?.length) {
       message = "Bạn chưa bổ sung chứng nhận"
-    } else if (!user?.Schedules?.length) {
-      message = "Bạn chưa bổ sung lịch trình giảng dạy"
-    } else if (!bankInfor?._id) {
-      message = "Bạn chưa bổ sung thông tin thanh toán"
     } else if (!user?.Description) {
       message = "Bạn chưa bổ sung giới thiệu bản thân"
     }
