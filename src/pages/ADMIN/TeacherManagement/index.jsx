@@ -29,28 +29,10 @@ const TeacherManagement = () => {
     TextSearch: "",
     CurrentPage: 1,
     PageSize: 10,
-    SubjectID: "",
-    Level: [],
     RegisterStatus: 0
   })
   const { listSystemKey } = useSelector(globalSelector)
-  const [subjects, setSubjects] = useState([])
   const [openModalReasonReject, setOpenModalReasonReject] = useState(false)
-
-  const getListSubject = async () => {
-    try {
-      setLoading(true)
-      const res = await SubjectService.getListSubject({
-        TextSearch: "",
-        CurrentPage: 0,
-        PageSize: 0
-      })
-      if (!!res?.isError) return toast.error(res?.msg)
-      setSubjects(res?.data?.List)
-    } finally {
-      setLoading(false)
-    }
-  }
 
   const getListTeacher = async () => {
     try {
@@ -63,10 +45,6 @@ const TeacherManagement = () => {
       setLoading(false)
     }
   }
-
-  useEffect(() => {
-    getListSubject()
-  }, [])
 
   useEffect(() => {
     getListTeacher()

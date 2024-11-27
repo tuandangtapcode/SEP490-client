@@ -177,6 +177,7 @@ const ModalDetailSchedule = ({
         !!openModalChangeTimetable &&
         <ModalChangeTimetable
           open={openModalChangeTimetable}
+          dataModalDetail={open}
           onCancel={() => setOpenModalChangeTimetable(false)}
           onCancelModalDetail={() => onCancel()}
           getTimeTable={getTimeTable}

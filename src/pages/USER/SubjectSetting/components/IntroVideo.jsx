@@ -52,6 +52,7 @@ const IntroVideo = ({
               className="pointer"
               multiple={true}
               onRemove={file => {
+                console.log("file", file);
                 if (!!file?.id) {
                   const copyFile = [...filesIntroVideo]
                   const newData = copyFile.filter(i => i?.id !== file?.id)

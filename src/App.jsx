@@ -27,6 +27,8 @@ const SubjectCateManagement = React.lazy(() => import("src/pages/ADMIN/SubjectCa
 const InboxManagement = React.lazy(() => import("src/pages/ADMIN/InboxManagement"))
 const PaymentTransfer = React.lazy(() => import("src/pages/ADMIN/PaymentTransfer"))
 const SubjectSettingManagement = React.lazy(() => import("src/pages/ADMIN/SubjectSettingManagement"))
+const BlogManagement = React.lazy(() => import("src/pages/ADMIN/BlogManagement"))
+const FeedbackManagement = React.lazy(() => import("src/pages/ADMIN/FeedbackManagement"))
 
 // ANONYMOUS
 // const ChatBoxAI = React.lazy(() => import("src/components/ChatBoxAI"))
@@ -171,6 +173,22 @@ const App = () => {
           element: (
             <LazyLoadingComponent>
               <SubjectSettingManagement />
+            </LazyLoadingComponent>
+          )
+        },
+        {
+          path: Router.QUAN_LY_BAI_DANG,
+          element: (
+            <LazyLoadingComponent>
+              <BlogManagement />
+            </LazyLoadingComponent>
+          )
+        },
+        {
+          path: Router.QUAN_LY_FEEDBACK,
+          element: (
+            <LazyLoadingComponent>
+              <FeedbackManagement />
             </LazyLoadingComponent>
           )
         },
@@ -459,9 +477,14 @@ const App = () => {
   const getDetailProfile = async () => {
     const res = await UserService.getDetailProfile()
     if (!!res?.isError) return toast.error(res?.msg)
+    const resTabs = await CommonService.getListTabs({
+      IsByGoogle: res?.data?.IsByGoogle
+    })
+    if (!!resTabs?.isError) return
     socket.connect()
     socket.emit("add-user-online", res?.data?._id)
     dispatch(globalSlice.actions.setUser(res?.data))
+    dispatch(globalSlice.actions.setListTabs(resTabs?.data))
   }
 
   useEffect(() => {
