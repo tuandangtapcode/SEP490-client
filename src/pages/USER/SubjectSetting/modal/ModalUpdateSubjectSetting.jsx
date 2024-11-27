@@ -27,6 +27,10 @@ const ModalUpdateSubjectSetting = ({ open, onCancel, onOk }) => {
   const [totalFee, setTotalFee] = useState(0)
   const [loading, setLoading] = useState(false)
 
+  console.log("filesIntroVideo", filesIntroVideo);
+  console.log("filesCertificate", filesCertificate);
+
+
   const handleSubmit = async () => {
     try {
       setLoading(true)
@@ -125,11 +129,11 @@ const ModalUpdateSubjectSetting = ({ open, onCancel, onOk }) => {
         : [{}],
       Certificates: open?.Certificates?.map((i, idx) => ({
         url: i,
-        id: idx
+        id: idx + 1
       })),
       IntroVideos: open?.IntroVideos?.map((i, idx) => ({
-        url: i.replace("mp4", "jpg"),
-        id: idx
+        url: i,
+        id: idx + 1
       }))
     }
     form.setFieldsValue(data)

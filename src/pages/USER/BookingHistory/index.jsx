@@ -80,7 +80,10 @@ const BookingHistory = () => {
       })
       if (!!res?.isError) return toast.error(res?.msg)
       if (confirmStatus === 4) {
-        socket.emit("send-noted-confirm", res?.data)
+        socket.emit("send-noted-confirm", {
+          ...res?.data,
+          IsReject: false
+        })
       }
       getListConfirm()
       toast.success(res?.msg)
@@ -241,10 +244,16 @@ const BookingHistory = () => {
 
   useEffect(() => {
     socket.on("listen-noted-confirm", data => {
-      const copyConfirms = [...confirms]
-      const index = confirms?.findIndex(i => i?._id === data?._id)
-      copyConfirms.splice(index, 1, data)
-      setConfirms(copyConfirms)
+      setConfirms(pre => {
+        const copyConfirms = [...pre]
+        const index = copyConfirms?.findIndex((i) => i?._id === data?._id)
+        if (index !== -1) {
+          copyConfirms.splice(index, 1, data)
+        } else {
+          copyConfirms.push(data)
+        }
+        return copyConfirms
+      })
     })
   }, [])
 

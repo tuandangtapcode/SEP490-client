@@ -14,10 +14,7 @@ export const SYSTEM_KEY = {
 
 export const Roles = {
   ROLE_ADMIN: 1,
-  ROLE_STAFF_USER: 2,
-  ROLE_STAFF_SUBJECT: 5,
-  ROLE_STAFF_INBOX: 6,
-  ROLE_STAFF_TRANSFER: 7,
+  ROLE_STAFF: 2,
   ROLE_TEACHER: 3,
   ROLE_STUDENT: 4,
 }

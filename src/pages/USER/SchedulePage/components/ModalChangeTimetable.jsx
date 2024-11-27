@@ -15,7 +15,7 @@ const ModalChangeTimetable = ({
   open,
   onCancel,
   getTimeTable,
-  onCancelModalDetail,
+  dataModalDetail,
   setOpenModalDetailSchedule
 }) => {
 
@@ -25,7 +25,7 @@ const ModalChangeTimetable = ({
 
   useEffect(() => {
     if (!!open?._id) {
-      form.setFieldsValue({
+      const dataTimetable = {
         ...open,
         DateAt: dayjs(open?.StartTime),
         Time: [dayjs(open?.StartTime), dayjs(open?.EndTime)],
@@ -34,10 +34,13 @@ const ModalChangeTimetable = ({
           name: i?.DocName,
           _id: i?._id
         }))
-      })
-      setDocuments(open?.Documents)
+      }
+      form.setFieldsValue(dataTimetable)
+      setDocuments(dataTimetable?.Files)
     }
   }, [open])
+
+  console.log("documents", documents);
 
 
   const handleBeforeUpload = async (file) => {
@@ -61,26 +64,34 @@ const ModalChangeTimetable = ({
           isSuccess: false
         })
       }
-      if (!!values?.Files?.length) {
+      if (!!values?.Files?.some(i => !!i?.originFileObj)) {
         const resFile = await FileService.uploadDocumentist({
           DocumentList: values?.Files?.map(i => i?.originFileObj)
         })
         if (resFile?.isError) return toast.error(resFile?.msg)
         documentResponse = resFile?.data
       }
+      const rawDocument = documents?.map(i => ({
+        _id: i?._id,
+        DocName: i?.name,
+        DocPath: i?.url
+      }))
       const dayGap = dayjs(values?.DateAt).startOf("days").diff(dayjs(values?.Time[0]).startOf("days"), "days")
       const res = await TimeTableService.updateTimeTable({
         TimeTableID: open?._id,
         StartTime: dayjs(values?.Time[0]).add(dayGap, "days"),
         EndTime: dayjs(values?.Time[1]).add(dayGap, "days"),
-        Documents: [
-          ...documents,
-          ...documentResponse
-        ]
+        Documents: !!documentResponse?.length
+          ? [...rawDocument, ...documentResponse]
+          : rawDocument
       })
       if (!!res?.isError) return toast.warning(res?.msg)
       toast.success(res?.msg)
-      setOpenModalDetailSchedule(res?.data)
+      setOpenModalDetailSchedule({
+        ...res?.data,
+        isAttendance: dataModalDetail?.isAttendance,
+        isUpdateTimeTable: dataModalDetail?.isUpdateTimeTable
+      })
       getTimeTable()
       onCancel()
     } finally {

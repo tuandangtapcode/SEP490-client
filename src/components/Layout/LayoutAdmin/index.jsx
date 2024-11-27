@@ -11,7 +11,7 @@ import { LayoutUserStyled } from "../styled"
 const LayoutAdmin = ({ children }) => {
 
   const navigate = useNavigate()
-  const { user } = useSelector(globalSelector)
+  const { user, listTabs } = useSelector(globalSelector)
   const location = useLocation()
   const dispatch = useDispatch()
   const [collapsed, setCollapsed] = useState(false)
@@ -27,30 +27,26 @@ const LayoutAdmin = ({ children }) => {
   return (
     <LayoutUserStyled>
       <Row>
-        <Col>
+        <Col span={collapsed ? 2 : 4} className="menu-container">
           <div
-            className="menu-container"
             style={{
               width: collapsed ? "90px" : "100%",
-              display: "flex",
-              flexDirection: "column",
-              justifyContent: "space-between"
             }}
           >
             <Menu
               inlineCollapsed={collapsed}
               mode="inline"
               onClick={e => handleChangeMenu(e.key)}
-              items={MenuAdmin()}
+              items={MenuAdmin()?.filter(i => listTabs?.includes(i?.TabID))}
               selectedKeys={location?.pathname}
             />
-            <div
-              className="collapsed-menu cursor-pointer d-flex"
-              onClick={() => setCollapsed(!collapsed)}
-            >
-              <div className="mr-8">
-                {collapsed ? ListIcons.ICON_MENUUNFOLD : ListIcons.ICON_MENUFOLD}
-              </div>
+          </div>
+          <div
+            className="collapsed-menu cursor-pointer d-flex"
+            onClick={() => setCollapsed(!collapsed)}
+          >
+            <div className="mr-8">
+              {collapsed ? ListIcons.ICON_MENUUNFOLD : ListIcons.ICON_MENUFOLD}
             </div>
           </div>
         </Col>
