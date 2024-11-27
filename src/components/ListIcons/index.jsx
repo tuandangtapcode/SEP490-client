@@ -45,7 +45,8 @@ import {
   AiFillCaretUp,
   AiOutlineQuestionCircle,
   AiFillPlusCircle,
-  AiOutlineFileDone
+  AiOutlineFileDone,
+  AiFillEyeInvisible
 } from "react-icons/ai"
 
 import {
@@ -53,7 +54,8 @@ import {
   BiLogIn,
   BiUserPin,
   BiMessageAltDots,
-  BiBookReader
+  BiBookReader,
+  BiSend
 } from "react-icons/bi"
 
 import {
@@ -172,7 +174,9 @@ const ListIcons = {
   ICON_PLUS: <AiFillPlusCircle className="fs-18" />,
   ICON_DOLLAR: <BsCurrencyDollar />,
   ICON_SUBJECT_SETTING: <BiBookReader className="fs-18" />,
-  ICON_NOTED: <AiOutlineFileDone className="fs-18" />
+  ICON_NOTED: <AiOutlineFileDone className="fs-18" />,
+  ICON_UNVIEW: <AiFillEyeInvisible className="fs-18 green-text" />,
+  ICON_SEND_BLACK: <BiSend className="fs-18 black-text" />
 }
 
 export default ListIcons

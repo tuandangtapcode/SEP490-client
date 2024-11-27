@@ -165,7 +165,13 @@ const ModalConfirmInfor = ({
             <p>Số tiền thanh toán:</p>
           </Col>
           <Col span={14}>
-            <p className="primary-text fw-700 fs-16">{formatMoney(teacher?.Price * selectedTimes.length * 1000 * (1 + profitPercent))} VNĐ</p>
+            <p className="primary-text fw-700 fs-16">
+              {
+                !!course
+                  ? formatMoney(getRealFee(course?.Price, profitPercent))
+                  : formatMoney(getRealFee(teacher?.Price * selectedTimes.length, profitPercent))
+              } VNĐ
+            </p>
           </Col>
           <Col span={24}>
             <span className="red-text mr-6">LƯU Ý:</span>

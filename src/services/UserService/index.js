@@ -23,7 +23,7 @@ import {
   apiResponseConfirmRegister,
   apiUpdateSubjectSetting,
   apiCheckAuth,
-  apiGetListTopTeacherBySubject,
+  apiGetListTopTeacher,
   apiForgotPassword,
   apiChangeCareerInformation,
   apiUpdateSchedule,
@@ -60,7 +60,7 @@ const createSubjectSetting = SubjectID => http.get(`${apiCreateSubjectSetting}/$
 const updateSubjectSetting = body => http.post(apiUpdateSubjectSetting, body)
 const deleteSubjectSetting = SubjectSettingID => http.get(`${apiDeleteSubjectSetting}/${SubjectSettingID}`)
 const responseConfirmSubjectSetting = body => http.post(apiResponseConfirmSubjectSetting, body)
-const getListTopTeacherBySubject = SubjectID => http.get(`${apiGetListTopTeacherBySubject}/${SubjectID}`)
+const getListTopTeacher = () => http.get(apiGetListTopTeacher)
 const changeCareerInformation = body => http.post(apiChangeCareerInformation, body)
 const updateSchedule = body => http.post(apiUpdateSchedule, body)
 const getListSubjectSetting = body => http.post(apiGetListSubjectSetting, body)
@@ -91,7 +91,7 @@ const UserService = {
   updateSubjectSetting,
   deleteSubjectSetting,
   responseConfirmSubjectSetting,
-  getListTopTeacherBySubject,
+  getListTopTeacher,
   changeCareerInformation,
   updateSchedule,
   getListSubjectSetting,

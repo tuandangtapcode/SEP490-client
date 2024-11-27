@@ -103,7 +103,7 @@ const SubjectSettingManagement = () => {
       disabled: record?.IsConfirm,
       onClick: () => {
         ConfirmModal({
-          description: `Bạn có chắc chắn duyệt tài khoản ${record?.FullName} không?`,
+          description: `Bạn có chắc chắn duyệt môn học của giáo viên ${record?.Teacher?.FullName} không?`,
           onOk: async close => {
             handleConfirmSubjectSetting(record)
             close()

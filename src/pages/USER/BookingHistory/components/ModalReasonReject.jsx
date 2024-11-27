@@ -47,8 +47,8 @@ const ModalReasonReject = ({ open, onCancel, onOk }) => {
       })
       if (!!res?.isError) return toast.error(res?.msg)
       toast.success(res?.msg)
-      onCancel()
       onOk()
+      onCancel()
     } finally {
       setLoading(false)
     }

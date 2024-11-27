@@ -59,11 +59,11 @@ const MyCourse = () => {
       onClick: () => setOpenModalUpdateCourse(record)
     },
     {
-      title: "Xóa",
-      icon: ListIcons?.ICON_DELETE,
+      title: !!record?.IsDeleted ? "Hiển thị khóa học" : "Ẩn khóa học",
+      icon: !!record?.IsDeleted ? ListIcons.ICON_VIEW : ListIcons.ICON_UNVIEW,
       onClick: () => {
         ConfirmModal({
-          description: `Bạn có chắc chắn muốn xoá khóa học này không?`,
+          description: `Bạn có chắc chắn muốn ${!!record?.IsDeleted ? "hiển thị khóa học" : "ẩn khóa học"} khóa học này không?`,
           okText: "Đồng ý",
           cancelText: "Đóng",
           onOk: async close => {
@@ -128,7 +128,7 @@ const MyCourse = () => {
       render: (value) => (
         <div>
           {
-            getListComboKey(SYSTEM_KEY.LEARN_TYPE, listSystemKey)
+            getListComboKey(SYSTEM_KEY.SKILL_LEVEL, listSystemKey)
               ?.find(i => i?.ParentID === value)?.ParentName
           }
         </div>
