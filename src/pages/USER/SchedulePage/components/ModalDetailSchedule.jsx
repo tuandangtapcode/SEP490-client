@@ -37,14 +37,12 @@ const ModalDetailSchedule = ({
       const res = await TimeTableService.attendanceTimeTable(open?._id)
       if (!!res?.isError) return toast.error(res?.msg)
       toast.success(res?.msg)
-      onCancel()
       getTimeTable()
+      onCancel()
     } finally {
       setLoading(false)
     }
   }
-
-  console.log("buttonShow", !buttonShow?.isShowBtnAttendance);
 
 
   return (
@@ -147,10 +145,11 @@ const ModalDetailSchedule = ({
               <Col span={25}>
                 <div>Tài liệu:</div>
               </Col>
-              {
-                open?.Documents?.map((i, idx) =>
-                  <Col key={idx} span={24}>
+              <Col span={24}>
+                {
+                  open?.Documents?.map((i, idx) =>
                     <div
+                      key={idx}
                       className="primary-text cursor-pointer"
                       onClick={() => {
                         saveAs(i?.DocPath, i?.DocName)
@@ -158,9 +157,9 @@ const ModalDetailSchedule = ({
                     >
                       {i?.DocName}
                     </div>
-                  </Col>
-                )
-              }
+                  )
+                }
+              </Col>
             </>
           }
         </Row>
@@ -178,6 +177,7 @@ const ModalDetailSchedule = ({
         !!openModalChangeTimetable &&
         <ModalChangeTimetable
           open={openModalChangeTimetable}
+          dataModalDetail={open}
           onCancel={() => setOpenModalChangeTimetable(false)}
           onCancelModalDetail={() => onCancel()}
           getTimeTable={getTimeTable}

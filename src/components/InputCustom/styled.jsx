@@ -47,8 +47,14 @@ export const InputWrapper = styled.div`
   /* height: 32px !important; */
 }
 
-.ant-btn-default:not(:disabled):not(.ant-btn-disabled):hover {
-  border-color: var(--color-primary-hover) !important;
-  background: white !important;
+.ant-input-outlined.ant-input-disabled {
+  border-color: rgba(0, 0, 0, 0.25) !important;
+  color: rgba(0, 0, 0, 0.25) !important;
 }
+
+/* .ant-btn-default:not(:disabled):not(.ant-btn-disabled):hover {
+  border-color: var(--color-primary-hover) !important;
+  background: rgba(0, 0, 0, 0.25) !important;
+  color: rgba(0, 0, 0, 0.25) !important;
+} */
 `

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react"
 import { Col, Form, Row } from "antd"
 import { LoginContainerStyled } from "./styled"
-import { useNavigate } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 import { getRegexEmail } from "src/lib/stringUtils"
 import InputCustom from "src/components/InputCustom"
 import ButtonCustom from "src/components/MyButton/ButtonCustom"
@@ -14,6 +14,7 @@ import SpinCustom from "src/components/SpinCustom"
 import { decodeData } from "src/lib/commonFunction"
 import { Roles } from "src/lib/constant"
 import { globalSelector } from "src/redux/selector"
+import Router from "src/routers"
 
 const LoginPage = () => {
 
@@ -21,13 +22,20 @@ const LoginPage = () => {
   const [loading, setLoading] = useState(false)
   const dispatch = useDispatch()
   const navigate = useNavigate()
-  const { isLogin } = useSelector(globalSelector)
+  const { isLogin, routerBeforeLogin } = useSelector(globalSelector)
 
-  const handleNavigate = (user) => {
-    if (user.RoleID === Roles.ROLE_ADMIN) {
-      navigate("/dashboard")
+  const handleNavigate = (tokenInfor) => {
+    if (!!routerBeforeLogin) {
+      dispatch(globalSlice.actions.setRouterBeforeLogin(""))
+      navigate(routerBeforeLogin)
     } else {
-      navigate('/')
+      if (tokenInfor.RoleID === Roles.ROLE_ADMIN) {
+        navigate("/dashboard")
+      } else if (tokenInfor.RoleID === Roles.ROLE_STAFF) {
+        navigate(Router.QUAN_LY_GIAO_VIEN)
+      } else {
+        navigate('/')
+      }
     }
   }
 
@@ -38,10 +46,10 @@ const LoginPage = () => {
         const userInfor = await UserService.getInforByGoogleLogin(tokenResponse?.access_token)
         const res = await UserService.loginByGoogle(userInfor?.data)
         if (!!res?.isError) return toast.error(res?.msg)
-        const user = decodeData(res?.data)
-        if (!!user.ID) {
-          dispatch(globalSlice.actions.setIsLogin(true))
-          handleNavigate(user)
+        const tokenInfor = decodeData(res?.data)
+        if (!!tokenInfor.ID) {
+          dispatch(globalSlice.actions.setIsCheckAuth(true))
+          handleNavigate(tokenInfor)
         } else {
           navigate('/forbidden')
         }
@@ -57,10 +65,10 @@ const LoginPage = () => {
       const values = await form.validateFields()
       const res = await UserService.login(values)
       if (!!res?.isError) return toast.error(res?.msg)
-      const user = decodeData(res?.data)
-      if (!!user.ID) {
-        dispatch(globalSlice.actions.setIsLogin(true))
-        handleNavigate(user)
+      const tokenInfor = decodeData(res?.data)
+      if (!!tokenInfor.ID) {
+        dispatch(globalSlice.actions.setIsCheckAuth(true))
+        handleNavigate(tokenInfor)
       } else {
         navigate('/forbidden')
       }
@@ -115,6 +123,15 @@ const LoginPage = () => {
                   placeholder="Mật khẩu"
                 />
               </Form.Item>
+            </Col>
+            <Col
+              className="d-flex-center"
+              span={24}
+              style={{
+                marginTop: "-12px",
+                marginBottom: "12px"
+              }}>
+              <Link to={Router.FORGOT_PASSWORD}>Quên mật khẩu?</Link>
             </Col>
             <Col span={24}>
               <ButtonCustom

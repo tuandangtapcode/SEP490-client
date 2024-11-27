@@ -5,13 +5,15 @@ import { getListComboKey } from "src/lib/commonFunction"
 import { SYSTEM_KEY } from "src/lib/constant"
 import { globalSelector } from "src/redux/selector"
 import dayjs from "dayjs"
-import { formatMoney } from "src/lib/stringUtils"
+import { formatMoney, getRealFee } from "src/lib/stringUtils"
 import ButtonCustom from "src/components/MyButton/ButtonCustom"
 import { useState } from "react"
 import ConfirmService from "src/services/ConfirmService"
 import { toast } from "react-toastify"
 import { useNavigate } from "react-router-dom"
 import Notice from "src/components/Notice"
+import ConfirmModal from "src/components/ModalCustom/ConfirmModal"
+import Router from "src/routers"
 
 const ModalConfirmInfor = ({
   open,
@@ -19,7 +21,9 @@ const ModalConfirmInfor = ({
   teacher,
   bookingInfor,
   selectedTimes,
-  course
+  course,
+  timeTablesStudent,
+  timeTablesTeacher
 }) => {
 
   const { listSystemKey, user, profitPercent } = useSelector(globalSelector)
@@ -35,8 +39,30 @@ const ModalConfirmInfor = ({
           msg: "Hãy nhập địa chỉ"
         })
       }
+      const selectTimesArray = selectedTimes.map(i => dayjs(i.StartTime).format("DD/MM/YYYY HH:mm"))
+      const timeTablesStudentArray = timeTablesStudent.map(i => dayjs(i.StartTime).format("DD/MM/YYYY HH:mm"))
+      const timeTablesTeacherArray = timeTablesTeacher.map(i => dayjs(i.StartTime).format("DD/MM/YYYY HH:mm"))
+      const checkExistTimeTablesStudent = selectTimesArray.filter(i => timeTablesStudentArray.includes(i))
+      const checkExistTimeTablesTeacher = selectTimesArray.filter(i => timeTablesTeacherArray.includes(i))
+      if (!!checkExistTimeTablesStudent.length) {
+        return ConfirmModal({
+          description: `Bạn đã có lịch học vào ngày ${checkExistTimeTablesStudent.map(i => i).join()}`,
+          onOk: async close => {
+            close()
+          }
+        })
+      }
+      if (!!checkExistTimeTablesTeacher.length) {
+        return ConfirmModal({
+          description: `Giáo viên đã có lịch dạy vào ngày ${checkExistTimeTablesTeacher.map(i => i).join()}`,
+          onOk: async close => {
+            close()
+          }
+        })
+      }
       const res = await ConfirmService.createConfirm({
         Sender: user?._id,
+        CourseID: !!course ? course?._id : undefined,
         StudentName: user?.FullName,
         Receiver: teacher?.Teacher?._id,
         TeacherName: teacher?.Teacher?.FullName,
@@ -44,8 +70,8 @@ const ModalConfirmInfor = ({
         Subject: teacher?.Subject?._id,
         SubjectName: teacher?.Subject?.SubjectName,
         TotalFee: !!course
-          ? course?.Price * (1 + profitPercent)
-          : teacher?.Price * selectedTimes.length * 1000 * (1 + profitPercent),
+          ? getRealFee(course?.Price, profitPercent)
+          : getRealFee(teacher?.Price * selectedTimes.length, profitPercent),
         LearnType: bookingInfor?.LearnType,
         Address: bookingInfor?.LearnType === 2
           ? bookingInfor?.Address
@@ -61,7 +87,7 @@ const ModalConfirmInfor = ({
       if (!!res?.isError) return toast.error(res?.msg)
       toast.success(res?.msg)
       onCancel()
-      navigate(`/user/lich-su-booking`)
+      navigate(`${Router.LICH_SU_BOOKING}`)
     } finally {
       setLoading(false)
     }
@@ -70,7 +96,7 @@ const ModalConfirmInfor = ({
   return (
     <ModalCustom
       open={open}
-      onCanel={onCancel}
+      onCancel={onCancel}
       title="Xác nhận thông tin booking"
       width="50vw"
       footer={
@@ -139,7 +165,17 @@ const ModalConfirmInfor = ({
             <p>Số tiền thanh toán:</p>
           </Col>
           <Col span={14}>
-            <p className="primary-text fw-700 fs-16">{formatMoney(teacher?.Price * selectedTimes.length * 1000 * (1 + profitPercent))} VNĐ</p>
+            <p className="primary-text fw-700 fs-16">
+              {
+                !!course
+                  ? formatMoney(getRealFee(course?.Price, profitPercent))
+                  : formatMoney(getRealFee(teacher?.Price * selectedTimes.length, profitPercent))
+              } VNĐ
+            </p>
+          </Col>
+          <Col span={24}>
+            <span className="red-text mr-6">LƯU Ý:</span>
+            <span>Khi giáo viên đã ghi nhận booking của bạn và xử lý booking bạn sẽ không được chỉnh sửa hoặc hủy booking của mình nữa. </span>
           </Col>
         </Row>
       </div>

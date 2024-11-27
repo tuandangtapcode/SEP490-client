@@ -6,7 +6,8 @@ import { useState } from "react"
 const Certificates = ({
   form,
   setFilesCertificate,
-  filesCertificate
+  filesCertificate,
+  subjectSetting
 }) => {
 
   const [previewImage, setPreviewImage] = useState()
@@ -50,6 +51,7 @@ const Certificates = ({
           >
             <Upload.Dragger
               listType="picture-circle"
+              disabled={subjectSetting?.RegisterStatus === 2 ? true : false}
               beforeUpload={file => handleBeforeUpload(file)}
               onPreview={handlePreview}
               accept="image/*"
@@ -57,6 +59,7 @@ const Certificates = ({
               multiple={true}
               onRemove={file => {
                 if (!!file?.id) {
+                  console.log("id", file?.id);
                   const copyFile = [...filesCertificate]
                   const newData = copyFile.filter(i => i?.id !== file?.id)
                   setFilesCertificate(newData)

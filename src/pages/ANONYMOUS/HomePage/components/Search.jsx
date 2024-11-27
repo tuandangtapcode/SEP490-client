@@ -1,24 +1,50 @@
 import ListIcons from "src/components/ListIcons"
 import { Col, Row, Select } from "antd"
-import { useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { useSelector } from "react-redux"
 import { globalSelector } from "src/redux/selector"
 import { getListComboKey } from "src/lib/commonFunction"
 import { SYSTEM_KEY } from "src/lib/constant"
-import { Link } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 import ButtonCustom from "src/components/MyButton/ButtonCustom"
 import { SearchContainerStyled } from "../styled"
+import SubjectService from "src/services/SubjectService"
+import { toast } from "react-toastify"
+import Router from "src/routers"
 
 const { Option } = Select
 
-const Search = ({ subjects }) => {
+const Search = ({ setPrompt }) => {
 
   const { listSystemKey } = useSelector(globalSelector)
+  const [subjects, setSubjects] = useState([])
+  const timeOutRef = useRef(null)
+  const navigate = useNavigate()
+  const [pagination, setPagination] = useState({
+    TextSearch: "",
+    CurrentPage: 1,
+    PageSize: 10
+  })
   const [searchData, setSearchData] = useState({
     Subject: "",
     Level: [],
     LearnType: []
   })
+
+  const getListSubject = async () => {
+    try {
+      const res = await SubjectService.getListSubject(pagination)
+      if (!!res?.isError) return toast.error(res?.msg)
+      setSubjects(res?.data?.List)
+    } finally {
+      console.log()
+    }
+  }
+
+  useEffect(() => {
+    getListSubject()
+  }, [pagination])
+
 
   return (
     <SearchContainerStyled>
@@ -32,11 +58,32 @@ const Search = ({ subjects }) => {
             <Select
               style={{ width: "100%" }}
               showSearch
+              allowClear
               placeholder="Chọn môn học"
               onChange={e => setSearchData(pre => ({ ...pre, Subject: e }))}
-              filterOption={(input, option) =>
-                option?.children?.toLowerCase().indexOf(input.toLowerCase()) >= 0
-              }
+              // onPopupScroll={e => {
+              //   const target = e.currentTarget
+              //   if (
+              //     !isLoadingMore &&
+              //     target.scrollHeight - target.scrollTop <= target.clientHeight + 1
+              //   ) {
+              //     setIsLoadingMore(true);
+              //     setPagination(prev => ({
+              //       ...prev,
+              //       CurrentPage: prev.CurrentPage + 1
+              //     }))
+              //   }
+              // }}
+              onSearch={(e) => {
+                if (timeOutRef.current) {
+                  clearTimeout(timeOutRef.current)
+                }
+                timeOutRef.current = setTimeout(() => {
+                  setPagination((pre) => ({ ...pre, TextSearch: e }))
+                  timeOutRef.current = null
+                }, 400)
+              }}
+              filterOption={false}
             >
               {
                 subjects?.map(i =>
@@ -60,6 +107,7 @@ const Search = ({ subjects }) => {
             <Select
               style={{ width: "100%" }}
               mode="multiple"
+              allowClear
               placeholder="Chọn môn học"
               onChange={e => setSearchData(pre => ({ ...pre, Level: e }))}
             >
@@ -84,6 +132,7 @@ const Search = ({ subjects }) => {
           <div className="ml-24">
             <Select
               mode="multiple"
+              allowClear
               placeholder="Chọn hình thức học"
               onChange={e => setSearchData(pre => ({ ...pre, LearnType: e }))}
             >
@@ -101,8 +150,11 @@ const Search = ({ subjects }) => {
           </div>
         </Col>
         <Col span={3} className="d-flex-center">
-          <ButtonCustom className="yellow-btn submit-btn mt-23">
-            <Link>Tìm</Link>
+          <ButtonCustom
+            className="yellow-btn submit-btn mt-23"
+          // onClick={() => navigate(`${Router.TIM_KIEM_GIAO_VIEN}/${Sear}`)}
+          >
+            Tìm
           </ButtonCustom>
         </Col>
       </Row>

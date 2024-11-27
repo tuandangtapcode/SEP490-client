@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import { useNavigate, useParams } from "react-router-dom"
+import { useLocation, useNavigate, useParams } from "react-router-dom"
 import SpinCustom from "src/components/SpinCustom"
 import UserService from "src/services/UserService"
 import { DivTimeContainer, MainProfileWrapper } from "./styled"
@@ -9,13 +9,11 @@ import Router from "src/routers"
 import { PatentChildBorder, TabStyled } from "src/pages/ADMIN/TeacherManagement/styled"
 import moment from "moment"
 import { formatMoney, getRealFee } from "src/lib/stringUtils"
-import { useSelector } from "react-redux"
+import { useDispatch, useSelector } from "react-redux"
 import { globalSelector } from "src/redux/selector"
 import { toast } from "react-toastify"
 import socket from "src/utils/socket"
-import ModalSendFeedback from "./modal/ModalSendFeedback"
 import FeedbackService from "src/services/FeedbackService"
-import ModalSendMessage from "./modal/ModalSendMessage"
 import 'swiper/css'
 import { convertSchedules } from "src/lib/dateUtils"
 import ListIcons from "src/components/ListIcons"
@@ -25,6 +23,7 @@ import { getListComboKey } from "src/lib/commonFunction"
 import { SYSTEM_KEY } from "src/lib/constant"
 import dayjs from "dayjs"
 import Feedback from "./components/Feedback"
+import globalSlice from "src/redux/globalSlice"
 
 const { Option } = Select
 
@@ -32,14 +31,14 @@ const TeacherDetail = () => {
 
   const { TeacherID, SubjectID } = useParams()
   const navigate = useNavigate()
+  const dispatch = useDispatch()
+  const location = useLocation()
   const [loading, setLoading] = useState(false)
   const [teacher, setTeacher] = useState()
   const [subjects, setSubjects] = useState([])
   const [feedbacks, setFeedbacks] = useState([])
   const [totalFeedback, setTotalFeedback] = useState(0)
   const { user, profitPercent, listSystemKey } = useSelector(globalSelector)
-  const [openModalSendFeedback, setOpenModalSendFeedback] = useState(false)
-  const [openModalSendMessage, setOpenModalSendMessage] = useState(false)
   const [openModalPreviewVideo, setOpenModalPreviewVideo] = useState(false)
 
 
@@ -301,7 +300,7 @@ const TeacherDetail = () => {
                 </TabStyled>
               </div>
               <div className="mb-12">
-                <span className="gray-text mr-4">Giá tiền/Buổi học: </span>
+                <span className="gray-text mr-4">Học phí/Buổi học: </span>
                 <span className="primary-text fw-700 fs-17">{formatMoney(getRealFee(teacher?.Price, profitPercent))} VNĐ</span>
               </div>
               {
@@ -311,9 +310,13 @@ const TeacherDetail = () => {
                     className="primary submit-btn"
                     onClick={() => {
                       if (!!user?._id) {
-                        navigate(`${Router.GIAO_VIEN}/${TeacherID}${Router.MON_HOC}/${SubjectID}/booking`)
+                        navigate(
+                          `${Router.GIAO_VIEN}/${TeacherID}${Router.MON_HOC}/${SubjectID}/booking`,
+                          { state: teacher }
+                        )
                       } else {
-                        return toast.warning("Hãy đăng nhập để tiến hành đặt lịch")
+                        dispatch(globalSlice.actions.setRouterBeforeLogin(location.pathname))
+                        navigate("/dang-nhap")
                       }
                     }}
                   >
@@ -324,22 +327,6 @@ const TeacherDetail = () => {
             </div>
           </MainProfileWrapper>
         </Col>
-
-        {
-          !!openModalSendFeedback &&
-          <ModalSendFeedback
-            open={openModalSendFeedback}
-            onCancel={() => setOpenModalSendFeedback(false)}
-          />
-        }
-
-        {
-          !!openModalSendMessage &&
-          <ModalSendMessage
-            open={openModalSendMessage}
-            onCancel={() => setOpenModalSendMessage(false)}
-          />
-        }
 
         {
           !!openModalPreviewVideo &&

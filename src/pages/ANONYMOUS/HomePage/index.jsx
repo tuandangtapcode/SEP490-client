@@ -1,7 +1,6 @@
 import { HomeContainerStyled } from "./styled"
 import { toast } from "react-toastify"
 import { useEffect, useState } from "react"
-import { useNavigate } from "react-router-dom"
 import SubjectService from "src/services/SubjectService"
 import { Col, Row } from "antd"
 import SpinCustom from "src/components/SpinCustom"
@@ -12,47 +11,25 @@ import BackgroundChooseTeacher from "./components/BackgroundChooseTeacher"
 import SubjectCare from "./components/SubjectCare"
 import BackgroundMobileApp from "./components/BackgroundMobileApp"
 import BecomeTeacher from "./components/BecomeTeacher"
+import CommonService from "src/services/CommonService"
 
 const HomePage = () => {
 
-  const navigate = useNavigate()
   const [loading, setLoading] = useState(false)
-  const [subjects, setSubjects] = useState([])
-  const [recommendSubjects, setRecommendSSubjects] = useState([])
-  const [subject, setSubject] = useState()
   const [teachers, setTeachers] = useState([])
+  const [prompt, setPrompt] = useState("")
 
-  const getListSubject = async () => {
+  const getListTeacherRecommend = async () => {
     try {
       setLoading(true)
-      const res = await SubjectService.getListSubject({
-        TextSearch: "",
-        CurrentPage: 0,
-        PageSize: 0
-      })
-      if (!!res?.isError) return toast.error(res?.msg)
-      setSubjects(res?.data?.List)
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  const getListRecommendSubject = async () => {
-    try {
-      setLoading(true)
-      const res = await SubjectService.getListRecommendSubject()
-      if (!!res?.isError) return toast.error(res?.msg)
-      setRecommendSSubjects(res?.data)
-      setSubject(res?.data[0])
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  const getListTopTeacherBySubject = async () => {
-    try {
-      setLoading(true)
-      const res = await UserService.getListTopTeacherBySubject(subject?._id)
+      let res
+      if (!!prompt) {
+        res = await CommonService.teacherRecommend({
+          prompt: prompt
+        })
+      } else {
+        res = await UserService.getListTopTeacher()
+      }
       if (!!res?.isError) return toast.error(res?.msg)
       setTeachers(res?.data)
     } finally {
@@ -61,28 +38,20 @@ const HomePage = () => {
   }
 
   useEffect(() => {
-    getListSubject()
-    getListRecommendSubject()
-  }, [])
-
-  useEffect(() => {
-    if (!!subject)
-      getListTopTeacherBySubject()
-  }, [subject])
+    getListTeacherRecommend()
+  }, [prompt])
 
   return (
     <SpinCustom spinning={loading}>
       <HomeContainerStyled>
         <Row gutter={[0, 16]}>
           <Col span={24} className="d-flex-center mb-70">
-            <Search subjects={subjects} />
+            <Search setPrompt={setPrompt} />
           </Col>
           <Col span={24} className="d-flex-center mb-50">
             <FamoursTeacher
-              recommendSubjects={recommendSubjects}
               teachers={teachers}
-              subject={subject}
-              setSubject={setSubject}
+              prompt={prompt}
             />
           </Col>
           <Col span={24} className="mb-50">
@@ -99,6 +68,7 @@ const HomePage = () => {
           </Col>
         </Row>
       </HomeContainerStyled>
+
     </SpinCustom>
   )
 }

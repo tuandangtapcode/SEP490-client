@@ -13,7 +13,7 @@ const LayoutUser = ({ children }) => {
   const navigate = useNavigate()
   const location = useLocation()
   const dispatch = useDispatch()
-  const { user } = useSelector(globalSelector)
+  const { user, listTabs } = useSelector(globalSelector)
 
   const handleChangeMenu = (key) => {
     if (key !== "logout") {
@@ -45,12 +45,12 @@ const LayoutUser = ({ children }) => {
             <div className="d-flex-center mb-12">
               <p className="fw-700 fs-20">{user?.FullName}</p>
             </div>
-            <div className="d-flex justify-content-space-around">
-              <div className="d-flex-sb">
+            <div className="pl-8 pr-8">
+              <div className="d-flex align-items-center mb-8">
                 {ListIcons.ICON_LOCATION}
                 <p className="ml-6">{user?.Address}</p>
               </div>
-              <div className="d-flex-sb">
+              <div className="d-flex align-items-center">
                 {ListIcons.ICON_DATE_OF_BIRTH}
                 <p className="ml-6">{dayjs(user?.DateOfBirth).format("DD/MM/YYYY")}</p>
               </div>
@@ -60,7 +60,7 @@ const LayoutUser = ({ children }) => {
             mode="inline"
             className="menu-antd-user"
             onClick={e => handleChangeMenu(e.key)}
-            items={MenuUser(user)?.filter(i => !!i?.isView)}
+            items={MenuUser(user)?.filter(i => listTabs?.includes(i?.TabID))}
             selectedKeys={location?.pathname}
           />
         </Col>

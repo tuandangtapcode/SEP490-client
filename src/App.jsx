@@ -12,10 +12,10 @@ import InactiveModal from './components/Layout/components/ModalInactiveAccount'
 import { decodeData } from './lib/commonFunction'
 import { globalSelector } from './redux/selector'
 import ScrollToTop from './components/ScrollToTop'
+import ModalChangeProfile from './components/Layout/components/ModalChangeProfile'
 
 // import InsertUpdateBlog from './pages/USER/BlogPosting/components/InsertUpdateBlog.jsx'
 // ADMIN
-
 const AdminRoutes = React.lazy(() => import("src/pages/ADMIN/AdminRoutes"))
 const StatisticManagement = React.lazy(() => import("src/pages/ADMIN/StatisticManagement"))
 const StaffManagement = React.lazy(() => import("src/pages/ADMIN/StaffManagement"))
@@ -26,6 +26,9 @@ const PaymentManagement = React.lazy(() => import("src/pages/ADMIN/PaymentManage
 const SubjectCateManagement = React.lazy(() => import("src/pages/ADMIN/SubjectCateManagement"))
 const InboxManagement = React.lazy(() => import("src/pages/ADMIN/InboxManagement"))
 const PaymentTransfer = React.lazy(() => import("src/pages/ADMIN/PaymentTransfer"))
+const SubjectSettingManagement = React.lazy(() => import("src/pages/ADMIN/SubjectSettingManagement"))
+const BlogManagement = React.lazy(() => import("src/pages/ADMIN/BlogManagement"))
+const FeedbackManagement = React.lazy(() => import("src/pages/ADMIN/FeedbackManagement"))
 
 // ANONYMOUS
 // const ChatBoxAI = React.lazy(() => import("src/components/ChatBoxAI"))
@@ -43,10 +46,11 @@ const BookingPage = React.lazy(() => import("src/pages/ANONYMOUS/BookingPage"))
 const FindSubject = React.lazy(() => import("src/pages/ANONYMOUS/FindSubject"))
 const MeetingRoom = React.lazy(() => import("src/pages/ANONYMOUS/MeetingRoom"))
 const SubjectcateDetail = React.lazy(() => import("src/pages/ANONYMOUS/SubjectcateDetail"))
+const ForgotPassword = React.lazy(() => import("src/pages/ANONYMOUS/ForgotPassword"))
 
 // USER
 const UserRoutes = React.lazy(() => import("src/pages/USER/UserRoutes"))
-const BlogPosting = React.lazy(() => import( "./pages/USER/BlogPosting"))
+const BlogPosting = React.lazy(() => import("./pages/USER/BlogPosting"))
 const UserProfile = React.lazy(() => import("src/pages/USER/UserProfile"))
 const SubjectSetting = React.lazy(() => import("src/pages/USER/SubjectSetting"))
 const InboxPage = React.lazy(() => import("src/pages/USER/InboxPage"))
@@ -69,7 +73,7 @@ const LazyLoadingComponent = ({ children }) => {
     <React.Suspense
       fallback={
         <div className="loading-center" style={{ display: 'flex', justifyContent: 'center', height: '100vh', alignItems: 'center' }}>
-          {/* <SpinCustom /> */}
+          <SpinCustom />
         </div>
       }
     >
@@ -161,6 +165,30 @@ const App = () => {
           element: (
             <LazyLoadingComponent>
               <PaymentTransfer />
+            </LazyLoadingComponent>
+          )
+        },
+        {
+          path: Router.QUAN_LY_SUBJECT_SETTING,
+          element: (
+            <LazyLoadingComponent>
+              <SubjectSettingManagement />
+            </LazyLoadingComponent>
+          )
+        },
+        {
+          path: Router.QUAN_LY_BAI_DANG,
+          element: (
+            <LazyLoadingComponent>
+              <BlogManagement />
+            </LazyLoadingComponent>
+          )
+        },
+        {
+          path: Router.QUAN_LY_FEEDBACK,
+          element: (
+            <LazyLoadingComponent>
+              <FeedbackManagement />
             </LazyLoadingComponent>
           )
         },
@@ -384,6 +412,14 @@ const App = () => {
             </LazyLoadingComponent>
           )
         },
+        {
+          path: Router.FORGOT_PASSWORD,
+          element: (
+            <LazyLoadingComponent>
+              <ForgotPassword />
+            </LazyLoadingComponent>
+          )
+        },
       ]
     },
     {
@@ -408,7 +444,8 @@ const App = () => {
   const dispatch = useDispatch()
   const navigate = useNavigate()
   const [modalInactiveAccount, setModalInactiveAccount] = useState(false)
-  const { isLogin } = useSelector(globalSelector)
+  const [openModalChangeProfile, setOpenModalChangeProfile] = useState(false)
+  const { isCheckAuth, user } = useSelector(globalSelector)
 
   const getListSystemkey = async () => {
     const res = await CommonService.getListSystemkey()
@@ -429,6 +466,7 @@ const App = () => {
       const tokenInfor = decodeData(res?.data)
       if (!!tokenInfor.ID) {
         setTotenInfor(tokenInfor)
+        dispatch(globalSlice.actions.setIsLogin(true))
         getDetailProfile()
       } else {
         navigate('/forbidden')
@@ -439,9 +477,14 @@ const App = () => {
   const getDetailProfile = async () => {
     const res = await UserService.getDetailProfile()
     if (!!res?.isError) return toast.error(res?.msg)
+    const resTabs = await CommonService.getListTabs({
+      IsByGoogle: res?.data?.IsByGoogle
+    })
+    if (!!resTabs?.isError) return
     socket.connect()
     socket.emit("add-user-online", res?.data?._id)
     dispatch(globalSlice.actions.setUser(res?.data))
+    dispatch(globalSlice.actions.setListTabs(resTabs?.data))
   }
 
   useEffect(() => {
@@ -451,13 +494,19 @@ const App = () => {
 
   useEffect(() => {
     checkAuth()
-  }, [isLogin])
+  }, [isCheckAuth])
 
   useEffect(() => {
     socket.on('listen-inactive-account', (data) => {
       setModalInactiveAccount(data)
     })
   }, [])
+
+  useEffect(() => {
+    if (!!user?.IsFirstLogin) {
+      setOpenModalChangeProfile(user)
+    }
+  }, [user])
 
   return (
     <div className="App">
@@ -473,6 +522,14 @@ const App = () => {
         <InactiveModal
           open={modalInactiveAccount}
           onCancel={() => setModalInactiveAccount(false)}
+        />
+      }
+
+      {
+        !!openModalChangeProfile &&
+        <ModalChangeProfile
+          open={openModalChangeProfile}
+          onCancel={() => setOpenModalChangeProfile(false)}
         />
       }
 

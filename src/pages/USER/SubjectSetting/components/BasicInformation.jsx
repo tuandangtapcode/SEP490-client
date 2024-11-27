@@ -34,7 +34,10 @@ const BasicInformation = ({ totalFee, setTotalFee, subjectSetting }) => {
               { required: true, message: "Thông tin không được để trống" }
             ]}
           >
-            <InputCustom placeHolder="Tiêu đề cho môn học của bạn sẽ giúp bạn thu hút học sinh một cách thú vị, khác biệt" />
+            <InputCustom
+              placeHolder="Tiêu đề cho môn học của bạn sẽ giúp bạn thu hút học sinh một cách thú vị, khác biệt"
+              disabled={subjectSetting?.RegisterStatus === 2 ? true : false}
+            />
           </Form.Item>
         </Col>
         <Col span={24}>
@@ -48,6 +51,7 @@ const BasicInformation = ({ totalFee, setTotalFee, subjectSetting }) => {
             <InputCustom
               placeHolder="Hãy giới thiệu một chút về môn học và cách bạn giảng dạy để có thể truyền tải đến học sinh một cách dễ hiểu nhất nhé"
               type="isTextArea"
+              disabled={subjectSetting?.RegisterStatus === 2 ? true : false}
               style={{
                 height: "100px"
               }}
@@ -63,6 +67,7 @@ const BasicInformation = ({ totalFee, setTotalFee, subjectSetting }) => {
             ]}
           >
             <Checkbox.Group
+              disabled={subjectSetting?.RegisterStatus === 2 ? true : false}
               mode='multiple'
             >
               {
@@ -98,6 +103,7 @@ const BasicInformation = ({ totalFee, setTotalFee, subjectSetting }) => {
               style={{ width: "200px" }}
               type='isNumber'
               suffix=".000 VNĐ"
+              disabled={subjectSetting?.RegisterStatus === 2 ? true : false}
               onChange={e => setTotalFee(getRealFee(e, profitPercent))}
             />
           </Form.Item>
@@ -119,6 +125,7 @@ const BasicInformation = ({ totalFee, setTotalFee, subjectSetting }) => {
           >
             <Checkbox.Group
               mode='multiple'
+              disabled={subjectSetting?.RegisterStatus === 2 ? true : false}
             // onChange={e => setLearnTypes(e)}
             >
               {getListComboKey(SYSTEM_KEY.SKILL_LEVEL, listSystemKey)?.map((i, idx) =>

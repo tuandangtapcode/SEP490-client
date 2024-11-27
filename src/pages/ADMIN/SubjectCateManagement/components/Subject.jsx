@@ -10,6 +10,7 @@ import InsertUpdateSubject from "./modal/InsertUpdateSubject"
 import { toast } from "react-toastify"
 import ButtonCustom from "src/components/MyButton/ButtonCustom"
 import ModalCustom from "src/components/ModalCustom"
+import ConfirmModal from "src/components/ModalCustom/ConfirmModal"
 
 
 const ModalSubject = ({ open, onCancel }) => {
@@ -92,16 +93,13 @@ const ModalSubject = ({ open, onCancel }) => {
             title="Xóa"
             icon={ListIcons?.ICON_DELETE}
             onClick={() => {
-              CB1({
-                title: `Bạn có chắc chắn muốn xoá môn học "${record?.SubjectName}" không?`,
-                // icon: "trashRed",
-                okText: "Đồng ý",
-                cancelText: "Đóng",
+              ConfirmModal({
+                description: `Bạn có chắc chắn muốn xoá môn học "${record?.SubjectName}" không?`,
                 onOk: async close => {
                   onDelete(record?._id)
                   getListSubject()
                   close()
-                },
+                }
               })
             }}
           />

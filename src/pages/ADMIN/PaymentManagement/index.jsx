@@ -154,9 +154,9 @@ const PaymentManagement = () => {
         <Col span={6}>
           <Select
             placeholder="Loại thanh toán"
+            allowClear
             onChange={e => setPagination(pre => ({ ...pre, PaymentType: e }))}
           >
-            <Select.Option key={0} value={0}>Tất cả</Select.Option>
             {PaymentTypeKey.map(PaymentType => (
               <Select.Option key={PaymentType._id} value={PaymentType.ParentID}>
                 {PaymentType?.ParentName}

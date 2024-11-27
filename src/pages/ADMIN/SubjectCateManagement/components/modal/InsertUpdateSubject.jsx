@@ -67,9 +67,9 @@ const InsertUpdateSubject = ({ open, onCancel, onOk }) => {
         ? await SubjectService.updateSubject(body)
         : await SubjectService.createSubject(body)
       if (!!res?.isError) return toast.error(res?.msg)
-      onCancel()
       toast.success(res?.msg)
       onOk()
+      onCancel()
     } finally {
       setLoading(false)
     }
@@ -78,6 +78,9 @@ const InsertUpdateSubject = ({ open, onCancel, onOk }) => {
 
   const renderFooter = () => (
     <Space className="d-flex-center">
+      <ButtonCustom btnType="cancel" onClick={onCancel}>
+        Đóng
+      </ButtonCustom>
       <ButtonCustom
         className="primary"
         onClick={() => {
@@ -85,9 +88,6 @@ const InsertUpdateSubject = ({ open, onCancel, onOk }) => {
         }}
       >
         Ghi lại
-      </ButtonCustom>
-      <ButtonCustom btnType="cancel" onClick={onCancel}>
-        Đóng
       </ButtonCustom>
     </Space>
   )

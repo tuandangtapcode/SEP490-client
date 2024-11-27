@@ -4,7 +4,7 @@ import UserService from "src/services/UserService"
 import socket from "src/utils/socket"
 
 const HashKey = import.meta.env.VITE_HASH_KEY
-const ChecksumKey = import.meta.env.VITE_BANK_CHECKSUMKEY
+const ChecksumKey = import.meta.env.VITE_PAYOS_CHECKSUM_KEY
 
 export const randomNumber = () => {
   const min = 100000
@@ -40,6 +40,7 @@ export const handleLogout = async (UserID, dispatch, navigate) => {
   socket.emit("user-logout", UserID)
   socket.disconnect()
   dispatch(globalSlice.actions.setIsLogin(false))
+  dispatch(globalSlice.actions.setIsCheckAuth(false))
   dispatch(globalSlice.actions.setUser({}))
   navigate('/dang-nhap')
 }

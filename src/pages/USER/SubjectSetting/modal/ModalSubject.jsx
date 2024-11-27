@@ -88,9 +88,10 @@ const ModalSubject = ({
             <Select
               showSearch
               placeholder="Chọn môn học"
-              filterOption={(input, option) =>
-                option?.children?.toLowerCase().indexOf(input.toLowerCase()) >= 0
-              }
+              filterOption={(input, option) => {
+                console.log("option", option);
+                return option?.children?.toLowerCase().indexOf(input.toLowerCase()) >= 0
+              }}
             >
               {
                 subjects

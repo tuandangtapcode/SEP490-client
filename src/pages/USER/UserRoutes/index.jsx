@@ -9,7 +9,7 @@ const UserRoutes = ({ tokenInfor }) => {
     <>
       {
         !!tokenInfor &&
-          tokenInfor?.RoleID !== Roles.ROLE_ADMIN ?
+          ![Roles.ROLE_ADMIN, Roles.ROLE_STAFF].includes(tokenInfor?.RoleID) ?
           <MainLayout tokenInfor={tokenInfor}>
             <Outlet />
           </MainLayout>

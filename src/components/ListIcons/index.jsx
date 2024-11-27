@@ -15,7 +15,8 @@ import {
   BsTelephone,
   BsFillPlayFill,
   BsCake2,
-  BsBarChartFill
+  BsBarChartFill,
+  BsCurrencyDollar
 } from "react-icons/bs"
 
 import {
@@ -43,14 +44,19 @@ import {
   AiFillCaretDown,
   AiFillCaretUp,
   AiOutlineQuestionCircle,
-  AiFillPlusCircle
+  AiFillPlusCircle,
+  AiOutlineFileDone,
+  AiFillEyeInvisible,
+  AiOutlineFileSearch
 } from "react-icons/ai"
 
 import {
   BiErrorAlt,
   BiLogIn,
   BiUserPin,
-  BiMessageAltDots
+  BiMessageAltDots,
+  BiBookReader,
+  BiSend
 } from "react-icons/bi"
 
 import {
@@ -166,7 +172,13 @@ const ListIcons = {
   ICON_LEVEL: <BsBarChartFill className="fs-18" />,
   ICON_LEARN_TYPE: <MdClass className="fs-18" />,
   ICON_QUESTION: <AiOutlineQuestionCircle />,
-  ICON_PLUS: <AiFillPlusCircle className="fs-18" />
+  ICON_PLUS: <AiFillPlusCircle className="fs-18" />,
+  ICON_DOLLAR: <BsCurrencyDollar />,
+  ICON_SUBJECT_SETTING: <BiBookReader className="fs-18" />,
+  ICON_NOTED: <AiOutlineFileDone className="fs-18" />,
+  ICON_UNVIEW: <AiFillEyeInvisible className="fs-18 green-text" />,
+  ICON_SEND_BLACK: <BiSend className="fs-18 black-text" />,
+  ICON_BLOG: <AiOutlineFileSearch className="fs-18 black-text" />
 }
 
 export default ListIcons

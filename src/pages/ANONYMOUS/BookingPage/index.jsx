@@ -1,6 +1,6 @@
 import { Col, DatePicker, Empty, message, Radio, Row, Space, Tooltip } from "antd"
 import { useEffect, useState } from "react"
-import { useNavigate, useParams } from "react-router-dom"
+import { useLocation, useNavigate, useParams } from "react-router-dom"
 import SpinCustom from "src/components/SpinCustom"
 import UserService from "src/services/UserService"
 import { MainProfileWrapper } from "../TeacherDetail/styled"
@@ -37,6 +37,7 @@ const BookingPage = () => {
   const { TeacherID, SubjectID } = useParams()
   const { listSystemKey, user, profitPercent } = useSelector(globalSelector)
   const navigate = useNavigate()
+  const location = useLocation()
   const [loading, setLoading] = useState(false)
   const [teacher, setTeacher] = useState()
   const [selectedTimes, setSelectedTimes] = useState([])
@@ -53,6 +54,7 @@ const BookingPage = () => {
   const [openModalChangeSchedule, setOpenModalChangeSchedule] = useState()
   const [openModalChooseCourse, setOpenModalChooseCourse] = useState()
 
+
   const getDetailTeacher = async () => {
     try {
       setLoading(true)
@@ -64,7 +66,7 @@ const BookingPage = () => {
     }
   }
 
-  const getTimeTable = async () => {
+  const getTimeTableOfStudent = async () => {
     try {
       setLoading(true)
       const res = await TimeTableService.getTimeTableByUser()
@@ -184,7 +186,7 @@ const BookingPage = () => {
   }
 
   useEffect(() => {
-    getTimeTable()
+    getTimeTableOfStudent()
     setBookingInfor(pre => ({
       ...pre,
       Address: !!user?.Address ? user?.Address : ""
@@ -192,8 +194,12 @@ const BookingPage = () => {
   }, [])
 
   useEffect(() => {
-    getDetailTeacher()
-  }, [TeacherID, SubjectID])
+    if (!location.state._id) {
+      getDetailTeacher()
+    } else {
+      setTeacher(location.state)
+    }
+  }, [TeacherID, SubjectID, location.state])
 
   useEffect(() => {
     if (!!teacher) getTimeTableOfTeacher()
@@ -360,7 +366,12 @@ const BookingPage = () => {
                     marginBottom: "12px"
                   }}
                   value={!!slotInWeek ? slotInWeek : ""}
+                  min={1}
+                  max={7}
                   onChange={e => {
+                    if (e > totalSlot) {
+                      return message.error("Số buổi 1 tuần lớn hơn tổng số buổi")
+                    }
                     setSlotInWeek(e)
                     const newArray = Array.from({ length: e }, (_, index) => ({
                       id: index + 1,
@@ -385,7 +396,10 @@ const BookingPage = () => {
                             width: "350px",
                           }}
                           value={i?.DateAt}
-                          disabledDate={current => disabledBeforeDate(current)}
+                          disabledDate={current =>
+                            disabledBeforeDate(current) ||
+                            scheduleInWeek.some(i => dayjs(i.DateAt).isSame(current, "day"))
+                          }
                           onChange={e => {
                             const copyScheduleInWeek = [...scheduleInWeek]
                             copyScheduleInWeek.splice(idxScheduleInWeek, 1, {
@@ -536,7 +550,12 @@ const BookingPage = () => {
               <ButtonCustom
                 className="primary submit-btn"
                 loading={loading}
-                onClick={() => setOpenModalConfirmInfor(true)}
+                onClick={() => {
+                  if (selectedTimes.length < totalSlot) {
+                    return message.error("Chưa chọn đủ số buổi học")
+                  }
+                  setOpenModalConfirmInfor(true)
+                }}
               >
                 Xác nhận
               </ButtonCustom>
@@ -554,6 +573,8 @@ const BookingPage = () => {
           bookingInfor={bookingInfor}
           selectedTimes={selectedTimes}
           course={course}
+          timeTablesStudent={timeTablesStudent}
+          timeTablesTeacher={timeTablesTeacher}
         />
       }
 

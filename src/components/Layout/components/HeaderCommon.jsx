@@ -89,7 +89,7 @@ const HeaderCommon = () => {
       key: Router.PROFILE,
       isView: true,
       label: (
-        <div>Quản trị</div>
+        <div>Hồ sơ</div>
       ),
       onClick: () => navigate(Router.PROFILE)
     },
@@ -143,12 +143,12 @@ const HeaderCommon = () => {
               onClick={() => navigate("/")}
               src={logo}
               alt=""
-              style={{ width: '100%', height: "80px", marginTop: '5px', marginRight: "12px" }}
+              style={{ width: '100%', height: "50px", marginTop: '5px', marginRight: "12px" }}
             />
           </Col>
           <Col span={18} className="d-flex-end">
             {
-              ![Roles.ROLE_ADMIN].includes(user?.RoleID) &&
+              ![Roles.ROLE_ADMIN, Roles.ROLE_STAFF].includes(user?.RoleID) &&
               <div>
                 <Menu
                   style={{
@@ -188,7 +188,7 @@ const HeaderCommon = () => {
             <div className="ml-12">
               {
                 user?._id ?
-                  <Dropdown menu={{ items: user?.RoleID !== Roles.ROLE_ADMIN ? menuAccoutUser : [] }} trigger={['click']}>
+                  <Dropdown menu={{ items: ![Roles.ROLE_ADMIN, Roles.ROLE_STAFF].includes(user?.RoleID) ? menuAccoutUser : [] }} trigger={['click']}>
                     <img
                       style={{
                         display: "block",

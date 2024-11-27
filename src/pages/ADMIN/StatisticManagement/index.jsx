@@ -68,12 +68,12 @@ const StatisticManagement = () => {
         </Col>
         <Col span={6}>
           <StatisticCardWrapper>
-            <Statistic title="Chi trả cho giáo viên" value={financial?.Profit} formatter={formatter} />
+            <Statistic title="Chi trả cho giáo viên" value={financial?.Expense} formatter={formatter} />
           </StatisticCardWrapper>
         </Col>
         <Col span={6}>
           <StatisticCardWrapper>
-            <Statistic title="Lợi nhuận" value={financial?.Expense} formatter={formatter} />
+            <Statistic title="Lợi nhuận" value={financial?.Profit} formatter={formatter} />
           </StatisticCardWrapper>
         </Col>
         <Col span={6}>

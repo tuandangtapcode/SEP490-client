@@ -12,8 +12,9 @@ import { Roles, SYSTEM_KEY } from "src/lib/constant"
 import { globalSelector } from "src/redux/selector"
 import LearnHistoryService from "src/services/LearnHistoryService"
 import ModalIssueMentor from "../SchedulePage/components/ModalIssueMentor"
-import ModalSendFeedback from "src/pages/ANONYMOUS/TeacherDetail/modal/ModalSendFeedback"
+import ModalSendFeedback from "src/pages/USER/StudiedSubject/components/ModalSendFeedback"
 import SpinCustom from "src/components/SpinCustom"
+import ModalViewLearnHistory from "./components/ModalViewLearnHistory"
 
 const StudiedSubject = () => {
 
@@ -30,6 +31,7 @@ const StudiedSubject = () => {
 
   const { listSystemKey, user } = useSelector(globalSelector)
   const LearnedStatusKey = getListComboKey(SYSTEM_KEY.LEARNED_STATUS, listSystemKey)
+  const [openModalViewLearnHistory, setOpenModalViewLearnHistory] = useState(false)
 
   const getListLearnHistory = async () => {
     try {
@@ -47,8 +49,6 @@ const StudiedSubject = () => {
       getListLearnHistory()
     }
   }, [pagination])
-
-
 
   const commonColumns = [
     {
@@ -79,13 +79,13 @@ const StudiedSubject = () => {
       key: 'TotalLearned',
     },
     {
-      title: 'Giáo viên phụ trách',
+      title: user?.RoleID === Roles.ROLE_STUDENT ? 'Giáo viên phụ trách' : "Tên học sinh",
       width: 80,
       align: 'center',
       dataIndex: 'Teacher',
       key: 'Teacher',
       render: (text, record) => (
-        <div>{record?.Teacher?.FullName}</div>
+        <div>{record?.[user?.RoleID === Roles.ROLE_STUDENT ? "Teacher" : "Student"]?.FullName}</div>
       ),
     },
     {
@@ -112,23 +112,29 @@ const StudiedSubject = () => {
         </Tag>
       )
     },
-  ]
-
-  const actionColumn = [
     {
-      title: 'Chức năng',
-      width: 40,
-      align: 'center',
-      dataIndex: 'function',
-      key: 'function',
+      title: "Chức năng",
+      width: 60,
+      key: "Function",
+      align: "center",
       render: (_, record) => (
-        <ButtonCircle
-          key={record?.LearnedStatus}
-          disabled={!!record?.isFeedback ? false : true}
-          title="Đánh giá giáo viên"
-          icon={ListIcons?.ICON_RATE}
-          onClick={() => setOpenModalSendFeedback(record)}
-        />
+        <Space direction="horizontal">
+          <ButtonCircle
+            title="Chi tiết"
+            icon={ListIcons?.ICON_VIEW}
+            onClick={() => setOpenModalViewLearnHistory(record?._id)}
+          />
+          {
+            user?.RoleID === Roles.ROLE_STUDENT &&
+            <ButtonCircle
+              key={record?.LearnedStatus}
+              disabled={!!record?.isFeedback ? false : true}
+              title="Đánh giá giáo viên"
+              icon={ListIcons?.ICON_RATE}
+              onClick={() => setOpenModalSendFeedback(record)}
+            />
+          }
+        </Space>
       ),
     },
   ]
@@ -173,11 +179,7 @@ const StudiedSubject = () => {
             noMrb
             showPagination
             dataSource={listSubject}
-            columns={
-              user?.RoleID === Roles.ROLE_STUDENT
-                ? [...commonColumns, ...actionColumn]
-                : commonColumns
-            }
+            columns={commonColumns}
             editableCell
             sticky={{ offsetHeader: -12 }}
             textEmpty="Không có dữ liệu"
@@ -203,6 +205,7 @@ const StudiedSubject = () => {
             }
           />
         </Col>
+
         {
           !!modalIssueMentor &&
           <ModalIssueMentor
@@ -210,6 +213,7 @@ const StudiedSubject = () => {
             onCancel={() => setModalIssueMentor(false)}
           />
         }
+
         {
           !!openModalSendFeedback &&
           <ModalSendFeedback
@@ -217,6 +221,15 @@ const StudiedSubject = () => {
             onCancel={() => setOpenModalSendFeedback(false)}
           />
         }
+
+        {
+          !!openModalViewLearnHistory &&
+          <ModalViewLearnHistory
+            open={openModalViewLearnHistory}
+            onCancel={() => setOpenModalViewLearnHistory(false)}
+          />
+        }
+
       </Row>
     </SpinCustom>
   )

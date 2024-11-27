@@ -42,9 +42,9 @@ const AccountUser = () => {
         OldPassword: values?.OldPassword,
         NewPassword: values?.NewPassword
       })
-      if (!!res?.isError) return toast.error(res?.msg) 
+      if (!!res?.isError) return toast.error(res?.msg)
       toast.success(res?.msg)
-      navigate("/")
+      form.resetFields()
     } finally {
       setLoading(false)
     }
@@ -88,7 +88,7 @@ const AccountUser = () => {
           </p>
           <p className="gray-text">
             <DotStyled />
-            Ít nhất 5 ký tự
+            Ít nhất 8 ký tự
           </p>
         </div>
         <Form.Item
