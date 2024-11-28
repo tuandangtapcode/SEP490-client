@@ -29,28 +29,10 @@ const TeacherManagement = () => {
     TextSearch: "",
     CurrentPage: 1,
     PageSize: 10,
-    SubjectID: "",
-    Level: [],
     RegisterStatus: 0
   })
   const { listSystemKey } = useSelector(globalSelector)
-  const [subjects, setSubjects] = useState([])
   const [openModalReasonReject, setOpenModalReasonReject] = useState(false)
-
-  const getListSubject = async () => {
-    try {
-      setLoading(true)
-      const res = await SubjectService.getListSubject({
-        TextSearch: "",
-        CurrentPage: 0,
-        PageSize: 0
-      })
-      if (!!res?.isError) return toast.error(res?.msg)
-      setSubjects(res?.data?.List)
-    } finally {
-      setLoading(false)
-    }
-  }
 
   const getListTeacher = async () => {
     try {
@@ -63,10 +45,6 @@ const TeacherManagement = () => {
       setLoading(false)
     }
   }
-
-  useEffect(() => {
-    getListSubject()
-  }, [])
 
   useEffect(() => {
     getListTeacher()
@@ -102,12 +80,14 @@ const TeacherManagement = () => {
 
   const listBtn = record => [
     {
+      isView: true,
       title: "Xem chi tiết",
       disabled: false,
       icon: ListIcons?.ICON_VIEW,
       onClick: () => setOpenViewProfile(record)
     },
     {
+      isView: true,
       title: "Duyệt",
       icon: ListIcons?.ICON_CONFIRM,
       disabled: record?.IsConfirm,
@@ -122,12 +102,14 @@ const TeacherManagement = () => {
       }
     },
     {
+      isView: true,
       title: "Không duyệt",
       icon: ListIcons?.ICON_CLOSE,
       disabled: record?.IsReject,
       onClick: () => setOpenModalReasonReject(record)
     },
     {
+      isView: !!record?.IsViewLockUnLock,
       title: !!record?.Account?.IsActive ? "Khóa tài khoản" : "Mở khóa tài khoản",
       icon: !!record?.Account?.IsActive ? ListIcons?.ICON_BLOCK : ListIcons?.ICON_UNBLOCK,
       disabled: record?.IsLockUnLock,
@@ -203,6 +185,7 @@ const TeacherManagement = () => {
         <Space direction="horizontal">
           {
             listBtn(record)?.map((i, idx) =>
+              !!i?.isView &&
               <ButtonCircle
                 key={idx}
                 disabled={i?.disabled}

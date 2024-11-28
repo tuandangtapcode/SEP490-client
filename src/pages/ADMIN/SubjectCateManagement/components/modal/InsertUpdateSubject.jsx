@@ -67,9 +67,9 @@ const InsertUpdateSubject = ({ open, onCancel, onOk }) => {
         ? await SubjectService.updateSubject(body)
         : await SubjectService.createSubject(body)
       if (!!res?.isError) return toast.error(res?.msg)
-      onCancel()
       toast.success(res?.msg)
       onOk()
+      onCancel()
     } finally {
       setLoading(false)
     }

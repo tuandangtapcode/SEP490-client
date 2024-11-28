@@ -39,11 +39,13 @@ const Router = {
   QUAN_LY_GIAO_VIEN: "/dashboard/teacher",
   QUAN_LY_SUBJECT_SETTING: "/dashboard/subject-setting",
   QUAN_LY_HOC_SINH: "/dashboard/student",
+  QUAN_LY_BAI_DANG: "/dashboard/blog",
   QUAN_LY_MON_HOC: "/dashboard/subject-cate",
   QUAN_LY_GIAO_DICH: "/dashboard/payment",
   QUAN_LY_CHUYEN_KHOAN: "/dashboard/transfer",
   QUAN_LY_REPORT: "/dashboard/report",
   QUAN_LY_ISSUE: "/dashboard/issue",
+  QUAN_LY_FEEDBACK: "/dashboard/feedback",
   QUAN_LY_HOP_THU_DEN: "/dashboard/inbox",
 }
 

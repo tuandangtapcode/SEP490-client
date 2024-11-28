@@ -72,6 +72,7 @@ const ModalChangeCareerInfor = ({ open, onCancel }) => {
         if (!!resCertificate?.isError) return toast.error(resCertificate?.msg)
       }
       const dataCertificate = resCertificate?.data
+      const rawCertificates = filesCertificate?.map(i => i.url)
       const res = await UserService.changeCareerInformation({
         Subjects: values?.Subjects,
         Experiences: values?.experiences?.map(i =>
@@ -81,8 +82,8 @@ const ModalChangeCareerInfor = ({ open, onCancel }) => {
           i?.Content
         ),
         Certificates: !!dataCertificate?.length
-          ? [...filesCertificate, ...dataCertificate]
-          : filesCertificate,
+          ? [...rawCertificates, ...dataCertificate]
+          : rawCertificates,
         Description: values?.Description
       })
       if (!!res?.isError) return toast.error(res?.msg)
@@ -95,7 +96,7 @@ const ModalChangeCareerInfor = ({ open, onCancel }) => {
   }
 
   useEffect(() => {
-    form.setFieldsValue({
+    const data = {
       experiences: !!user?.Experiences?.length
         ? user?.Experiences?.map(i => ({
           Content: i
@@ -108,12 +109,13 @@ const ModalChangeCareerInfor = ({ open, onCancel }) => {
         : [{}],
       Certificates: user?.Certificates?.map((i, idx) => ({
         url: i,
-        id: idx
+        id: idx + 1
       })),
       Description: user?.Description,
       Subjects: user?.SubjectSettings?.map(i => i?.Subject?._id)
-    })
-    setFilesCertificate(user?.Certificates)
+    }
+    form.setFieldsValue(data)
+    setFilesCertificate(data.Certificates)
   }, [])
 
   useEffect(() => {

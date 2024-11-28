@@ -12,7 +12,6 @@ import TableCustom from "src/components/TableCustom"
 import ListIcons from "src/components/ListIcons"
 import ButtonCircle from "src/components/MyButton/ButtonCircle"
 import ModalViewBooking from "./components/ModalViewBooking"
-import ModalUpdateBooking from "./components/ModalUpdateBooking"
 import SpinCustom from "src/components/SpinCustom"
 import ConfirmModal from "src/components/ModalCustom/ConfirmModal"
 import NotificationService from "src/services/NotificationService"
@@ -29,7 +28,6 @@ const BookingHistory = () => {
   const [confirms, setConfirms] = useState([])
   const [total, setTotal] = useState(0)
   const [openModalViewBooking, setOpenModalViewBooking] = useState(false)
-  const [openModalUpdateBooking, setOpenModalUpdateBooking] = useState(false)
   const [openModalReasonReject, setOpenModalReasonReject] = useState(false)
   const [pagination, setPagination] = useState({
     CurrentPage: 1,
@@ -73,14 +71,17 @@ const BookingHistory = () => {
       const res = await ConfirmService.changeConfirmStatus({
         ConfirmID: record?._id,
         ConfirmStatus: confirmStatus,
-        Recevier: record?.Receiver,
         RecevierName: user?.FullName,
         SenderName: record?.Sender?.FullName,
         SenderEmail: record?.Sender?.Email
       })
       if (!!res?.isError) return toast.error(res?.msg)
       if (confirmStatus === 4) {
-        socket.emit("send-noted-confirm", res?.data)
+        socket.emit("send-noted-confirm", {
+          ...res?.data,
+          RoleID: user?.RoleID,
+          IsReject: false
+        })
       }
       getListConfirm()
       toast.success(res?.msg)
@@ -100,12 +101,6 @@ const BookingHistory = () => {
       icon: ListIcons?.ICON_VIEW,
       onClick: () => setOpenModalViewBooking(record)
     },
-    // {
-    //   title: "Chỉnh sửa",
-    //   isView: record?.IsUpdate,
-    //   icon: ListIcons?.ICON_EDIT,
-    //   onClick: () => setOpenModalUpdateBooking(record)
-    // },
     {
       title: !!record?.IsDisabledConfirm ? "Bạn đã có lịch trùng với booking này" : "Duyệt",
       isDisabled: record?.IsDisabledConfirm,
@@ -241,10 +236,16 @@ const BookingHistory = () => {
 
   useEffect(() => {
     socket.on("listen-noted-confirm", data => {
-      const copyConfirms = [...confirms]
-      const index = confirms?.findIndex(i => i?._id === data?._id)
-      copyConfirms.splice(index, 1, data)
-      setConfirms(copyConfirms)
+      setConfirms(pre => {
+        const copyConfirms = [...pre]
+        const index = copyConfirms?.findIndex((i) => i?._id === data?._id)
+        if (index !== -1) {
+          copyConfirms.splice(index, 1, data)
+        } else {
+          copyConfirms.push(data)
+        }
+        return copyConfirms
+      })
     })
   }, [])
 
@@ -296,16 +297,6 @@ const BookingHistory = () => {
           <ModalViewBooking
             open={openModalViewBooking}
             onCancel={() => setOpenModalViewBooking(false)}
-          />
-        }
-
-        {
-          !!openModalUpdateBooking &&
-          <ModalUpdateBooking
-            open={openModalUpdateBooking}
-            onCancel={() => setOpenModalUpdateBooking(false)}
-            onOk={getListConfirm}
-            setOpenModalUpdateBooking={setOpenModalUpdateBooking}
           />
         }
 

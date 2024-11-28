@@ -8,7 +8,8 @@ const globalSlice = createSlice({
     isCheckAuth: false,
     listSystemKey: [],
     profitPercent: 0,
-    routerBeforeLogin: ""
+    routerBeforeLogin: "",
+    listTabs: []
   },
   reducers: {
     setUser: (state, action) => {
@@ -28,6 +29,9 @@ const globalSlice = createSlice({
     },
     setRouterBeforeLogin: (state, action) => {
       state.routerBeforeLogin = action.payload
+    },
+    setListTabs: (state, action) => {
+      state.listTabs = action.payload
     }
   }
 })

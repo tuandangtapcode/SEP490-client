@@ -59,7 +59,7 @@ const SignupPage = () => {
           const user = decodeData(res?.data)
           if (!!user.ID) {
             dispatch(globalSlice.actions.setIsCheckAuth(true))
-            if (user.RoleID === Roles.ROLE_ADMIN) {
+            if (![3, 4].includes(user.RoleID)) {
               navigate("/dashboard")
             } else {
               navigate('/')

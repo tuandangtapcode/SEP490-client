@@ -43,8 +43,8 @@ const BookingPage = () => {
   const [selectedTimes, setSelectedTimes] = useState([])
   const [bookingInfor, setBookingInfor] = useState()
   const [times, setTimes] = useState([])
-  const [timeTablesTeacher, SetTimeTablesTeacher] = useState([])
-  const [timeTablesStudent, SetTimeTablesStudent] = useState([])
+  const [timeTablesTeacher, setTimeTablesTeacher] = useState([])
+  const [timeTablesStudent, setTimeTablesStudent] = useState([])
   const [openModalConfirmInfor, setOpenModalConfirmInfor] = useState()
   const [totalSlot, setTotalSlot] = useState(0)
   const [slotInWeek, setSlotInWeek] = useState(0)
@@ -71,7 +71,7 @@ const BookingPage = () => {
       setLoading(true)
       const res = await TimeTableService.getTimeTableByUser()
       if (!!res?.isError) return toast.error(res?.msg)
-      SetTimeTablesStudent(res?.data?.List)
+      setTimeTablesStudent(res?.data?.List)
     } finally {
       setLoading(false)
     }
@@ -82,7 +82,7 @@ const BookingPage = () => {
       setLoading(true)
       const res = await TimeTableService.getTimeTableOfTeacherOrStudent(TeacherID)
       if (!!res?.isError) return toast.error(res?.msg)
-      SetTimeTablesTeacher(res?.data)
+      setTimeTablesTeacher(res?.data)
     } finally {
       setLoading(false)
     }
@@ -367,8 +367,11 @@ const BookingPage = () => {
                   }}
                   value={!!slotInWeek ? slotInWeek : ""}
                   min={1}
-                  max={3}
+                  max={7}
                   onChange={e => {
+                    if (e > totalSlot) {
+                      return message.error("Số buổi 1 tuần lớn hơn tổng số buổi")
+                    }
                     setSlotInWeek(e)
                     const newArray = Array.from({ length: e }, (_, index) => ({
                       id: index + 1,
@@ -547,7 +550,12 @@ const BookingPage = () => {
               <ButtonCustom
                 className="primary submit-btn"
                 loading={loading}
-                onClick={() => setOpenModalConfirmInfor(true)}
+                onClick={() => {
+                  if (selectedTimes.length < totalSlot) {
+                    return message.error("Chưa chọn đủ số buổi học")
+                  }
+                  setOpenModalConfirmInfor(true)
+                }}
               >
                 Xác nhận
               </ButtonCustom>

@@ -14,6 +14,8 @@ const ModalChangeSchedule = ({
   setSelectedTimes
 }) => {
 
+  console.log("selectedTimes", selectedTimes);
+
 
   return (
     <ModalCustom
@@ -42,8 +44,12 @@ const ModalChangeSchedule = ({
                 style={{
                   width: "100%",
                 }}
+                allowClear={false}
                 value={i?.DateAt}
-                disabledDate={current => disabledBeforeDate(current)}
+                disabledDate={current =>
+                  disabledBeforeDate(current) ||
+                  selectedTimes.some(i => dayjs(i.DateAt).isSame(current, "day"))
+                }
                 onChange={e => {
                   const copySelectTimes = [...selectedTimes]
                   copySelectTimes.splice(idx, 1, {

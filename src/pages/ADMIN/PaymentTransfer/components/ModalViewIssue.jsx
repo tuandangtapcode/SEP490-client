@@ -19,8 +19,6 @@ const ModalViewIssue = ({ open, onCancel, setPagination }) => {
   const handleIssue = async (record) => {
     try {
       setLoading(true)
-      const resIssue = await IssueService.handleIssue(record?._id)
-      if (!!resIssue?.isError) return toast.error(res?.msg)
       const res = await PaymentService.createPayment({
         PaymentType: 2,
         PaymentStatus: 1,
@@ -31,12 +29,12 @@ const ModalViewIssue = ({ open, onCancel, setPagination }) => {
       })
       if (!!res?.isError) return toast.error(res?.msg)
       toast.success("Issue đã được xử lý. Đã tạo thanh toán hoàn tiền cho học sinh")
-      onCancel()
       setPagination(pre => ({
         ...pre,
         FromDate: getCurrentWeekRange().startOfWeek,
         ToDate: getCurrentWeekRange().endOfWeek
       }))
+      onCancel()
     } finally {
       setLoading(false)
     }
@@ -75,19 +73,19 @@ const ModalViewIssue = ({ open, onCancel, setPagination }) => {
                 <div className="center-text fs-18 fw-700">Lần báo số {idx + 1}</div>
               </Col>
               <Col span={5}>
-                <div>Người phản ánh:</div>
+                <div>Học sinh:</div>
               </Col>
               <Col span={17}>
                 <div>{i?.Sender?.FullName}</div>
               </Col>
               <Col span={5}>
-                <div>Người bị phản ánh:</div>
+                <div>Giáo viên:</div>
               </Col>
               <Col span={17}>
                 <div>{i?.Teacher?.FullName}</div>
               </Col>
               <Col span={5}>
-                <div>Buổi học vào ngày:</div>
+                <div>Ngày:</div>
               </Col>
               <Col span={17}>
                 <div>
@@ -97,33 +95,23 @@ const ModalViewIssue = ({ open, onCancel, setPagination }) => {
                 </div>
               </Col>
               <Col span={5}>
-                <div>Bắt đầu lúc:</div>
+                <div>Thời gian:</div>
               </Col>
               <Col span={17}>
                 <div>
                   {
-                    dayjs(open?.TimeTables?.find(item => item?._id === i?.Timetable)?.StartTime).format("HH:mm")
+                    dayjs(open?.TimeTables?.find(item => item?._id === i?.Timetable)?.StartTime).format("HH:mm") - dayjs(open?.TimeTables?.find(item => item?._id === i?.Timetable)?.EndTime).format("HH:mm")
                   }
                 </div>
               </Col>
               <Col span={5}>
-                <div>Kết thúc lúc:</div>
-              </Col>
-              <Col span={17}>
-                <div>
-                  {
-                    dayjs(open?.TimeTables?.find(item => item?._id === i?.Timetable)?.EndTime).format("HH:mm")
-                  }
-                </div>
-              </Col>
-              <Col span={5}>
-                <div>Tiêu đề phản ánh:</div>
+                <div>Tiêu đề:</div>
               </Col>
               <Col span={17}>
                 <div>{i?.Title}</div>
               </Col>
               <Col span={5}>
-                <div>Nội dung phản ánh:</div>
+                <div>Nội dung:</div>
               </Col>
               <Col span={17}>
                 <div>{i?.Content}</div>
@@ -133,16 +121,10 @@ const ModalViewIssue = ({ open, onCancel, setPagination }) => {
                   className="primary"
                   loading={loading}
                   onClick={() => {
-                    if (!i?.IsHandle) {
-                      handleIssue(i)
-                    }
+                    handleIssue(i)
                   }}
                 >
-                  {
-                    !!i?.IsHandle
-                      ? "Đã xử lý"
-                      : "Tạo thanh toán hoàn tiền cho học sinh"
-                  }
+                  Tạo thanh toán hoàn tiền cho học sinh
                 </ButtonCustom>
               </Col>
             </React.Fragment>

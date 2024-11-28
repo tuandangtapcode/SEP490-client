@@ -21,7 +21,6 @@ export const MenuCommon = () => [
     label: "Cách hoạt động"
   }
   // {
-  //   isView: user?.RoleID === Roles.ROLE_STUDENT,
   //   key: Router.POST_BAI_TIM_GIAO_VIEN,
   //   label: "Đăng bài tìm giáo viên"
   // },
@@ -29,67 +28,64 @@ export const MenuCommon = () => [
 
 export const MenuUser = (user) => [
   {
-    isView: true,
     key: Router.PROFILE,
     label: "Profile",
+    TabID: 1
   },
   {
-    isView: !user?.IsByGoogle,
     key: Router.CAI_DAT_MAT_KHAU,
-    label: "Cài đặt mật khẩu"
+    label: "Cài đặt mật khẩu",
+    TabID: 2
   },
   {
-    isView: user?.RoleID === Roles.ROLE_TEACHER,
     key: Router.SUBJECT_SETTING,
     label: "Cài đặt môn học",
+    TabID: 3
   },
   {
-    isView: true,
     key: Router.LICH_HOC,
-    label: "Lịch học",
+    label: user?.RoleID === Roles.ROLE_TEACHER
+      ? "Lịch dạy"
+      : "Lịch học",
+    TabID: 4
   },
   {
-    isView: true,
     key: Router.DANH_SACH_MON_DA_HOC,
     label: user?.RoleID === Roles.ROLE_TEACHER ?
       "Danh sách các môn đã dạy"
       :
-      "Danh sách các môn đã tham gia"
+      "Danh sách các môn đã tham gia",
+    TabID: 5
   },
   {
-    isView: user?.RoleID === Roles.ROLE_TEACHER,
     key: Router.KHOA_HOC,
     label: "Khóa học",
+    TabID: 6
   },
   {
-    isView: true,
     key: Router.LICH_SU_BOOKING,
     label: "Lịch sử booking",
+    TabID: 7
   },
-  // {
-  //   isview: user?.RoleID === Roles.ROLE_STUDENT,
-  //   key: Router.POST_BAI_TIM_GIAO_VIEN,
-  //   label: "Bài viết đã đăng",
-  // },
   {
-    isView: user?.RoleID === Roles.ROLE_STUDENT,
     key: Router.DANG_BAI_VIET,
     label: "Đăng bài",
+    TabID: 8
   },
   {
-    isView: true,
     key: Router.HOP_THU_DEN,
-    label: "Hộp thư đến"
+    label: "Hộp thư đến",
+    TabID: 9
   },
   {
-    isView: true,
     key: Router.LICH_SU_GIAO_DICH,
-    label: "Lịch sử giao dịch"
+    label: "Lịch sử giao dịch",
+    TabID: 10
   },
   {
-    isView: true,
     key: Router.CAI_DAT_TAI_KHOAN_NH,
-    label: "Cài đặt tài khoản ngân hàng"
+    label: "Cài đặt tài khoản ngân hàng",
+    TabID: 11
   },
 ]
 
@@ -98,72 +94,78 @@ export const MenuAdmin = () => [
     icon: ListIcons.ICON_STATISTIC,
     label: "Thống kê",
     key: Router.QUAN_LY_THONG_KE,
-    RoleID: [1, 2]
+    TabID: 1
   },
   {
     icon: ListIcons.ICON_STAFF,
     label: "Quản trị hệ thống",
     key: Router.QUAN_LY_STAFF,
-    RoleID: [1]
+    TabID: 2
   },
   {
     icon: ListIcons.ICON_TEACHER,
     label: "Giáo viên",
     key: Router.QUAN_LY_GIAO_VIEN,
-    RoleID: [1, 2]
+    TabID: 3
   },
   {
     icon: ListIcons.ICON_SUBJECT_SETTING,
     label: "Môn học của giáo viên",
     key: Router.QUAN_LY_SUBJECT_SETTING,
-    RoleID: [1, 2]
+    TabID: 4
   },
   {
     icon: ListIcons.ICON_STUDENT,
     label: "Học sinh",
     key: Router.QUAN_LY_HOC_SINH,
-    RoleID: [1, 2]
+    TabID: 5
+  },
+  {
+    icon: ListIcons.ICON_BLOG,
+    key: Router.QUAN_LY_BAI_DANG,
+    label: "Bài đăng của học sinh",
+    TabID: 6
   },
   {
     icon: ListIcons.ICON_SUBJECT_CATE,
-    label: "Quản lý môn học",
+    label: "Quản lý danh mục môn học",
     key: Router.QUAN_LY_MON_HOC,
-    RoleID: [1, 2],
+    TabID: 7
   },
   {
     icon: ListIcons.ICON_PAYMENT,
     label: "Quản lý lịch sử giao dịch",
     key: Router.QUAN_LY_GIAO_DICH,
-    RoleID: [1]
+    TabID: 8
   },
   {
     icon: ListIcons.ICON_PAYMENT_MENTOR,
     label: "Quản lý chuyển khoản",
     key: Router.QUAN_LY_CHUYEN_KHOAN,
-    RoleID: [1]
+    TabID: 9
   },
   {
     icon: ListIcons.ICON_REPORT,
-    label: "Report",
-    key: Router.QUAN_LY_REPORT,
-    RoleID: [1, 2]
-  },
-  {
-    icon: ListIcons.ICON_REPORT,
-    label: "Issue",
+    label: "Vấn đề giảng dạy",
     key: Router.QUAN_LY_ISSUE,
-    RoleID: [1, 2]
+    TabID: 10
+  },
+  {
+    icon: ListIcons.ICON_RATE,
+    label: "Nhận xét của học sinh",
+    key: Router.QUAN_LY_FEEDBACK,
+    TabID: 11
   },
   {
     icon: ListIcons.ICON_MESSAGE,
     label: "Quản lý hộp thư đến",
     key: Router.QUAN_LY_HOP_THU_DEN,
-    RoleID: [1, 2],
+    TabID: 12
   },
   {
     icon: <div style={{ marginLeft: '-5px' }}>{ListIcons.ICON_LOGOUT}</div>,
     label: "Đăng xuất",
     key: 'logout',
-    RoleID: [1]
+    TabID: 13
   },
 ]

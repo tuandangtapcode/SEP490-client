@@ -41,9 +41,9 @@ const InsertUpdateSubjectCate = ({ open, onCancel, onOk }) => {
         ? await SubjectCateService.updateSubjectCate(body)
         : await SubjectCateService.createSubjectCate(body)
       if (!!res?.isError) return toast.error(res?.msg)
-      onCancel()
       toast.success(res?.msg)
       onOk()
+      onCancel()
     } finally {
       setLoading(false)
     }

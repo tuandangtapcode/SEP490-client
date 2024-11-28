@@ -20,13 +20,13 @@ const StudentManagement = () => {
   const [loading, setLoading] = useState(false)
   const [listData, setListData] = useState([])
   const [total, setTotal] = useState(0)
+  const [isViewLockUnLock, setIsViewLockUnLock] = useState(false)
   const [pagination, setPagination] = useState({
     TextSearch: "",
     CurrentPage: 1,
     PageSize: 10,
     SortByBookQuantity: 1
   })
-
   const { listSystemKey } = useSelector(globalSelector)
   const registerStatus = getListComboKey(SYSTEM_KEY.REGISTER_STATUS, listSystemKey)
 
@@ -38,6 +38,7 @@ const StudentManagement = () => {
       if (!!res?.isError) return toast.error(res?.msg)
       setListData(res?.data?.List)
       setTotal(res?.data?.Total)
+      setIsViewLockUnLock(res?.data?.IsViewLockUnLock)
     } finally {
       setLoading(false)
     }
@@ -58,7 +59,7 @@ const StudentManagement = () => {
     }
   }
 
-  const columns = [
+  const defaultComlums = [
     {
       title: "STT",
       width: 35,
@@ -134,6 +135,9 @@ const StudentManagement = () => {
         </Tag>
       )
     },
+  ]
+
+  const actionColumn = [
     {
       title: "Chức năng",
       width: 70,
@@ -184,9 +188,12 @@ const StudentManagement = () => {
             bordered
             noMrb
             showPagination
-            loading={loading}
             dataSource={listData}
-            columns={columns}
+            columns={
+              !!isViewLockUnLock
+                ? [...defaultComlums, ...actionColumn]
+                : defaultComlums
+            }
             editableCell
             sticky={{ offsetHeader: -12 }}
             textEmpty="Không có dữ liệu"

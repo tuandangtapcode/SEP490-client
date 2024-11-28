@@ -1,4 +1,4 @@
-import { Col, Form, List, message, Row, Space } from "antd"
+import { Col, Form, List, message, Row, Space, Tag } from "antd"
 import { useEffect, useState } from "react"
 import { toast } from "react-toastify"
 import ButtonCustom from "src/components/MyButton/ButtonCustom"
@@ -14,11 +14,17 @@ import dayjs from "dayjs"
 import ModalSubject from "./modal/ModalSubject"
 import FileService from "src/services/FileService"
 import NotificationService from "src/services/NotificationService"
-import { ADMIN_ID } from "src/lib/constant"
+import { ADMIN_ID, SYSTEM_KEY } from "src/lib/constant"
 import { useSelector } from "react-redux"
 import { globalSelector } from "src/redux/selector"
 import socket from "src/utils/socket"
 import { getRealFee } from "src/lib/stringUtils"
+import { getListComboKey } from "src/lib/commonFunction"
+import ListIcons from "src/components/ListIcons"
+import ButtonCircle from "src/components/MyButton/ButtonCircle"
+import TableCustom from "src/components/TableCustom"
+import ModalUpdateSubjectSetting from "./modal/ModalUpdateSubjectSetting"
+import ConfirmModal from "src/components/ModalCustom/ConfirmModal"
 
 const SubjectSetting = () => {
 
@@ -27,10 +33,8 @@ const SubjectSetting = () => {
   const [subjectSettings, setSubjectSettings] = useState([])
   const [subjectSetting, setSubjectSetting] = useState()
   const [form] = Form.useForm()
-  const [filesCertificate, setFilesCertificate] = useState([])
-  const [filesIntroVideo, setFilesIntroVideo] = useState([])
-  const { user, profitPercent } = useSelector(globalSelector)
-  const [totalFee, setTotalFee] = useState(0)
+  const { profitPercent, listSystemKey } = useSelector(globalSelector)
+  const [openModalUpdateSubjectSetting, setModalUpdateSubjectSetting] = useState(false)
 
   const getListSubjectSetting = async () => {
     try {
@@ -38,80 +42,6 @@ const SubjectSetting = () => {
       const res = await UserService.getListSubjectSettingByTeacher()
       if (!!res?.isError) return toast.error(res?.msg)
       setSubjectSettings(res?.data)
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  const handleSubmit = async () => {
-    try {
-      setLoading(true)
-      const values = await form.validateFields()
-      let resCertificate, resIntroVideo
-      if (!!values?.Certificates?.some(i => !!i?.originFileObj)) {
-        resCertificate = FileService.uploadFileList({
-          FileList: values?.Certificates?.map(i => i?.originFileObj)
-        })
-      }
-      if (!!values?.IntroVideos?.some(i => !!i?.originFileObj)) {
-        resIntroVideo = FileService.uploadFileList({
-          FileList: values?.IntroVideos?.map(i => i?.originFileObj)
-        })
-      }
-      const resultFile = await Promise.all([resCertificate, resIntroVideo])
-      if (!!resultFile[0]?.isError || !!resultFile[1]?.isError) return
-      const dataCertificate = resultFile[0]?.data
-      const dataIntroVideo = resultFile[1]?.data
-      const resSubjectSetting = await UserService.updateSubjectSetting({
-        SubjectSettingID: subjectSetting?._id,
-        SubjectID: subjectSetting?.Subject?._id,
-        Quote: {
-          Title: values?.TitleQuote,
-          Content: values?.ContentQuote
-        },
-        Certificates: !!dataCertificate?.length
-          ? [...filesCertificate, ...dataCertificate]
-          : filesCertificate,
-        IntroVideos: !!dataIntroVideo?.length
-          ? [...filesIntroVideo, ...dataIntroVideo]
-          : filesIntroVideo,
-        Levels: values?.Levels,
-        Experiences: !!values?.experiences
-          ? values?.experiences?.map(i => ({
-            Content: i?.Content,
-            StartDate: i?.Date[0],
-            EndDate: i?.Date[1]
-          }))
-          : undefined,
-        Educations: !!values?.educations
-          ? values?.educations?.map(i => ({
-            Content: i?.Content,
-            StartDate: i?.Date[0],
-            EndDate: i?.Date[1]
-          }))
-          : undefined,
-        Price: values?.Price,
-        LearnTypes: values?.LearnTypes
-      })
-      if (!!resSubjectSetting?.isError) return toast.error(resSubjectSetting?.msg)
-      const resNotification = await NotificationService.createNotification({
-        Content: `${user?.FullName} đã gửi yêu cầu duyệt profile cho bạn`,
-        Type: "teacher",
-        Receiver: ADMIN_ID
-      })
-      if (!!resNotification?.isError) return
-      socket.emit('send-notification',
-        {
-          Content: resNotification?.data?.Content,
-          IsSeen: resNotification?.IsSeen,
-          _id: resNotification?.data?._id,
-          Type: resNotification?.data?.Type,
-          IsNew: resNotification?.data?.IsNew,
-          Receiver: ADMIN_ID,
-          createdAt: resNotification?.data?.createdAt
-        })
-      toast.success("Yêu cầu kiểm duyệt đã được gửi")
-      setSubjectSetting(resSubjectSetting?.data)
     } finally {
       setLoading(false)
     }
@@ -136,40 +66,110 @@ const SubjectSetting = () => {
     getListSubjectSetting()
   }, [])
 
-  useEffect(() => {
-    if (!!subjectSetting) {
-      form.setFieldsValue({
-        TitleQuote: subjectSetting?.Quote?.Title,
-        ContentQuote: subjectSetting?.Quote?.Content,
-        LearnTypes: subjectSetting?.LearnTypes,
-        Price: subjectSetting?.Price,
-        Levels: subjectSetting?.Levels,
-        experiences: !!subjectSetting?.Experiences?.length
-          ? subjectSetting?.Experiences?.map(i => ({
-            ...i,
-            Date: [dayjs(i?.StartDate), dayjs(i?.EndDate)]
-          }))
-          : [{}],
-        educations: !!subjectSetting?.Educations?.length
-          ? subjectSetting?.Educations?.map(i => ({
-            ...i,
-            Date: [dayjs(i?.StartDate), dayjs(i?.EndDate)]
-          }))
-          : [{}],
-        Certificates: subjectSetting?.Certificates?.map((i, idx) => ({
-          url: i,
-          id: idx
-        })),
-        IntroVideos: subjectSetting?.IntroVideos?.map((i, idx) => ({
-          url: i.replace("mp4", "jpg"),
-          id: idx
-        }))
-      })
-      setTotalFee(getRealFee(subjectSetting?.Price, profitPercent))
-      setFilesCertificate(subjectSetting?.Certificates)
-      setFilesIntroVideo(subjectSetting?.IntroVideos)
+  const listBtn = record => [
+    {
+      title: "Chỉnh sửa",
+      isDisabled: record?.IsUpdate,
+      icon: ListIcons?.ICON_EDIT,
+      onClick: () => setModalUpdateSubjectSetting(record)
+    },
+    {
+      title: !!record?.IsDisabled ? "Hiển thị môn học" : "Ẩn môn học",
+      isDisabled: !!record?.IsDisabledBtn,
+      icon: !!record?.IsDisabled ? ListIcons.ICON_VIEW : ListIcons.ICON_UNVIEW,
+      onClick: () => {
+        ConfirmModal({
+          icon: "ICON_SUSCESS_MODAL",
+          description: `Bạn có chắc chắn ${!!record?.IsDisabled ? "hiển thị môn học" : "ẩn môn học"} không?`,
+          onOk: async close => {
+            disabledOrEnabledSubjectSetting(record, !record?.IsDisabled)
+            close()
+          }
+        })
+      }
+    },
+  ]
+
+  const column = [
+    {
+      title: "STT",
+      width: 50,
+      align: "center",
+      render: (_, record, index) => (
+        <div className="text-center">{index + 1}</div>
+      ),
+    },
+    {
+      title: "Tên môn học",
+      width: 100,
+      dataIndex: "SubjectName",
+      align: "center",
+      key: "SubjectName",
+      render: (_, record) => (
+        <div className="text-center">{record?.Subject?.SubjectName}</div>
+      ),
+    },
+    {
+      title: "Trạng thái đăng ký",
+      width: 80,
+      dataIndex: "RegisterStatus",
+      align: "center",
+      key: "RegisterStatus",
+      render: (val) => (
+        <Tag color={["processing", "warning", "success", "error"][val - 1]} className="p-5 fs-16">
+          {
+            getListComboKey(SYSTEM_KEY.REGISTER_STATUS, listSystemKey)
+              ?.find(i => i?.ParentID === val)?.ParentName
+          }
+        </Tag>
+      )
+    },
+    {
+      title: "Trạng thái sử dụng",
+      width: 60,
+      dataIndex: "IsDisabled",
+      align: "center",
+      key: "IsDisabled",
+      render: (val) => (
+        <Tag color={!val ? "success" : "error"} className="p-5 fs-16">
+          {
+            !val ? "Đang sử dụng" : "Đã ẩn"
+          }
+        </Tag>
+      )
+    },
+    {
+      title: "Ngày cập nhật",
+      width: 60,
+      dataIndex: "updatedAt",
+      align: "center",
+      key: "updatedAt",
+      render: (val) => (
+        <div>{dayjs(val).format("DD/MM/YYYY")}</div>
+      )
+    },
+    {
+      title: "Chức năng",
+      width: 70,
+      key: "Function",
+      align: "center",
+      render: (_, record) => (
+        <Space direction="horizontal">
+          {
+            listBtn(record)?.map((i, idx) =>
+              <ButtonCircle
+                key={idx}
+                title={i?.title}
+                icon={i?.icon}
+                disabled={i?.isDisabled}
+                onClick={i?.onClick}
+              />
+            )
+          }
+        </Space>
+      ),
     }
-  }, [subjectSetting?.Subject?._id])
+  ]
 
 
   return (
@@ -188,106 +188,20 @@ const SubjectSetting = () => {
             </Space>
           </Col>
           <Col span={24} className="mb-20">
-            <List
+            <TableCustom
+              isPrimary
+              bordered
+              noMrb
+              showPagination
               dataSource={subjectSettings}
-              renderItem={i => (
-                <SubjectItemStyled
-                  className={!!i?.IsDisabled ? "disabled" : ""}
-                >
-                  <List.Item
-                    actions={[
-                      <ButtonCustom
-                        key={1}
-                        className={`${subjectSetting?.Subject?._id === i?.Subject?._id ? "primary" : "third"} mini-size`}
-                        onClick={() => {
-                          if (i?.Subject?._id !== subjectSetting?.Subject?._id) {
-                            setSubjectSetting(i)
-                          } else {
-                            setSubjectSetting()
-                          }
-                        }}
-                      >
-                        Chọn
-                      </ButtonCustom>,
-                      <ButtonCustom
-                        key={2}
-                        className={`third mini-size`}
-                        onClick={() => {
-                          if (!i?.IsDisabled) {
-                            disabledOrEnabledSubjectSetting(i, true)
-                          } else {
-                            disabledOrEnabledSubjectSetting(i, false)
-                          }
-                        }}
-                      >
-                        {
-                          !i?.IsDisabled
-                            ? "Ẩn môn học"
-                            : "Hiện môn học"
-                        }
-                      </ButtonCustom>
-                    ]}
-                  >
-                    {i?.Subject?.SubjectName}
-                  </List.Item>
-                </SubjectItemStyled>
-              )}
+              columns={column}
+              editableCell
+              sticky={{ offsetHeader: -12 }}
+              textEmpty="Không có dữ liệu"
+              rowKey="key"
+              pagination={false}
             />
-            {/* {
-              subjectSettings?.map((i, idx) =>
-                <SubjectItemStyled
-                  className={subjectSetting?.Subject?._id === i?.Subject?._id ? "active" : ""}
-                  key={idx}
-                  onClick={() => {
-                    if (i?.Subject?._id !== subjectSetting?.Subject?._id) {
-                      setSubjectSetting(i)
-                    } else {
-                      setSubjectSetting()
-                    }
-                  }}
-                >
-                  {i?.Subject?.SubjectName}
-                </SubjectItemStyled>
-              )
-            } */}
           </Col>
-          {
-            !!subjectSetting &&
-            <>
-              <BasicInformation
-                totalFee={totalFee}
-                setTotalFee={setTotalFee}
-                subjectSetting={subjectSetting}
-              />
-              <Experiences subjectSetting={subjectSetting} />
-              <Educations subjectSetting={subjectSetting} />
-              <Certificates
-                form={form}
-                setFilesCertificate={setFilesCertificate}
-                filesCertificate={filesCertificate}
-                subjectSetting={subjectSetting}
-              />
-              <IntroVideo
-                form={form}
-                setFilesIntroVideo={setFilesIntroVideo}
-                filesIntroVideo={filesIntroVideo}
-                subjectSetting={subjectSetting}
-              />
-              {
-                subjectSetting?.RegisterStatus !== 2 &&
-                <Col span={24}>
-                  <ButtonCustom
-                    className="medium-size primary fw-700 mb-12"
-                    onClick={() => {
-                      handleSubmit()
-                    }}
-                  >
-                    Gửi yêu cầu kiểm duyệt
-                  </ButtonCustom>
-                </Col>
-              }
-            </>
-          }
         </Row>
       </Form>
 
@@ -297,6 +211,15 @@ const SubjectSetting = () => {
           open={openModalSubject}
           onCancel={() => setOpenModalSubject(false)}
           subjectSettings={subjectSettings}
+          onOk={getListSubjectSetting}
+        />
+      }
+
+      {
+        !!openModalUpdateSubjectSetting &&
+        <ModalUpdateSubjectSetting
+          open={openModalUpdateSubjectSetting}
+          onCancel={() => setModalUpdateSubjectSetting(false)}
           onOk={getListSubjectSetting}
         />
       }

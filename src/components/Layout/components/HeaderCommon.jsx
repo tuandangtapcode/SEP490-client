@@ -148,7 +148,7 @@ const HeaderCommon = () => {
           </Col>
           <Col span={18} className="d-flex-end">
             {
-              ![Roles.ROLE_ADMIN].includes(user?.RoleID) &&
+              ![Roles.ROLE_ADMIN, Roles.ROLE_STAFF].includes(user?.RoleID) &&
               <div>
                 <Menu
                   style={{
@@ -188,7 +188,7 @@ const HeaderCommon = () => {
             <div className="ml-12">
               {
                 user?._id ?
-                  <Dropdown menu={{ items: user?.RoleID !== Roles.ROLE_ADMIN ? menuAccoutUser : [] }} trigger={['click']}>
+                  <Dropdown menu={{ items: ![Roles.ROLE_ADMIN, Roles.ROLE_STAFF].includes(user?.RoleID) ? menuAccoutUser : [] }} trigger={['click']}>
                     <img
                       style={{
                         display: "block",

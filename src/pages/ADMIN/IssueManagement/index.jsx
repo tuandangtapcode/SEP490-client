@@ -1,11 +1,11 @@
 import { Col, Row } from "antd"
-import moment from "moment"
 import { useEffect, useState } from "react"
 import { toast } from "react-toastify"
 import InputCustom from "src/components/InputCustom"
 import SpinCustom from "src/components/SpinCustom"
 import TableCustom from "src/components/TableCustom"
 import IssueService from "src/services/IssueService"
+import dayjs from "dayjs"
 
 const IssueManagement = () => {
 
@@ -15,6 +15,7 @@ const IssueManagement = () => {
   const [pagination, setPagination] = useState({
     CurrentPage: 1,
     PageSize: 10,
+    TextSearch: ""
   })
 
 
@@ -38,32 +39,56 @@ const IssueManagement = () => {
   const columns = [
     {
       title: "STT",
-      width: 50,
+      width: 30,
       align: "center",
       render: (_, record, index) => (
         <div className="text-center">{pagination?.PageSize * (pagination?.CurrentPage - 1) + index + 1}</div>
       ),
     },
     {
-      title: 'Người phản ánh',
-      width: 100,
+      title: 'Học sinh',
+      width: 90,
       align: 'center',
-      dataIndex: 'AuthorName',
-      key: 'AuthorName',
+      dataIndex: 'StudentName',
+      key: 'StudentName',
       render: (text, record) => (
         <div>{record.Sender?.FullName}</div>
       ),
     },
     {
-      title: 'Tiêu đề phản ánh',
+      title: 'Giáo viên',
       width: 100,
+      align: 'center',
+      dataIndex: 'TeacherName',
+      key: 'TeacherName',
+      render: (text, record) => (
+        <div>{record.Teacher?.FullName}</div>
+      ),
+    },
+    {
+      title: 'Buổi học',
+      width: 90,
+      align: 'center',
+      dataIndex: 'StartTime',
+      key: 'StartTime',
+      render: (text, record) => (
+        <div>
+          <span className="mr-3">{dayjs(record?.Timetable?.StartTime).format('DD/MM/YYYY')}</span>
+          <span>{dayjs(record?.Timetable?.StartTime).format('hh:mm')}-</span>
+          <span>{dayjs(record?.Timetable?.EndTime).format('hh:mm')}</span>
+        </div>
+      ),
+    },
+    {
+      title: 'Tiêu đề phản ánh',
+      width: 90,
       align: 'center',
       dataIndex: 'Title',
       key: 'Title',
     },
     {
       title: 'Nội dung phản ánh chi tiết',
-      width: 300,
+      width: 200,
       dataIndex: 'Content',
       key: 'Content',
     },
@@ -74,7 +99,7 @@ const IssueManagement = () => {
       dataIndex: 'createdAt',
       key: 'createdAt',
       render: (text, record) => (
-        <div>{moment(record?.createdAt).format('hh:mm - DD/MM/YYYY')}</div>
+        <div>{dayjs(record?.createdAt).format('hh:mm DD/MM/YYYY')}</div>
       ),
     },
 
@@ -91,9 +116,9 @@ const IssueManagement = () => {
         <Col span={24}>
           <InputCustom
             type="isSearch"
-            placeholder="Tìm kiếm mã giao dịch..."
+            placeholder="Tìm kiếm tên giáo viên hoặc tên học sinh..."
             allowClear
-            onSearch={e => setPagination(pre => ({ ...pre, TraddingCode: e }))}
+            onSearch={e => setPagination(pre => ({ ...pre, TextSearch: e }))}
           />
         </Col>
         <Col span={24} className="mt-16">

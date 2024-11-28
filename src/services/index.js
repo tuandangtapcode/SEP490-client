@@ -1,5 +1,6 @@
 import axios from 'axios'
 import Notice from 'src/components/Notice'
+import Router from 'src/routers'
 
 const ReactAppRootAPILocal = import.meta.env.VITE_ROOT_API_LOCAL
 const ReactAppRootAPICloud = import.meta.env.VITE_ROOT_API_CLOUD
@@ -41,6 +42,7 @@ instance.interceptors.response.use(
         msg: `Phiên làm việc đã hết hạn. Hãy đăng nhập lại để tiếp tục sử dụng`,
         isSuccess: false,
       })
+      return window.location.replace(Router.TRANG_CHU)
     } else if (+error?.response?.status == 403) {
       Notice({
         msg: `Bạn không có quyền truy cập`,

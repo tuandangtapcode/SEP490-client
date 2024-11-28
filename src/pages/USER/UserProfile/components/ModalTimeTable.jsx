@@ -12,11 +12,11 @@ import UserService from 'src/services/UserService'
 import globalSlice from 'src/redux/globalSlice'
 import { toast } from 'react-toastify'
 import { globalSelector } from 'src/redux/selector'
-import { convertToCurrentEquivalent } from 'src/lib/dateUtils'
 import Notice from 'src/components/Notice'
-
+import { convertToCurrentEquivalent } from 'src/lib/dateUtils'
 
 const localizer = momentLocalizer(moment)
+moment.updateLocale('en', { week: { dow: 1 } })
 
 const formats = {
   monthHeaderFormat: () => { }, // Định dạng tiêu đề tháng
@@ -48,6 +48,9 @@ const ModalTimeTable = ({
     const newData = schedules?.filter(i => i?.start !== schedule?.start)
     setSchedules(newData)
   }
+
+  console.log("schedules", schedules);
+
 
   const handleChangeSchedules = async () => {
     try {
@@ -127,7 +130,7 @@ const ModalTimeTable = ({
             toolbar={false}
             defaultView={Views.WEEK}
             formats={formats}
-            firstDayOfWeek={2}
+            firstDayOfWeek={1}
             selectable
             onSelectSlot={handleSelectSlot}
             onSelectEvent={handleSelectEvent}

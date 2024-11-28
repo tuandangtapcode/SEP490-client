@@ -50,7 +50,7 @@ const InsertUpdateCourse = ({ open, onCancel, onOk }) => {
     if (!!open?._id) {
       form.setFieldsValue(open)
     }
-    setTotalFee()
+    setTotalFee(open?.Price)
   }, [open?._id])
 
   return (
@@ -137,7 +137,7 @@ const InsertUpdateCourse = ({ open, onCancel, onOk }) => {
             <div className="d-flex align-items-center">
               <div className="mr-8">Số tiền học sinh cần trả:</div>
               <div>
-                <span>{formatMoney(totalFee)}</span>
+                <span>{formatMoney(getRealFee(totalFee, profitPercent))}</span>
                 <span> VNĐ</span>
               </div>
             </div>
