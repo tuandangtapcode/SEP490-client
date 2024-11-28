@@ -133,7 +133,7 @@ const PaymentTransfer = () => {
     },
     {
       title: "Gửi yêu cầu giải trình",
-      icon: ListIcons?.ICON_CLOSE,
+      icon: ListIcons?.ICON_SEND_BLACK,
       disabled: !record?.Receiver?.Issues?.length || !!record?.RequestAxplanationAt,
       onClick: () => handleSendRequestExplanation(record)
     }
@@ -223,7 +223,7 @@ const PaymentTransfer = () => {
             QUẢN LÝ CHUYỂN KHOẢN
           </div>
         </Col>
-        <Col span={14}>
+        <Col span={18}>
           <InputCustom
             type="isSearch"
             placeholder="Tìm kiếm tên người nhận..."
@@ -231,27 +231,27 @@ const PaymentTransfer = () => {
             onSearch={e => setPagination(pre => ({ ...pre, TraddingCode: e }))}
           />
         </Col>
-        <Col span={4}>
+        {/* <Col span={4}>
           <Select
             placeholder="Trạng thái thanh toán"
+            allowClear
             onChange={e => setPagination(pre => ({ ...pre, Paymentstatus: e }))}
           >
-            <Select.Option key={0} value={0}>Tất cả</Select.Option>
             {PaymentStatuskey.map(PaymentStatus => (
               <Select.Option key={PaymentStatus._id} value={PaymentStatus.ParentID}>
                 {PaymentStatus?.ParentName}
               </Select.Option>
             ))}
           </Select>
-        </Col>
+        </Col> */}
         <Col span={6}>
           <DatePicker.RangePicker
             value={[dayjs(pagination?.FromDate), dayjs(pagination?.ToDate)]}
             format="DD/MM/YYYY"
             onChange={e => setPagination(pre => ({
               ...pre,
-              FromDate: dayjs(e[0]),
-              ToDate: dayjs(e[1])
+              FromDate: dayjs(e[0]).startOf("day"),
+              ToDate: dayjs(e[1]).endOf("day")
             }))}
           />
         </Col>

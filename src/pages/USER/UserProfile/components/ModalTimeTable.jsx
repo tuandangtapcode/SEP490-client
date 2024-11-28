@@ -12,8 +12,8 @@ import UserService from 'src/services/UserService'
 import globalSlice from 'src/redux/globalSlice'
 import { toast } from 'react-toastify'
 import { globalSelector } from 'src/redux/selector'
+import Notice from 'src/components/Notice'
 import { convertToCurrentEquivalent } from 'src/lib/dateUtils'
-
 
 const localizer = momentLocalizer(moment)
 moment.updateLocale('en', { week: { dow: 1 } })
@@ -49,13 +49,21 @@ const ModalTimeTable = ({
     setSchedules(newData)
   }
 
+  console.log("schedules", schedules);
+
+
   const handleChangeSchedules = async () => {
     try {
       setLoading(true)
       if (!schedules.length)
         return message.error("Hãy chọn lịch dạy cho bạn")
+      if (schedules?.some(i => dayjs(i.end).diff(dayjs(i.start)) < 90)) {
+        return Notice({
+          msg: "Thời gian 1 buổi học không được dưới 90 phút",
+          isSuccess: false
+        })
+      }
       const res = await UserService.updateSchedule({
-        Email: user?.Email,
         Schedules: schedules?.map(i => ({
           DateAt: dayjs(i?.start).format("dddd"),
           StartTime: dayjs(i?.start),
@@ -122,7 +130,7 @@ const ModalTimeTable = ({
             toolbar={false}
             defaultView={Views.WEEK}
             formats={formats}
-            firstDayOfWeek={2}
+            firstDayOfWeek={1}
             selectable
             onSelectSlot={handleSelectSlot}
             onSelectEvent={handleSelectEvent}

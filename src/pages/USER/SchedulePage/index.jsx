@@ -12,7 +12,6 @@ import ModalDetailSchedule from "./components/ModalDetailSchedule"
 import { toast } from "react-toastify"
 
 const localizer = momentLocalizer(moment)
-moment.updateLocale('en', { week: { dow: 1 } })
 
 const messages = {
   allDay: "Cả ngày",
@@ -22,7 +21,7 @@ const messages = {
   month: "Tháng",
   week: "Tuần",
   day: "Ngày",
-  agenda: "Lịch học hôm nay",
+  agenda: "Lịch dạy",
   date: "Ngày",
   time: "Thời gian",
   event: "Sự kiện",

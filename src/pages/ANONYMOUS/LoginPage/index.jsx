@@ -31,6 +31,8 @@ const LoginPage = () => {
     } else {
       if (tokenInfor.RoleID === Roles.ROLE_ADMIN) {
         navigate("/dashboard")
+      } else if (tokenInfor.RoleID === Roles.ROLE_STAFF) {
+        navigate(Router.QUAN_LY_GIAO_VIEN)
       } else {
         navigate('/')
       }

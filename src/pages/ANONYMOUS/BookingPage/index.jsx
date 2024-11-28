@@ -360,7 +360,12 @@ const BookingPage = () => {
                     marginBottom: "12px"
                   }}
                   value={!!slotInWeek ? slotInWeek : ""}
+                  min={1}
+                  max={7}
                   onChange={e => {
+                    if (e > totalSlot) {
+                      return message.error("Số buổi 1 tuần lớn hơn tổng số buổi")
+                    }
                     setSlotInWeek(e)
                     const newArray = Array.from({ length: e }, (_, index) => ({
                       id: index + 1,
@@ -536,7 +541,12 @@ const BookingPage = () => {
               <ButtonCustom
                 className="primary submit-btn"
                 loading={loading}
-                onClick={() => setOpenModalConfirmInfor(true)}
+                onClick={() => {
+                  if (selectedTimes.length < totalSlot) {
+                    return message.error("Chưa chọn đủ số buổi học")
+                  }
+                  setOpenModalConfirmInfor(true)
+                }}
               >
                 Xác nhận
               </ButtonCustom>

@@ -23,12 +23,15 @@ import {
   apiResponseConfirmRegister,
   apiUpdateSubjectSetting,
   apiCheckAuth,
-  apiGetListTopTeacherBySubject,
+  apiGetListTopTeacher,
   apiForgotPassword,
   apiChangeCareerInformation,
   apiUpdateSchedule,
   apiGetListSubjectSetting,
   apiResponseConfirmSubjectSetting,
+  apiDisabledOrEnabledSubjectSetting,
+  apiCreateAccountStaff,
+  apiGetListAccountStaff,
 } from "./urls"
 
 const getInforByGoogleLogin = (access_token) => axios.get(apiGetInforByGoogleLogin, {
@@ -59,10 +62,13 @@ const createSubjectSetting = SubjectID => http.get(`${apiCreateSubjectSetting}/$
 const updateSubjectSetting = body => http.post(apiUpdateSubjectSetting, body)
 const deleteSubjectSetting = SubjectSettingID => http.get(`${apiDeleteSubjectSetting}/${SubjectSettingID}`)
 const responseConfirmSubjectSetting = body => http.post(apiResponseConfirmSubjectSetting, body)
-const getListTopTeacherBySubject = SubjectID => http.get(`${apiGetListTopTeacherBySubject}/${SubjectID}`)
+const getListTopTeacher = () => http.get(apiGetListTopTeacher)
 const changeCareerInformation = body => http.post(apiChangeCareerInformation, body)
 const updateSchedule = body => http.post(apiUpdateSchedule, body)
 const getListSubjectSetting = body => http.post(apiGetListSubjectSetting, body)
+const disabledOrEnabledSubjectSetting = body => http.post(apiDisabledOrEnabledSubjectSetting, body)
+const createAccountStaff = body => http.post(apiCreateAccountStaff, body)
+const getListAccountStaff = body => http.post(apiGetListAccountStaff, body)
 
 const UserService = {
   getInforByGoogleLogin,
@@ -89,10 +95,13 @@ const UserService = {
   updateSubjectSetting,
   deleteSubjectSetting,
   responseConfirmSubjectSetting,
-  getListTopTeacherBySubject,
+  getListTopTeacher,
   changeCareerInformation,
   updateSchedule,
-  getListSubjectSetting
+  getListSubjectSetting,
+  disabledOrEnabledSubjectSetting,
+  createAccountStaff,
+  getListAccountStaff
 }
 
 export default UserService

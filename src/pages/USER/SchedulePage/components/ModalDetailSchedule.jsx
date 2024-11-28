@@ -37,8 +37,8 @@ const ModalDetailSchedule = ({
       const res = await TimeTableService.attendanceTimeTable(open?._id)
       if (!!res?.isError) return toast.error(res?.msg)
       toast.success(res?.msg)
-      onCancel()
       getTimeTable()
+      onCancel()
     } finally {
       setLoading(false)
     }
@@ -177,6 +177,7 @@ const ModalDetailSchedule = ({
         !!openModalChangeTimetable &&
         <ModalChangeTimetable
           open={openModalChangeTimetable}
+          dataModalDetail={open}
           onCancel={() => setOpenModalChangeTimetable(false)}
           onCancelModalDetail={() => onCancel()}
           getTimeTable={getTimeTable}

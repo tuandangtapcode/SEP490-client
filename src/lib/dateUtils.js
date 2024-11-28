@@ -67,17 +67,20 @@ export const getCurrentWeekRange = () => {
 }
 
 export const convertToCurrentEquivalent = (date) => {
-  const currentDate = new Date()
+  const currentDate = new Date() // Ngày hiện tại
+  const currentDayOfWeek = currentDate.getUTCDay() // Ngày trong tuần hiện tại (0 - Chủ nhật, 1 - Thứ hai, ...)
+  // Tính ngày Thứ hai của tuần hiện tại
+  const daysToMonday = currentDayOfWeek === 0 ? -6 : 1 - currentDayOfWeek // Nếu Chủ nhật thì đi tới Thứ hai tuần hiện tại
   const currentWeekMonday = new Date(currentDate)
-  const currentDayOfWeek = currentDate.getUTCDay()
-  const daysToMonday = currentDayOfWeek === 0 ? 6 : currentDayOfWeek - 1
-  currentWeekMonday.setUTCDate(currentDate.getUTCDate() - daysToMonday)
-  const dayOfWeek = date.getUTCDay()
+  currentWeekMonday.setUTCDate(currentDate.getUTCDate() + daysToMonday)
+  // Chuyển ngày nhập vào thành ngày tương ứng với tuần hiện tại
+  const dayOfWeek = date.getUTCDay() // Ngày trong tuần của ngày cần chuyển đổi
   const hours = date.getUTCHours()
   const minutes = date.getUTCMinutes()
   const seconds = date.getUTCSeconds()
   const newDate = new Date(currentWeekMonday)
-  newDate.setUTCDate(currentWeekMonday.getUTCDate() + (dayOfWeek - 1))
+  newDate.setUTCDate(currentWeekMonday.getUTCDate() + (dayOfWeek === 0 ? 6 : dayOfWeek - 1)) // Nếu Chủ nhật, đặt là Thứ bảy
   newDate.setUTCHours(hours, minutes, seconds, 0)
+
   return newDate
 }

@@ -24,6 +24,7 @@ const ModalReasonReject = ({ open, onCancel, onOk }) => {
       })
       if (!!res?.isError) return toast.error(res?.msg)
       onOk()
+      onCancel()
     } finally {
       setLoading(false)
     }
@@ -48,7 +49,7 @@ const ModalReasonReject = ({ open, onCancel, onOk }) => {
             loading={loading}
             onClick={() => handleRejectRegister()}
           >
-            Lưu
+            Gửi
           </ButtonCustom>
         </Space>
       }

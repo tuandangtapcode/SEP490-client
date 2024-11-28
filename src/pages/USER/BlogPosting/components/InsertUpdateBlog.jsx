@@ -125,15 +125,11 @@ const InsertUpdateBlog = ({ open, onCancel, onOk }) => {
       };
         const res = !!open?._id
         ? await BlogService.updateBlog(body)
-        : await BlogService.createBlog(body);
-
-      if (!!res?.isError) return toast.error(res?.msg);
-      onCancel();
-      toast.success(res?.msg);
-      onOk();
-    } catch (error) {
-      console.error(error);
-      toast.error(error.message || "Đã xảy ra lỗi.");
+        : await BlogService.createBlog(body)
+      if (!!res?.isError) return toast.error(res?.msg)
+      toast.success(res?.msg)
+      onOk()
+      onCancel()
     } finally {
       setLoading(false);
     }
@@ -216,6 +212,67 @@ const InsertUpdateBlog = ({ open, onCancel, onOk }) => {
                   />
                 </Form.Item>
                 <Row gutter={16}>
+                  <Col span={6}>
+                    <Form.Item name="Price" label="Học phí mỗi buổi (VNĐ):" rules={[{ required: true, message: 'Vui lòng chọn giá!' }]}>
+                      <InputNumber
+                        min={0}
+                        max={1000000}
+                        step={50000}
+                        value={price}
+                        onChange={(value) => {
+                          setPrice(value);
+                          form.setFieldsValue({ Price: value });
+                        }}
+                        formatter={(value) => value ? value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".") : ''}
+                        parser={(value) => value.replace(/\./g, '')}
+                      /><span style={{ marginLeft: 10 }}>VNĐ</span>
+                    </Form.Item>
+                  </Col>
+                  <Col span={5}>
+                    <Form.Item name="NumberSlot" label="Tổng số buổi:" rules={[
+                      {
+                        required: true,
+                        message: 'Vui lòng nhập số buổi!'
+                      },
+                      {
+                        type: 'number',
+                        min: 1,
+                        message: 'Số buổi phải lớn hơn hoặc bằng 1!'
+                      }
+                    ]}
+                    >
+                      <InputNumber min={1} />
+                    </Form.Item>
+                  </Col>
+                  <Col span={5}>
+                    <Form.Item name="NumberSlotOfWeek" label="Số buổi học/Tuần:" rules={[
+                      {
+                        required: true,
+                        message: 'Vui lòng nhập số buổi!'
+                      },
+                      {
+                        type: 'number',
+                        min: 1,
+                        max: 10,
+                        message: 'Số buổi phải lớn hơn hoặc bằng 1!'
+                      }
+                    ]}
+                    >
+                      <InputNumber min={1} />
+                    </Form.Item>
+                  </Col>
+                  <Col span={8}>
+                    <Form.Item style={{ width: "100%" }} labelAlign="right" name="Gender" label="Yêu cầu giới tính giáo viên" rules={[{ required: true, message: 'Vui lòng chọn giới tính!' }]}>
+                      <Select>
+                        <Select.Option value={0}>Nam</Select.Option>
+                        <Select.Option value={1}>Nữ</Select.Option>
+                      </Select>
+                    </Form.Item>
+                  </Col>
+                </Row>
+                <Row gutter={16}>
+
+
                   <Col span={12}>
                     <Form.Item name="LearnType" label="Hình thức học" rules={[{ required: true, message: 'Vui lòng nhập hình thức học!' }]}>
                       <Select

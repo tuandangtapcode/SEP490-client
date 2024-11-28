@@ -36,7 +36,11 @@ const BankInfor = ({ isProfilePage, setBankInfor }) => {
       }
       if (!body?.bin || !body?.accountNumber) return
       const res = await BankingService.getInforBankAccount(body)
-      if (!res?.data?.data) return toast.error(res?.data?.desc)
+      if (!res?.data?.data) {
+        form.setFieldValue("accountName", "")
+        return toast.error(res?.data?.desc)
+      }
+      toast.success(res?.data?.desc)
       form.setFieldValue("accountName", res?.data?.data?.accountName)
 
     } finally {

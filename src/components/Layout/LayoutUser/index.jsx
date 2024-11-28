@@ -13,7 +13,7 @@ const LayoutUser = ({ children }) => {
   const navigate = useNavigate()
   const location = useLocation()
   const dispatch = useDispatch()
-  const { user } = useSelector(globalSelector)
+  const { user, listTabs } = useSelector(globalSelector)
 
   const handleChangeMenu = (key) => {
     if (key !== "logout") {
@@ -60,7 +60,7 @@ const LayoutUser = ({ children }) => {
             mode="inline"
             className="menu-antd-user"
             onClick={e => handleChangeMenu(e.key)}
-            items={MenuUser(user)?.filter(i => !!i?.isView)}
+            items={MenuUser(user)?.filter(i => listTabs?.includes(i?.TabID))}
             selectedKeys={location?.pathname}
           />
         </Col>

@@ -26,7 +26,6 @@ const StudentManagement = () => {
     PageSize: 10,
     SortByBookQuantity: 1
   })
-
   const { listSystemKey } = useSelector(globalSelector)
   const registerStatus = getListComboKey(SYSTEM_KEY.REGISTER_STATUS, listSystemKey)
 
@@ -184,7 +183,6 @@ const StudentManagement = () => {
             bordered
             noMrb
             showPagination
-            loading={loading}
             dataSource={listData}
             columns={columns}
             editableCell

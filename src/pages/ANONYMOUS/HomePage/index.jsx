@@ -11,30 +11,25 @@ import BackgroundChooseTeacher from "./components/BackgroundChooseTeacher"
 import SubjectCare from "./components/SubjectCare"
 import BackgroundMobileApp from "./components/BackgroundMobileApp"
 import BecomeTeacher from "./components/BecomeTeacher"
+import CommonService from "src/services/CommonService"
 
 const HomePage = () => {
 
   const [loading, setLoading] = useState(false)
-  const [recommendSubjects, setRecommendSSubjects] = useState([])
-  const [subject, setSubject] = useState()
   const [teachers, setTeachers] = useState([])
+  const [prompt, setPrompt] = useState("")
 
-  const getListRecommendSubject = async () => {
+  const getListTeacherRecommend = async () => {
     try {
       setLoading(true)
-      const res = await SubjectService.getListRecommendSubject()
-      if (!!res?.isError) return toast.error(res?.msg)
-      setRecommendSSubjects(res?.data)
-      setSubject(res?.data[0])
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  const getListTopTeacherBySubject = async () => {
-    try {
-      setLoading(true)
-      const res = await UserService.getListTopTeacherBySubject(subject?._id)
+      let res
+      if (!!prompt) {
+        res = await CommonService.teacherRecommend({
+          prompt: prompt
+        })
+      } else {
+        res = await UserService.getListTopTeacher()
+      }
       if (!!res?.isError) return toast.error(res?.msg)
       setTeachers(res?.data)
     } finally {
@@ -43,28 +38,21 @@ const HomePage = () => {
   }
 
   useEffect(() => {
-    getListRecommendSubject()
-  }, [])
-
-  useEffect(() => {
-    if (!!subject)
-      getListTopTeacherBySubject()
-  }, [subject])
+    getListTeacherRecommend()
+  }, [prompt])
 
   return (
     <SpinCustom spinning={loading}>
       <HomeContainerStyled>
         <Row gutter={[0, 16]}>
           <Col span={24} className="d-flex-center mb-70">
-            <Search />
+            <Search setPrompt={setPrompt} />
           </Col>
           <Col span={24} className="d-flex-center mb-50">
-            {/* <FamoursTeacher
-              recommendSubjects={recommendSubjects}
+            <FamoursTeacher
               teachers={teachers}
-              subject={subject}
-              setSubject={setSubject}
-            /> */}
+              prompt={prompt}
+            />
           </Col>
           <Col span={24} className="mb-50">
             <BackgroundChooseTeacher />

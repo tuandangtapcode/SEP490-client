@@ -29,28 +29,10 @@ const TeacherManagement = () => {
     TextSearch: "",
     CurrentPage: 1,
     PageSize: 10,
-    SubjectID: "",
-    Level: [],
     RegisterStatus: 0
   })
   const { listSystemKey } = useSelector(globalSelector)
-  const [subjects, setSubjects] = useState([])
   const [openModalReasonReject, setOpenModalReasonReject] = useState(false)
-
-  const getListSubject = async () => {
-    try {
-      setLoading(true)
-      const res = await SubjectService.getListSubject({
-        TextSearch: "",
-        CurrentPage: 0,
-        PageSize: 0
-      })
-      if (!!res?.isError) return toast.error(res?.msg)
-      setSubjects(res?.data?.List)
-    } finally {
-      setLoading(false)
-    }
-  }
 
   const getListTeacher = async () => {
     try {
@@ -63,10 +45,6 @@ const TeacherManagement = () => {
       setLoading(false)
     }
   }
-
-  useEffect(() => {
-    getListSubject()
-  }, [])
 
   useEffect(() => {
     getListTeacher()
@@ -223,7 +201,7 @@ const TeacherManagement = () => {
         <Col span={24} className="mb-16">
           <div className="title-type-1"> QUẢN LÝ TÀI KHOẢN GIÁO VIÊN</div>
         </Col>
-        <Col span={12}>
+        <Col span={20}>
           <InputCustom
             type="isSearch"
             placeholder="Nhập vào tên giáo viên"
@@ -233,50 +211,10 @@ const TeacherManagement = () => {
         </Col>
         <Col span={4}>
           <Select
-            placeholder="Chọn môn học"
-            onChange={e => setPagination(pre => ({ ...pre, SubjectID: e }))}
-          >
-            {
-              subjects?.map(i =>
-                <Option
-                  key={i?._id}
-                  value={i?._id}
-                >
-                  {i?.SubjectName}
-                </Option>
-              )
-            }
-          </Select>
-        </Col>
-        <Col span={4}>
-          <Select
-            mode="multiple"
-            placeholder="Chọn level"
-            onChange={e => setPagination(pre => ({ ...pre, Level: e }))}
-          >
-            {
-              getListComboKey(SYSTEM_KEY.SKILL_LEVEL, listSystemKey)?.map(i =>
-                <Option
-                  key={i?.ParentID}
-                  value={i?.ParentID}
-                >
-                  {i?.ParentName}
-                </Option>
-              )
-            }
-          </Select>
-        </Col>
-        <Col span={4}>
-          <Select
             placeholder="Tình trạng đăng ký"
+            allowClear
             onChange={e => setPagination(pre => ({ ...pre, RegisterStatus: e }))}
           >
-            <Option
-              key={0}
-              value={0}
-            >
-              Tất cả
-            </Option>
             {
               getListComboKey(SYSTEM_KEY.REGISTER_STATUS, listSystemKey)?.map(i =>
                 <Option

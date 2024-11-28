@@ -15,11 +15,11 @@ const MainLayout = ({ children, tokenInfor }) => {
       <Layout>
         <Content className="site-layout-background">
           {
-            (!!tokenInfor && tokenInfor?.RoleID === Roles.ROLE_ADMIN) ?
+            (!!tokenInfor && [Roles.ROLE_ADMIN, Roles.ROLE_STAFF].includes(tokenInfor?.RoleID)) ?
               <LayoutAdmin>
                 {children}
               </LayoutAdmin>
-              : (!!tokenInfor && tokenInfor?.RoleID !== Roles.ROLE_ADMIN) ?
+              : (!!tokenInfor && ![Roles.ROLE_ADMIN, Roles.ROLE_STAFF].includes(tokenInfor?.RoleID)) ?
                 <LayoutUser>
                   {children}
                 </LayoutUser>
