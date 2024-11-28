@@ -1,4 +1,4 @@
-import { Col, Rate, Row, Space } from "antd"
+import { Col, Rate, Row, Space, Table } from "antd"
 import { useEffect, useState } from "react"
 import { toast } from "react-toastify"
 import ModalCustom from "src/components/ModalCustom"
@@ -6,11 +6,17 @@ import SpinCustom from "src/components/SpinCustom"
 import LearnHistoryService from "src/services/LearnHistoryService"
 import { saveAs } from "file-saver"
 import ButtonCustom from "src/components/MyButton/ButtonCustom"
+import dayjs from "dayjs"
+import TableCustom from "src/components/TableCustom"
+import { useSelector } from "react-redux"
+import { globalSelector } from "src/redux/selector"
+import { Roles } from "src/lib/constant"
 
 const ModalViewLearnHistory = ({ open, onCancel }) => {
 
   const [learnHistory, setLearnHistory] = useState()
   const [loading, setLoading] = useState(false)
+  const { user } = useSelector(globalSelector)
 
   const getDetailLearnHistory = async () => {
     try {
@@ -26,6 +32,73 @@ const ModalViewLearnHistory = ({ open, onCancel }) => {
   useEffect(() => {
     getDetailLearnHistory()
   }, [open])
+
+  const colums = [
+    {
+      title: 'Tên học sinh',
+      width: 80,
+      align: 'center',
+      dataIndex: 'FullName',
+      key: 'FullName',
+      render: (text, record) => (
+        <div>{record?.Student?.FullName}</div>
+      ),
+    },
+    {
+      title: 'Ngày giờ',
+      width: 90,
+      align: 'center',
+      dataIndex: 'StartTime',
+      key: 'StartTime',
+      render: (text, record) => (
+        <div>
+          <span className="mr-3">{dayjs(record?.StartTime).format("DD/MM/YYYY")}</span>
+          <span>{dayjs(record?.StartTime).format("HH:mm")}-</span>
+          <span>{dayjs(record?.EndTime).format("HH:mm")}</span>
+        </div>
+      ),
+    },
+    {
+      title: 'Tình trạng điểm danh',
+      width: 80,
+      align: 'center',
+      dataIndex: 'Status',
+      key: 'Status',
+      render: (val) => (
+        <div>
+          {
+            !!val ? "Đã điểm danh" : "Chưa điểm danh"
+          }
+        </div>
+      ),
+    },
+    {
+      title: 'Tài liệu',
+      width: 100,
+      align: 'center',
+      dataIndex: 'Documents',
+      key: 'Documents',
+      render: (val) => (
+        <div>
+          {
+            val?.length
+              ? val?.map((i, idx) =>
+                <div
+                  key={idx}
+                  className="primary-text cursor-pointer"
+                  onClick={() => {
+                    saveAs(i?.DocPath, i?.DocName)
+                  }}
+                >
+                  {i?.DocName}
+                </div>
+              )
+              : <span>Không có tài liệu</span>
+          }
+        </div>
+      ),
+    },
+  ]
 
   return (
     <ModalCustom
@@ -46,12 +119,24 @@ const ModalViewLearnHistory = ({ open, onCancel }) => {
     >
       <SpinCustom spinning={loading}>
         <div className="d-flex-center">
-          <Row style={{ width: "50%" }}>
+          <Row >
             <Col span={6}>
               <div className="fw-600 fs-16">Môn học</div>
             </Col>
             <Col span={18}>
               <div className="fs-16">{learnHistory?.Subject?.SubjectName}</div>
+            </Col>
+            <Col span={6}>
+              <div className="fw-600 fs-16">
+                {
+                  user?.RoleID === Roles.ROLE_TEACHER
+                    ? "Học sinh"
+                    : "Giáo viên"
+                }
+              </div>
+            </Col>
+            <Col span={18}>
+              <div className="fs-16">{learnHistory?.Timetables[0]?.[user?.RoleID === Roles.ROLE_TEACHER ? "Student" : "Teacher"]?.FullName}</div>
             </Col>
             <Col span={6}>
               <div className="fw-600 fs-16">Số buổi học</div>
@@ -62,44 +147,18 @@ const ModalViewLearnHistory = ({ open, onCancel }) => {
             <Col span={24}>
               <div className="fw-600 fs-16">Thông tin điểm danh</div>
             </Col>
-            <Col span={8}>
-              Tên học sinh
+            <Col span={24}>
+              <Table
+                bordered
+                dataSource={learnHistory?.Timetables}
+                columns={colums}
+                editableCell
+                sticky={{ offsetHeader: -12 }}
+                textEmpty="Không có dữ liệu"
+                rowKey="key"
+                pagination={false}
+              />
             </Col>
-            <Col span={8}>
-              Tình trạng điểm danh
-            </Col>
-            <Col span={8}>
-              Tài liệu
-            </Col>
-            {
-              learnHistory?.Timetables?.map(i =>
-                <>
-                  <Col span={8}>
-                    {i?.Student?.FullName}
-                  </Col>
-                  <Col span={8}>
-                    {!!i?.Status ? "Đã điểm danh" : "Chưa điểm danh"}
-                  </Col>
-                  <Col span={8}>
-                    {
-                      !!i?.Documents?.length
-                        ? open?.Documents?.map((i, idx) =>
-                          <div
-                            key={idx}
-                            className="primary-text cursor-pointer"
-                            onClick={() => {
-                              saveAs(i?.DocPath, i?.DocName)
-                            }}
-                          >
-                            {i?.DocName}
-                          </div>
-                        )
-                        : <span>Không có tài liệu</span>
-                    }
-                  </Col>
-                </>
-              )
-            }
             <Col span={learnHistory?.Feedback[0] ? 24 : 5}>
               <div className="fw-600 fs-16">Nhận xét</div>
             </Col>
