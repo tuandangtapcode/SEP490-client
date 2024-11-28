@@ -14,7 +14,6 @@ import { globalSelector } from './redux/selector'
 import ScrollToTop from './components/ScrollToTop'
 import ModalChangeProfile from './components/Layout/components/ModalChangeProfile'
 
-// import InsertUpdateBlog from './pages/USER/BlogPosting/components/InsertUpdateBlog.jsx'
 // ADMIN
 const AdminRoutes = React.lazy(() => import("src/pages/ADMIN/AdminRoutes"))
 const StatisticManagement = React.lazy(() => import("src/pages/ADMIN/StatisticManagement"))
@@ -48,7 +47,7 @@ const ForgotPassword = React.lazy(() => import("src/pages/ANONYMOUS/ForgotPasswo
 
 // USER
 const UserRoutes = React.lazy(() => import("src/pages/USER/UserRoutes"))
-const BlogPosting = React.lazy(() => import("./pages/USER/BlogPosting"))
+const BlogPosting = React.lazy(() => import("src/pages/USER/BlogPosting"))
 const UserProfile = React.lazy(() => import("src/pages/USER/UserProfile"))
 const SubjectSetting = React.lazy(() => import("src/pages/USER/SubjectSetting"))
 const InboxPage = React.lazy(() => import("src/pages/USER/InboxPage"))

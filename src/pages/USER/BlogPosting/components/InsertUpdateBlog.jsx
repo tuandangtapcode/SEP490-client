@@ -1,4 +1,4 @@
-import { Col, Form, message,Empty, Row, Space, Upload, Radio, Slider, Select, Input, DatePicker, Button, InputNumber, TimePicker } from "antd"
+import { Col, Form, message, Empty, Row, Space, Upload, Radio, Slider, Select, Input, DatePicker, Button, InputNumber } from "antd"
 import { useEffect, useState } from "react"
 import { toast } from "react-toastify"
 import InputCustom from "src/components/InputCustom"
@@ -9,7 +9,10 @@ import BlogService from "src/services/BlogService"
 import styled from "styled-components"
 import SubjectService from "src/services/SubjectService"
 import moment from "moment";
-
+import { disabledBeforeDate } from "src/lib/dateUtils"
+import dayjs from "dayjs";
+import FormItem from "antd/es/form/FormItem"
+const { RangePicker } = DatePicker;
 const StyleModal = styled.div`
   .ant-form-item-label {
     width: 50%;
@@ -23,8 +26,7 @@ const InsertUpdateBlog = ({ open, onCancel, onOk }) => {
   const [preview, setPreview] = useState()
   const [loading, setLoading] = useState(false)
   const [subjects, setSubjects] = useState([]);
-  const [priceRange, setPriceRange] = useState([0, 1000000]);
-
+  const [selectDate, setSelectDate] = useState();
   const [slotInWeek, setSlotInWeek] = useState(0)
   const [scheduleInWeek, setScheduleInWeek] = useState([])
   const [selectedTimes, setSelectedTimes] = useState([])
@@ -32,7 +34,7 @@ const InsertUpdateBlog = ({ open, onCancel, onOk }) => {
   const [price, setPrice] = useState(0);
   const [showAddress, setShowAddress] = useState(false);
 
-  const [schedules, setSchedules] = useState([{ DateAt: null, StartTime: null, EndTime: null }]);
+  const [schedules, setSchedules] = useState([{ StartTime: null, EndTime: null }]);
   useEffect(() => {
     if (!!open?._id) {
       form.setFieldsValue(open)
@@ -60,50 +62,82 @@ const InsertUpdateBlog = ({ open, onCancel, onOk }) => {
   }, []);
 
   useEffect(() => {
-    const learnTypes = form.getFieldValue('LearnTypes') || [];
-    setShowAddress(learnTypes.includes(2));
-  }, [form.getFieldValue('LearnTypes')]);
+    const learnType = form.getFieldValue('LearnType') || [];
+    setShowAddress(learnType.includes(2));
+  }, [form.getFieldValue('LearnType')]);
 
-  const addSchedule = () => {
-    setSchedules([...schedules, { DateAt: null, StartTime: null, EndTime: null }]);
-  };
   const formatCurrency = (value) => {
     if (typeof value !== 'number') return '';
     return `${value.toLocaleString('vi-VN')} VNĐ`;
   };
+
+  const handleTimeChange = (index, { StartTime, EndTime }) => {
+    const updatedSchedules = [...schedules];
+    updatedSchedules[index].StartTime = StartTime ? StartTime.format("YYYY-MM-DD HH:mm") : null;
+    updatedSchedules[index].EndTime = EndTime ? EndTime.format("YYYY-MM-DD HH:mm") : null;
+    console.log("Updated schedules:", updatedSchedules);
+    setSchedules(updatedSchedules);
+  };
+
   const handleSubmit = async () => {
     try {
-      setLoading(true)
-      const values = await form.validateFields()
-      const formattedSchedules = schedules.map((schedule) => ({
-        DateAt: moment(schedule.DateAt, "YYYY-MM-DD").toDate(),
-        StartTime: moment(schedule.StartTime, "HH:mm").format("HH:mm"),
-        EndTime: moment(schedule.EndTime, "HH:mm").format("HH:mm"),
-      }));
+      setLoading(true);
+      const values = await form.validateFields();
+      if (schedules.length === 0) {
+        throw new Error("Bạn cần thêm ít nhất một lịch học.");
+        return;
+      }
+      
+      const formattedSchedules = schedules.map((schedule) => {
+        if (!schedule.StartTime || !schedule.EndTime) {
+          throw new Error("Thời gian bắt đầu và kết thúc không được để trống.");
+        }
+        const start = moment(schedule.StartTime, "YYYY-MM-DD HH:mm");
+  const end = moment(schedule.EndTime, "YYYY-MM-DD HH:mm");
+
+  if (!start.isBefore(end)) {
+    throw new Error("Thời gian bắt đầu phải nhỏ hơn thời gian kết thúc.");
+  }
+        const diffInHours = end.diff(start, "hours", true);
+        if (diffInHours < 1) {
+          throw new Error("Thời gian học phải ít nhất 1 giờ.");
+        }
+        return {
+          StartTime: schedule.StartTime, 
+          EndTime: schedule.EndTime,
+        };
+      });
+
       const body = {
         BlogID: !!open?._id ? open?._id : undefined,
         Title: values?.Title,
         Content: values?.Content,
         Subject: values?.Subject,
+        // Gender: Array.isArray(values.Gender)
+        //   ? values.Gender.map((value) => Number(value)).filter((value) => [1, 2].includes(value))
+        //   : [],
         Gender: values?.Gender,
         Price: price,
         NumberSlot: values?.NumberSlot,
-        NumberSlotOfWeek: values?.NumberSlotOfWeek,
         Address: values?.Address,
-        LearnTypes: values?.LearnTypes,
+        LearnType: values?.LearnType,
         Schedules: formattedSchedules,
-      }
-      const res = !!open?._id
+      };
+        const res = !!open?._id
         ? await BlogService.updateBlog(body)
-        : await BlogService.createBlog(body)
-      if (!!res?.isError) return toast.error(res?.msg)
-      onCancel()
-      toast.success(res?.msg)
-      onOk()
+        : await BlogService.createBlog(body);
+
+      if (!!res?.isError) return toast.error(res?.msg);
+      onCancel();
+      toast.success(res?.msg);
+      onOk();
+    } catch (error) {
+      console.error(error);
+      toast.error(error.message || "Đã xảy ra lỗi.");
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
 
   const renderFooter = () => (
@@ -123,27 +157,23 @@ const InsertUpdateBlog = ({ open, onCancel, onOk }) => {
       </Space>
     </div>
   )
-
-
-
-
   return (
     <ModalCustom
       title={!open?._id ? "Đăng bài tìm giáo viên" : "Cập nhật bài viết"}
       width={1000}
-      
+
       open={open}
       onCancel={onCancel}
       footer={renderFooter()}
     >
       <SpinCustom spinning={loading}>
         <StyleModal>
-        
-              <h2>Mô tả yêu cầu tìm giáo viên</h2>
-              <Col span={7}>
-              <div style={{ borderBottom: "2px solid #000", margin: "10px 0" }}></div>
-            </Col>
-        
+
+          <h2>Mô tả yêu cầu tìm giáo viên</h2>
+          <Col span={7}>
+            <div style={{ borderBottom: "2px solid #000", margin: "10px 0" }}></div>
+          </Col>
+
           <Form form={form} layout="vertical" initialValues={{}}>
             <Row gutter={16}>
               <Col span={24}>
@@ -186,140 +216,8 @@ const InsertUpdateBlog = ({ open, onCancel, onOk }) => {
                   />
                 </Form.Item>
                 <Row gutter={16}>
-                <Col span={6}>
-                <Form.Item name="Price" label="Học phí mỗi buổi (VNĐ):" rules={[{ required: true, message: 'Vui lòng chọn giá!' }]}>
-                      <InputNumber
-                        min={0}
-                        max={1000000}
-                        step={50000}
-                        value={price} 
-                        onChange={(value) => {
-                          setPrice(value);
-                          form.setFieldsValue({ Price: value }); 
-                        }}
-                        formatter={(value) => value ? value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".") : ''}
-                        parser={(value) => value.replace(/\./g, '')}
-                      /><span style={{ marginLeft: 10 }}>VNĐ</span>
-                </Form.Item>
-                    </Col>
-                    <Col span={5}>
-                      <Form.Item  name="NumberSlot" label="Tổng số buổi:" rules={[
-                        {
-                          required: true,
-                          message: 'Vui lòng nhập số buổi!'
-                        },
-                        {
-                          type: 'number',
-                          min: 1,
-                          message: 'Số buổi phải lớn hơn hoặc bằng 1!'
-                        }
-                      ]}
-                      >
-                        <InputNumber min={1} />
-                      </Form.Item>
-                    </Col>
-                    <Col span={5}>
-                      <Form.Item name="NumberSlotOfWeek" label="Số buổi học/Tuần:" rules={[
-                        {
-                          required: true,
-                          message: 'Vui lòng nhập số buổi!'
-                        },
-                        {
-                          type: 'number',
-                          min: 1,
-                          max: 10,
-                          message: 'Số buổi phải lớn hơn hoặc bằng 1!'
-                        }
-                      ]}
-                      >
-                      
-                        <InputNumber min={1} />
-                      </Form.Item>
-                    </Col>
-                    <Col span={8}>
-                    <Form.Item style={{ width: "100%" }} labelAlign="right" name="Gender" label="Yêu cầu giới tính giáo viên" rules={[{ required: true, message: 'Vui lòng chọn giới tính!' }]}>
-                      <Select>
-                        <Select.Option value={0}>Nam</Select.Option>
-                        <Select.Option value={1}>Nữ</Select.Option>
-                      </Select>
-                    </Form.Item>
-                  </Col>
-                </Row>
-                <InputCustom
-                  type="isNumber"
-                  placeholder="Bạn muốn học bao nhiêu buổi 1 tuần?"
-                  style={{
-                    width: "350px",
-                    marginBottom: "12px"
-                  }}
-                  value={!!slotInWeek ? slotInWeek : ""}
-                  onChange={e => {
-                    setSlotInWeek(e)
-                    const newArray = Array.from({ length: e }, (_, index) => ({
-                      id: index + 1,
-                      DateAt: "",
-                      StartTime: "",
-                      EndTime: "",
-                      Times: []
-                    }))
-                    setScheduleInWeek(newArray)
-                    setSelectedTimes([])
-                  }}
-                />
-                {
-                  !!slotInWeek &&
-                  scheduleInWeek.map((i, idxScheduleInWeek) =>
-                    <Row className="mb-12" key={idxScheduleInWeek}>
-                      <Col span={12}>
-                        <DatePicker
-                          placeholder="Bạn muốn bắt đầu học vào thời điểm nào?"
-                          format="DD/MM/YYYY"
-                          style={{
-                            width: "350px",
-                          }}
-                          value={i?.DateAt}
-                          disabledDate={current => disabledBeforeDate(current)}
-                          onChange={e => {
-                            const copyScheduleInWeek = [...scheduleInWeek]
-                            copyScheduleInWeek.splice(idxScheduleInWeek, 1, {
-                              ...i,
-                              DateAt: e,
-                              Times: getFreeTimeOfTeacher(e, true)
-                            })
-                            setScheduleInWeek(copyScheduleInWeek)
-                          }}
-                        />
-                      </Col>
-                      <Col span={12}>
-                        <Row gutter={[16, 8]}>
-                          {!!i?.DateAt &&
-                            (
-                              !!i?.Times.length ?
-                                i?.Times?.map((item, idx) =>
-                                  <Col span={12} key={idx}>
-                                    <TimeItem
-                                      timeItem={item}
-                                      selectedTimes={selectedTimes}
-                                      scheduleInWeek={scheduleInWeek}
-                                      timeTablesStudent={timeTablesStudent}
-                                      handleSelectedTimes={handleSelectedTimes}
-                                      handleSetScheduleInWeek={() => handleSetScheduleInWeek(idxScheduleInWeek, i, item)}
-                                      isFixedSchedule={true}
-                                    />
-                                  </Col>
-                                )
-                                : <Empty description="Không có thời gian học" />
-                            )}
-                        </Row>
-                      </Col>
-                    </Row>
-                  )
-                }
-                <Row gutter={16}>
-
-                  
                   <Col span={12}>
-                    <Form.Item name="LearnTypes" label="Hình thức học" rules={[{ required: true, message: 'Vui lòng nhập hình thức học!' }]}>
+                    <Form.Item name="LearnType" label="Hình thức học" rules={[{ required: true, message: 'Vui lòng nhập hình thức học!' }]}>
                       <Select
                         mode="multiple"
                         placeholder="Chọn hình thức học"
@@ -333,65 +231,153 @@ const InsertUpdateBlog = ({ open, onCancel, onOk }) => {
                     </Form.Item>
                   </Col>
                   <Col span={12}>
-                  {showAddress && (
-                    <Form.Item name="Address" label="Địa chỉ" rules={[
-                      {
-                        required: true,
-                        message: 'Vui lòng nhập địa chỉ'
-                      }
-                    ]}>
-                      <Input />
-                    </Form.Item>
-                  )}
+                    {showAddress && (
+                      <Form.Item name="Address" label="Địa chỉ" rules={[
+                        {
+                          required: true,
+                          message: 'Vui lòng nhập địa chỉ'
+                        }
+                      ]}>
+                        <Input />
+                      </Form.Item>
+                    )}
                   </Col>
                 </Row>
-                <h3>Thời gian học</h3>
-                {/* <Button onClick={addSchedule}>Thêm lịch</Button> */}
-                {schedules.map((schedule, index) => (
-                  <Row key={index} gutter={16}>
-                    <Col span={6}>
-                      <Form.Item label="Ngày:" style={{ marginBottom: 0 }}>
-                        <DatePicker
-                          format={"dddd"}
-                          onChange={(date) => {
-                            const updatedSchedules = [...schedules];
-                            updatedSchedules[index].DateAt = date ? date.format("YYYY-MM-DD") : null;
-                            setSchedules(updatedSchedules);
-                          }}
-                        />
-                      </Form.Item>
-                    </Col>
-                    <Col span={9}>
-                      <Form.Item label="Giờ bắt đầu:" style={{ marginBottom: 0 }}>
-                        <TimePicker
-                          showTime format="HH:mm"
-                          onChange={(time) => {
-                            const updatedSchedules = [...schedules];
-                            updatedSchedules[index].StartTime = time ? time.format("HH:mm") : null;
-                            setSchedules(updatedSchedules);
-                          }}
-                        />
-                      </Form.Item>
-                    </Col>
-                    <Col span={9}>
-                      <Form.Item label="Giờ kết thúc:" style={{ marginBottom: 0 }}>
-                        <TimePicker
-                          showTime format="HH:mm"
-                          onChange={(time) => {
-                            const updatedSchedules = [...schedules];
-                            updatedSchedules[index].EndTime = time ? time.format("HH:mm") : null;
-                            setSchedules(updatedSchedules);
-                          }}
-                        />
-                      </Form.Item>
-                    </Col>
-                  </Row>
-                ))}
+                <Row gutter={16}>
+                  <Col span={6}>
+                    <Form.Item name="Price" label="Học phí mỗi buổi (VNĐ):" rules={[{ required: true, message: 'Vui lòng chọn giá!' }]}>
+                      <InputNumber
+                        min={0}
+                        max={1000000}
+                        step={50000}
+                        value={price}
+                        onChange={(value) => {
+                          setPrice(value);
+                          form.setFieldsValue({ Price: value });
+                        }}
+                        formatter={(value) => value ? value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".") : ''}
+                        parser={(value) => value.replace(/\./g, '')}
+                      /><span style={{ marginLeft: 10 }}>VNĐ</span>
+                    </Form.Item>
+                  </Col>
+                  <Col span={5}>
+                    <Form.Item name="NumberSlot" label="Tổng số buổi:" rules={[
+                      {
+                        required: true,
+                        message: 'Vui lòng nhập số buổi!'
+                      },
+                      {
+                        type: 'number',
+                        min: 1,
+                        message: 'Số buổi phải lớn hơn 0!'
+                      }
+                    ]}
+                    >
+                      <InputNumber min={1} />
+                    </Form.Item>
+                  </Col>
+
+                  <Col span={8}>
+                    <Form.Item style={{ width: "100%" }} labelAlign="right" name="Gender" label="Yêu cầu giới tính giáo viên" rules={[{ required: true, message: 'Vui lòng chọn giới tính!' }]}>
+                      <Select
+                      mode="multiple">
+                        <Select.Option value={1}>Nam</Select.Option>
+                        <Select.Option value={2}>Nữ</Select.Option>
+                      </Select>
+                    </Form.Item>
+                  </Col>
+                </Row>
+                <FormItem >
+<InputCustom
+                  type="isNumber"
+                  placeholder="Bạn muốn học bao nhiêu buổi 1 tuần?"
+                  style={{
+                    width: "350px",
+                    marginBottom: "12px"
+                  }}
+                  value={!!slotInWeek ? slotInWeek : ""}
+                  onChange={e => {
+                    setSlotInWeek(e)
+                    const newArray = Array.from({ length: e }, (_, index) => ({
+                      id: index + 1,
+                      StartTime: "",
+                      EndTime: "",
+                      Times: []
+                    }))
+                    setScheduleInWeek(newArray)
+                    setSelectedTimes([])
+                  }}
+                />
+                </FormItem>
+                  
+                
+                {
+                  !!slotInWeek &&
+                  scheduleInWeek.map((i, idxScheduleInWeek) =>
+                    <Row gutter={16} key={idxScheduleInWeek}>
+                      <Col span={14}>
+                        <Form.Item>
+                          <DatePicker.RangePicker
+                            showTime={{ format: "HH:mm" }}
+                            format="YYYY-MM-DD HH:mm"
+                            placeholder={["Ngày bắt đầu", "Ngày kết thúc"]}
+                            onChange={(dateRange) => {
+                              if (dateRange && dateRange.length === 2) {
+                                const [startDate, endDate] = dateRange;
+                                const diffInHours = endDate.diff(startDate, "hours", true); 
+      
+                                if (!startDate.isSame(endDate, "day")) {
+                                  alert("Ngày bắt đầu và ngày kết thúc phải cùng một ngày.");
+                                  return;
+                                }
+if (diffInHours < 1.5) {
+        toast.error("Thời gian kết thúc phải cách thời gian bắt đầu ít nhất 1 tiếng.");
+        return; 
+      }
+                                handleTimeChange(idxScheduleInWeek, {
+                                  StartTime: startDate,
+                                  EndTime: endDate,
+                                });
+                              } else {
+                                handleTimeChange(idxScheduleInWeek, { StartTime: null, EndTime: null });
+                              }
+                            }}
+                            disabledTime={(currentDate) => {
+    if (!currentDate) return {};
+
+    const startTime = form.getFieldValue(["schedules", idxScheduleInWeek, "StartTime"]);
+    if (!startTime) return {}; 
+
+    const minEndTime = moment(startTime).add(1, "hours"); 
+    const maxEndTime = moment(startTime).endOf("day"); 
+
+    return {
+      disabledHours: () => {
+        const hours = [];
+        for (let i = 0; i < 24; i++) {
+          if (i < minEndTime.hour() || i > maxEndTime.hour()) {
+            hours.push(i);
+          }
+        }
+        return hours;
+      },
+      disabledMinutes: (hour) => {
+        if (hour === minEndTime.hour()) {
+          // Không cho chọn phút trước phút tối thiểu trong giờ tối thiểu
+          return Array.from({ length: minEndTime.minute() }, (_, i) => i);
+        }
+        return [];
+      },
+    };
+  }}
+                          />
+                        </Form.Item>
+                      </Col>
+                    </Row>
+                  )
+                }
               </Col>
             </Row>
-            
-
-
           </Form>
         </StyleModal>
       </SpinCustom>
