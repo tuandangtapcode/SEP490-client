@@ -128,7 +128,7 @@ const StudiedSubject = () => {
             user?.RoleID === Roles.ROLE_STUDENT &&
             <ButtonCircle
               key={record?.LearnedStatus}
-              disabled={!!record?.isFeedback ? false : true}
+              disabled={!!record?.IsFeedback ? false : true}
               title="Đánh giá giáo viên"
               icon={ListIcons?.ICON_RATE}
               onClick={() => setOpenModalSendFeedback(record)}

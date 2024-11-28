@@ -80,12 +80,14 @@ const TeacherManagement = () => {
 
   const listBtn = record => [
     {
+      isView: true,
       title: "Xem chi tiết",
       disabled: false,
       icon: ListIcons?.ICON_VIEW,
       onClick: () => setOpenViewProfile(record)
     },
     {
+      isView: true,
       title: "Duyệt",
       icon: ListIcons?.ICON_CONFIRM,
       disabled: record?.IsConfirm,
@@ -100,12 +102,14 @@ const TeacherManagement = () => {
       }
     },
     {
+      isView: true,
       title: "Không duyệt",
       icon: ListIcons?.ICON_CLOSE,
       disabled: record?.IsReject,
       onClick: () => setOpenModalReasonReject(record)
     },
     {
+      isView: !!record?.IsViewLockUnLock,
       title: !!record?.Account?.IsActive ? "Khóa tài khoản" : "Mở khóa tài khoản",
       icon: !!record?.Account?.IsActive ? ListIcons?.ICON_BLOCK : ListIcons?.ICON_UNBLOCK,
       disabled: record?.IsLockUnLock,
@@ -181,6 +185,7 @@ const TeacherManagement = () => {
         <Space direction="horizontal">
           {
             listBtn(record)?.map((i, idx) =>
+              !!i?.isView &&
               <ButtonCircle
                 key={idx}
                 disabled={i?.disabled}

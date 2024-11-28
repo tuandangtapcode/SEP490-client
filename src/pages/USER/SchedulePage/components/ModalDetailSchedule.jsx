@@ -60,10 +60,10 @@ const ModalDetailSchedule = ({
             Đóng
           </ButtonCustom>
           {
-            !!buttonShow?.isShowBtnAttendance &&
+            !!buttonShow?.IsShowBtnAttendance &&
             <ButtonCustom
               loading={loading}
-              disabled={!!open?.isAttendance ? false : true}
+              disabled={!!open?.IsAttendance ? false : true}
               className="primary"
               onClick={() => handleAttendanceTimeTable()}
             >
@@ -71,10 +71,10 @@ const ModalDetailSchedule = ({
             </ButtonCustom>
           }
           {
-            !!buttonShow?.isShowBtnUpdateTimeTable &&
+            !!buttonShow?.IsShowBtnUpdateTimeTable &&
             <ButtonCustom
               loading={loading}
-              disabled={!!open?.isUpdateTimeTable ? false : true}
+              disabled={!!open?.IsUpdateTimeTable ? false : true}
               className="third-type-2"
               onClick={() => setOpenModalChangeTimetable(open)}
             >
@@ -93,7 +93,7 @@ const ModalDetailSchedule = ({
             <div>{dayjs(open?.StartTime).startOf("day").format("dddd DD/MM/YYYY")}</div>
           </Col>
           <Col span={2} className="d-flex-end">
-            {!!open?.isSubmitIssue &&
+            {!!open?.IsSubmitIssue &&
               <ButtonCircle
                 icon={ListIcons.ICON_WARNING}
                 title="Báo cáo Giáo viên"
@@ -108,18 +108,18 @@ const ModalDetailSchedule = ({
             <div>{dayjs(open?.StartTime).format("HH:mm")} - {dayjs(open?.EndTime).format("HH:mm")}</div>
           </Col>
           <Col span={5}>
-            <div>{!buttonShow?.isShowBtnAttendance ? "Giáo viên:" : "Học sinh:"}</div>
+            <div>{!buttonShow?.IsShowBtnAttendance ? "Giáo viên:" : "Học sinh:"}</div>
           </Col>
           <Col span={19}>
             <div
               onClick={() => {
-                if (!buttonShow?.isShowBtnAttendance) {
+                if (!buttonShow?.IsShowBtnAttendance) {
                   navigate(`${Router.GIAO_VIEN}/${open?.Teacher?._id}${Router.MON_HOC}/${open?.Subject?._id}`)
                 }
               }}
-              className={!buttonShow?.isShowBtnAttendance ? "primary-text cursor-pointer" : ""}
+              className={!buttonShow?.IsShowBtnAttendance ? "primary-text cursor-pointer" : ""}
             >
-              {open[!buttonShow?.isShowBtnAttendance ? "Teacher" : "Student"]?.FullName}
+              {open[!buttonShow?.IsShowBtnAttendance ? "Teacher" : "Student"]?.FullName}
             </div>
           </Col>
           <Col span={5}>

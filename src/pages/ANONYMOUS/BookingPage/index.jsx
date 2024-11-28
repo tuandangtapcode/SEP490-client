@@ -43,8 +43,8 @@ const BookingPage = () => {
   const [selectedTimes, setSelectedTimes] = useState([])
   const [bookingInfor, setBookingInfor] = useState()
   const [times, setTimes] = useState([])
-  const [timeTablesTeacher, SetTimeTablesTeacher] = useState([])
-  const [timeTablesStudent, SetTimeTablesStudent] = useState([])
+  const [timeTablesTeacher, setTimeTablesTeacher] = useState([])
+  const [timeTablesStudent, setTimeTablesStudent] = useState([])
   const [openModalConfirmInfor, setOpenModalConfirmInfor] = useState()
   const [totalSlot, setTotalSlot] = useState(0)
   const [slotInWeek, setSlotInWeek] = useState(0)
@@ -71,7 +71,7 @@ const BookingPage = () => {
       setLoading(true)
       const res = await TimeTableService.getTimeTableByUser()
       if (!!res?.isError) return toast.error(res?.msg)
-      SetTimeTablesStudent(res?.data?.List)
+      setTimeTablesStudent(res?.data?.List)
     } finally {
       setLoading(false)
     }
@@ -82,7 +82,7 @@ const BookingPage = () => {
       setLoading(true)
       const res = await TimeTableService.getTimeTableOfTeacherOrStudent(TeacherID)
       if (!!res?.isError) return toast.error(res?.msg)
-      SetTimeTablesTeacher(res?.data)
+      setTimeTablesTeacher(res?.data)
     } finally {
       setLoading(false)
     }

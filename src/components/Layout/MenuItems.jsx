@@ -142,7 +142,7 @@ export const MenuAdmin = () => [
     icon: ListIcons.ICON_PAYMENT_MENTOR,
     label: "Quản lý chuyển khoản",
     key: Router.QUAN_LY_CHUYEN_KHOAN,
-    RTabID: 9
+    TabID: 9
   },
   {
     icon: ListIcons.ICON_REPORT,
@@ -165,6 +165,7 @@ export const MenuAdmin = () => [
   {
     icon: <div style={{ marginLeft: '-5px' }}>{ListIcons.ICON_LOGOUT}</div>,
     label: "Đăng xuất",
-    key: 'logout'
+    key: 'logout',
+    TabID: 13
   },
 ]
