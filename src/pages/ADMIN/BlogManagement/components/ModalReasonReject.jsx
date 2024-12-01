@@ -15,7 +15,7 @@ const ModalReasonReject = ({ open, onCancel, onOk }) => {
     try {
       setLoading(true)
       const values = await form.validateFields()
-      const res = await BlogService.ChangeRegisterStatus({
+      const res = await BlogService.changeRegisterStatus({
         BlogID: open?._id,
         FullName: open?.User?.FullName,
         RegisterStatus: 4,

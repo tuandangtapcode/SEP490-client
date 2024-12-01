@@ -34,8 +34,8 @@ const sendRequestReceive = params => {
 const getListBlogByStudent = body => http.post(apiGetListBlogByStudent, body)
 const getListBlogByTeacher = body => http.post(apiGetListBlogByTeacher, body)
 
-const ChangeReceiveStatus = body => http.post(apiChangeReceiveStatus, body)
-const ChangeRegisterStatus = body => http.post(apiChangeRegisterStatus, body)
+const changeReceiveStatus = body => http.post(apiChangeReceiveStatus, body)
+const changeRegisterStatus = body => http.post(apiChangeRegisterStatus, body)
 
 
 const BlogService = {
@@ -49,8 +49,8 @@ const BlogService = {
   sendRequestReceive,
   getListBlogByStudent,
   getListBlogByTeacher,
-  ChangeReceiveStatus,
-  ChangeRegisterStatus
+  changeReceiveStatus,
+  changeRegisterStatus
 }
 
 export default BlogService

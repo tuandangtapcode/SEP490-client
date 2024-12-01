@@ -6,30 +6,21 @@ import SubjectService from "src/services/SubjectService";
 import { Card, Descriptions, Divider, Tag, Spin, Button, Modal } from "antd";
 import { EyeOutlined } from "@ant-design/icons";
 import moment from "moment";
+import ModalCustom from "src/components/ModalCustom";
+import { SYSTEM_KEY } from "src/lib/constant"
+import { globalSelector } from "src/redux/selector"
+import { getListComboKey } from "src/lib/commonFunction"
+import { useSelector } from "react-redux"
 
-const BlogDetail = ({ BlogID }) => {
+
+
+const BlogDetail = ({ BlogID, open, onCancel }) => {
 //   const { BlogID } = useParams();
   const [loading, setLoading] = useState(false);
   const [detailBlog, setDetailBlog] = useState({});
   const [subjects, setSubjects] = useState([]);
+  const { listSystemKey, user, profitPercent } = useSelector(globalSelector)
 
-//   const getDetailBlog = async (id) => {
-//     try {
-//       setLoading(true);
-//       console.log("Calling API with BlogID:", id);
-//       const res = await BlogService.getDetailBlog(id); 
-//       console.log("API Response:", res);
-//       if (res?.isError) {
-//         toast.error(res?.msg);
-//       } else {
-//         setDetailBlog(res?.data); 
-//       }
-//     } catch (error) {
-//       toast.error("Không thể tải dữ liệu blog.");
-//     } finally {
-//       setLoading(false);
-//     }
-//   };
 const getDetailBlog = async (id) => {
     try {
       setLoading(true);
@@ -90,6 +81,7 @@ const getDetailBlog = async (id) => {
   if (loading) return <Spin size="large" className="center-spin" />;
 
   return (
+    // <ModalCustom>
     <div>
       <Descriptions bordered column={2} style={{ marginTop: "1.5em" }}>
         <Descriptions.Item label="Tiêu đề">
@@ -105,24 +97,34 @@ const getDetailBlog = async (id) => {
           {getSubjectNameById(detailBlog?.Subject)}
         </Descriptions.Item>
         <Descriptions.Item label="Yêu cầu giáo viên:">
-          {detailBlog?.Gender === 1 ? "Nữ" : "Nam"}
+        {
+                  detailBlog?.LearnType?.map(i =>
+                    <div key={i} value={i}>
+                      {
+                        getListComboKey(SYSTEM_KEY.GENDER, listSystemKey)?.find(item =>
+                          item?.ParentID === i)?.ParentName
+                      }
+                    </div>
+                  )
+                }
         </Descriptions.Item>
         
         <Descriptions.Item label="Số buổi học">
           <strong>{detailBlog?.NumberSlot}</strong>
         </Descriptions.Item>
         <Descriptions.Item label="Hình thức học">
-          {detailBlog?.LearnType?.map((type, index) => (
-            <Tag color="blue" key={index}>
-              {type === 1
-                ? "Học Online"
-                : type === 2
-                ? "Học Offline"
-                : "Không xác định"}
-            </Tag>
-          ))}
+            {
+                  detailBlog?.LearnType?.map(i =>
+                    <Tag key={i} value={i}>
+                      {
+                        getListComboKey(SYSTEM_KEY.LEARN_TYPE, listSystemKey)?.find(item =>
+                          item?.ParentID === i)?.ParentName
+                      }
+                    </Tag>
+                  )
+                }
         </Descriptions.Item>
-        {detailBlog?.LearnType === 1 && (
+        {detailBlog?.LearnType === 2 && (
           <Descriptions.Item label="Địa chỉ">
             {detailBlog?.Address || "Không có thông tin địa chỉ"}
           </Descriptions.Item>
@@ -137,6 +139,7 @@ const getDetailBlog = async (id) => {
         </Descriptions.Item>
       </Descriptions>
     </div>
+  //  </ModalCustom>
   );
 };
 
