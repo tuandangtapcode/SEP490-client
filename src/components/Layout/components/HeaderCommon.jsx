@@ -30,7 +30,7 @@ const NotificationItem = ({
         if (!data?.IsSeen) {
           seenNotification(data?._id)
         }
-        navigate(`/${user?.RoleID === Roles.ROLE_ADMIN ? "dashboard" : "user"}/${data?.Type}`)
+        navigate(`/${[Roles.ROLE_ADMIN, Roles.ROLE_STAFF].includes(user?.RoleID) ? "dashboard" : "user"}/${data?.Type}`)
       }}
       style={{ margin: '8px 0' }}
       className={data?.IsSeen ? "gray-text" : "black-text not-seen-notify"}

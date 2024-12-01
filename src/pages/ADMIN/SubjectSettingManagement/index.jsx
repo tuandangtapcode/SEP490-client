@@ -220,7 +220,11 @@ const SubjectSettingManagement = () => {
           <Select
             placeholder="Chọn môn học"
             allowClear
+            showSearch
             onChange={e => setPagination(pre => ({ ...pre, SubjectID: e }))}
+            filterOption={(input, option) =>
+              option?.children?.toLowerCase().indexOf(input.toLowerCase()) >= 0
+            }
           >
             {
               subjects?.map(i =>
@@ -238,6 +242,7 @@ const SubjectSettingManagement = () => {
           <Select
             mode="multiple"
             allowClear
+            showSearch={false}
             placeholder="Chọn level"
             onChange={e => setPagination(pre => ({ ...pre, Level: e }))}
           >
