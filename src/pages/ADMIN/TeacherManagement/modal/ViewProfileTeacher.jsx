@@ -4,7 +4,7 @@ import { Tabs } from "antd"
 import Information from "../components/Information"
 import BankInfor from "../components/BankInfor"
 import Schedules from "../components/Schedules"
-import TimeTables from "../components/TimeTables"
+import LearnHistories from "../components/LearnHistories"
 
 
 const ViewProfileTeacher = ({ open, onCancel }) => {
@@ -39,10 +39,10 @@ const ViewProfileTeacher = ({ open, onCancel }) => {
     },
     {
       key: 4,
-      label: "Thông tin lịch dạy",
+      label: "Lịch sử giảng dạy",
       children: (
         <PatentChildBorder>
-          <TimeTables user={open} />
+          <LearnHistories user={open} />
         </PatentChildBorder>
       )
     },

@@ -18,14 +18,7 @@ const Search = ({ setPrompt }) => {
 
   const { listSystemKey } = useSelector(globalSelector)
   const [subjects, setSubjects] = useState([])
-  const timeOutRef = useRef(null)
-  const navigate = useNavigate()
   const [form] = Form.useForm()
-  const [pagination, setPagination] = useState({
-    TextSearch: "",
-    CurrentPage: 1,
-    PageSize: 10
-  })
   const [searchData, setSearchData] = useState({
     Subject: "",
     Level: [],
@@ -34,7 +27,11 @@ const Search = ({ setPrompt }) => {
 
   const getListSubject = async () => {
     try {
-      const res = await SubjectService.getListSubject(pagination)
+      const res = await SubjectService.getListSubject({
+        TextSearch: "",
+        CurrentPage: 0,
+        PageSize: 0
+      })
       if (!!res?.isError) return toast.error(res?.msg)
       setSubjects(res?.data?.List)
     } finally {
@@ -44,7 +41,7 @@ const Search = ({ setPrompt }) => {
 
   useEffect(() => {
     getListSubject()
-  }, [pagination])
+  }, [])
 
 
   return (
@@ -63,29 +60,9 @@ const Search = ({ setPrompt }) => {
                 allowClear
                 placeholder="Chọn môn học"
                 onChange={e => setSearchData(pre => ({ ...pre, Subject: e }))}
-                // onPopupScroll={e => {
-                //   const target = e.currentTarget
-                //   if (
-                //     !isLoadingMore &&
-                //     target.scrollHeight - target.scrollTop <= target.clientHeight + 1
-                //   ) {
-                //     setIsLoadingMore(true);
-                //     setPagination(prev => ({
-                //       ...prev,
-                //       CurrentPage: prev.CurrentPage + 1
-                //     }))
-                //   }
-                // }}
-                onSearch={(e) => {
-                  if (timeOutRef.current) {
-                    clearTimeout(timeOutRef.current)
-                  }
-                  timeOutRef.current = setTimeout(() => {
-                    setPagination((pre) => ({ ...pre, TextSearch: e }))
-                    timeOutRef.current = null
-                  }, 400)
-                }}
-                filterOption={false}
+                filterOption={(input, option) =>
+                  option?.children?.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                }
               >
                 {
                   subjects?.map(i =>

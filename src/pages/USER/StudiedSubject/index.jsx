@@ -15,6 +15,9 @@ import ModalIssueMentor from "../SchedulePage/components/ModalIssueMentor"
 import ModalSendFeedback from "src/pages/USER/StudiedSubject/components/ModalSendFeedback"
 import SpinCustom from "src/components/SpinCustom"
 import ModalViewLearnHistory from "./components/ModalViewLearnHistory"
+import SubjectService from "src/services/SubjectService"
+
+const { Option } = Select
 
 const StudiedSubject = () => {
 
@@ -26,9 +29,11 @@ const StudiedSubject = () => {
   const [pagination, setPagination] = useState({
     CurrentPage: 1,
     PageSize: 10,
-    TextSearch: ""
+    TextSearch: "",
+    LearnedStatus: 0,
+    SubjectID: ""
   })
-
+  const [subjects, setSubjects] = useState([])
   const { listSystemKey, user } = useSelector(globalSelector)
   const LearnedStatusKey = getListComboKey(SYSTEM_KEY.LEARNED_STATUS, listSystemKey)
   const [openModalViewLearnHistory, setOpenModalViewLearnHistory] = useState(false)
@@ -44,10 +49,27 @@ const StudiedSubject = () => {
       setLoading(false)
     }
   }
-  useEffect(() => {
-    if (pagination?.PageSize) {
-      getListLearnHistory()
+
+  const getListSubject = async () => {
+    try {
+      const res = await SubjectService.getListSubject({
+        TextSearch: "",
+        CurrentPage: 0,
+        PageSize: 0
+      })
+      if (!!res?.isError) return toast.error(res?.msg)
+      setSubjects(res?.data?.List)
+    } finally {
+      console.log()
     }
+  }
+
+  useEffect(() => {
+    getListSubject()
+  }, [])
+
+  useEffect(() => {
+    getListLearnHistory()
   }, [pagination])
 
   const commonColumns = [
@@ -73,7 +95,7 @@ const StudiedSubject = () => {
     },
     {
       title: 'Số lượng buổi học',
-      width: 50,
+      width: 80,
       align: 'center',
       dataIndex: 'TotalLearned',
       key: 'TotalLearned',
@@ -87,6 +109,13 @@ const StudiedSubject = () => {
       render: (text, record) => (
         <div>{record?.[user?.RoleID === Roles.ROLE_STUDENT ? "Teacher" : "Student"]?.FullName}</div>
       ),
+    },
+    {
+      title: "Số buổi đã học",
+      width: 80,
+      dataIndex: "LearnedNumber",
+      align: "center",
+      key: "LearnedNumber"
     },
     {
       title: 'Ngày đăng ký',
@@ -104,7 +133,7 @@ const StudiedSubject = () => {
       dataIndex: "LearnedStatus",
       align: "center",
       key: "LearnedStatus",
-      render: (val, record) => (
+      render: (val) => (
         <Tag color={["processing", "success"][val - 1]} className="p-5 fs-16">
           {
             LearnedStatusKey?.find(i => i?.ParentID === val)?.ParentName
@@ -141,7 +170,7 @@ const StudiedSubject = () => {
 
   return (
     <SpinCustom spinning={loading}>
-      <Row gutter={[16, 16]}>
+      <Row gutter={[8, 8]}>
         <Col span={24} className="mb-5">
           <div className="title-type-1">
             {user?.RoleID === Roles.ROLE_TEACHER ?
@@ -152,7 +181,7 @@ const StudiedSubject = () => {
 
           </div>
         </Col>
-        <Col span={18}>
+        <Col span={14}>
           <InputCustom
             type="isSearch"
             placeholder="Tìm kiếm môn học..."
@@ -161,6 +190,29 @@ const StudiedSubject = () => {
           />
         </Col>
         <Col span={6}>
+          <Select
+            style={{ width: "100%" }}
+            showSearch
+            allowClear
+            placeholder="Chọn môn học"
+            onChange={e => setPagination(pre => ({ ...pre, SubjectID: e }))}
+            filterOption={(input, option) =>
+              option?.children?.toLowerCase().indexOf(input.toLowerCase()) >= 0
+            }
+          >
+            {
+              subjects?.map(i =>
+                <Option
+                  key={i?._id}
+                  value={i?._id}
+                >
+                  {i?.SubjectName}
+                </Option>
+              )
+            }
+          </Select>
+        </Col>
+        <Col span={4}>
           <Select
             placeholder="Trạng thái môn học"
             onChange={e => setPagination(pre => ({ ...pre, LearnedStatus: e }))}

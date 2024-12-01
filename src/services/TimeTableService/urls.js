@@ -3,3 +3,4 @@ export const apiGetTimeTableOfTeacherOrStudent = "timetable/getTimeTableOfTeache
 export const apiAttendanceTimeTable = "timetable/attendanceTimeTable"
 export const apiUpdateTimeTable = "timetable/updateTimeTable"
 export const apiGetTimeTableByUser = "timetable/getTimeTableByUser"
+export const apiAttendanceOrCancelTimeTable = "timetable/attendanceOrCancelTimeTable"

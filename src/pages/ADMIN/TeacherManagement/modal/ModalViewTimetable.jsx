@@ -1,32 +1,55 @@
 import { Space, Tag } from "antd"
 import dayjs from "dayjs"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { toast } from "react-toastify"
+import ModalCustom from "src/components/ModalCustom"
 import ButtonCustom from "src/components/MyButton/ButtonCustom"
 import TableCustom from "src/components/TableCustom"
+import LearnHistoryService from "src/services/LearnHistoryService"
 import TimeTableService from "src/services/TimeTableService"
 
-const TimeTables = ({ user }) => {
+const ModalViewTimeTable = ({ open, onCancel, onOk }) => {
 
   const [loading, setLoading] = useState(false)
-  // const [timeTables, setTimeTables] = useState([])
+  const [timeTables, setTimeTables] = useState([])
   const [listTimeTables, setListTimeTables] = useState([])
 
-  // const getTimeTableOfTeacher = async () => {
-  //   try {
-  //     setLoading(true)
-  //     const res = await TimeTableService.getTimeTableOfTeacherOrStudent(user?._id)
-  //     if (!!res?.isError) return toast.error(res?.msg)
-  //     setTimeTablesTeacher(res?.data)
-  //   } finally {
-  //     setLoading(false)
-  //   }
-  // }
+  const getDetailLearnHistory = async () => {
+    try {
+      setLoading(true)
+      const res = await LearnHistoryService.getDetailLearnHistory(open)
+      if (!!res?.isError) return toast.error(res?.msg)
+      setTimeTables(res?.data?.Timetables)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleAttendanceOrCancelTimeTable = async (type) => {
+    try {
+      setLoading(true)
+      const res = await TimeTableService.attendanceOrCancelTimeTable({
+        TimeTables: listTimeTables?.map(i => i?._id),
+        Type: type,
+        LearnHistoryID: open
+      })
+      if (!!res?.isError) return toast.error(res?.msg)
+      toast.success(res?.msg)
+      getDetailLearnHistory()
+      onOk()
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    getDetailLearnHistory()
+  }, [open])
 
   const rowSelection = {
     listTimeTables,
     getCheckboxProps: record => ({
-      disabled: !!record?.Status || !!record?.IsCancel,
+      disabled: !!record?.Status || !!record?.IsCancel || record?.IsDisabledAtendance,
     }),
     selectedRowKeys: listTimeTables.map(i => i?._id),
     onChange: (newSelectedRowKeys, newSelectedRows) => {
@@ -37,35 +60,15 @@ const TimeTables = ({ user }) => {
   const columns = [
     {
       title: "STT",
-      width: 50,
+      width: 30,
       align: "center",
       render: (_, record, index) => (
         <div className="text-center">{index + 1}</div>
       ),
     },
     {
-      title: "Tên học sinh",
-      width: 100,
-      dataIndex: "FullName",
-      align: "center",
-      key: "FullName",
-      render: (text, record) => (
-        <div>{record?.Student?.FullName}</div>
-      ),
-    },
-    {
-      title: "Môn học",
-      width: 80,
-      dataIndex: "SubjectName",
-      align: "center",
-      key: "SubjectName",
-      render: (text, record) => (
-        <div>{record?.Subject?.SubjectName}</div>
-      ),
-    },
-    {
       title: "Thời gian",
-      width: 80,
+      width: 100,
       dataIndex: "StartTime",
       align: "center",
       key: "StartTime",
@@ -79,7 +82,7 @@ const TimeTables = ({ user }) => {
     },
     {
       title: "Trạng thái điểm danh",
-      width: 60,
+      width: 80,
       dataIndex: "Status",
       align: "center",
       key: "Status",
@@ -93,7 +96,7 @@ const TimeTables = ({ user }) => {
     },
     {
       title: "Trạng thái buổi học",
-      width: 60,
+      width: 80,
       dataIndex: "IsCancel",
       align: "center",
       key: "IsCancel",
@@ -108,29 +111,41 @@ const TimeTables = ({ user }) => {
   ]
 
   return (
-    <div>
-      <Space className="d-flex-end mb-12">
-        <ButtonCustom
-          className="third"
-          loading={loading}
-        // onClick={() => handleRejectRegister()}
-        >
-          Hủy lịch học
-        </ButtonCustom>
-        <ButtonCustom
-          className="third"
-          loading={loading}
-        // onClick={() => handleRejectRegister()}
-        >
-          Điểm danh
-        </ButtonCustom>
-      </Space>
+    <ModalCustom
+      open={open}
+      onCancel={onCancel}
+      title="Thời khóa biểu"
+      width="70vw"
+      footer={
+        <Space className="d-flex-end">
+          <ButtonCustom
+            className="third"
+            onClick={() => onCancel()}
+          >
+            Đóng
+          </ButtonCustom>
+          <ButtonCustom
+            className="third-type-2"
+            onClick={() => handleAttendanceOrCancelTimeTable("IsCancel")}
+          >
+            Hủy lịch học
+          </ButtonCustom>
+          <ButtonCustom
+            className="third-type-2"
+            onClick={() => handleAttendanceOrCancelTimeTable("Status")}
+          >
+            Điểm danh
+          </ButtonCustom>
+        </Space>
+      }
+    >
       <TableCustom
         isPrimary
         bordered
         noMrb
         showPagination
-        dataSource={user?.TimeTables}
+        loading={loading}
+        dataSource={timeTables}
         columns={columns}
         editableCell
         sticky={{ offsetHeader: -12 }}
@@ -139,8 +154,8 @@ const TimeTables = ({ user }) => {
         pagination={false}
         rowSelection={rowSelection}
       />
-    </div>
+    </ModalCustom>
   )
 }
 
-export default TimeTables
+export default ModalViewTimeTable

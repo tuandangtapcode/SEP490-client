@@ -1,5 +1,6 @@
 import http from "../index"
 import {
+  apiAttendanceOrCancelTimeTable,
   apiAttendanceTimeTable,
   apiCreateTimeTable,
   apiGetTimeTableByUser,
@@ -12,13 +13,15 @@ const getTimeTableOfTeacherOrStudent = UserID => http.get(`${apiGetTimeTableOfTe
 const attendanceTimeTable = TimeTableID => http.get(`${apiAttendanceTimeTable}/${TimeTableID}`)
 const updateTimeTable = body => http.post(apiUpdateTimeTable, body)
 const getTimeTableByUser = () => http.get(apiGetTimeTableByUser)
+const attendanceOrCancelTimeTable = body => http.post(apiAttendanceOrCancelTimeTable, body)
 
 const TimeTableService = {
   createTimeTable,
   getTimeTableOfTeacherOrStudent,
   attendanceTimeTable,
   updateTimeTable,
-  getTimeTableByUser
+  getTimeTableByUser,
+  attendanceOrCancelTimeTable
 }
 
 export default TimeTableService
