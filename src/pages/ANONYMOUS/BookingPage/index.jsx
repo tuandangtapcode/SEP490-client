@@ -1,6 +1,6 @@
 import { Col, DatePicker, Empty, message, Radio, Row, Space, Tooltip } from "antd"
 import { useEffect, useState } from "react"
-import { useLocation, useNavigate, useParams } from "react-router-dom"
+import { useNavigate, useParams } from "react-router-dom"
 import SpinCustom from "src/components/SpinCustom"
 import UserService from "src/services/UserService"
 import { MainProfileWrapper } from "../TeacherDetail/styled"
@@ -37,7 +37,6 @@ const BookingPage = () => {
   const { TeacherID, SubjectID } = useParams()
   const { listSystemKey, user, profitPercent } = useSelector(globalSelector)
   const navigate = useNavigate()
-  const location = useLocation()
   const [loading, setLoading] = useState(false)
   const [teacher, setTeacher] = useState()
   const [selectedTimes, setSelectedTimes] = useState([])
@@ -54,7 +53,6 @@ const BookingPage = () => {
   const [openModalChangeSchedule, setOpenModalChangeSchedule] = useState()
   const [openModalChooseCourse, setOpenModalChooseCourse] = useState()
 
-
   const getDetailTeacher = async () => {
     try {
       setLoading(true)
@@ -66,7 +64,7 @@ const BookingPage = () => {
     }
   }
 
-  const getTimeTableOfStudent = async () => {
+  const getTimeTable = async () => {
     try {
       setLoading(true)
       const res = await TimeTableService.getTimeTableByUser()
@@ -186,7 +184,7 @@ const BookingPage = () => {
   }
 
   useEffect(() => {
-    getTimeTableOfStudent()
+    getTimeTable()
     setBookingInfor(pre => ({
       ...pre,
       Address: !!user?.Address ? user?.Address : ""
@@ -194,12 +192,8 @@ const BookingPage = () => {
   }, [])
 
   useEffect(() => {
-    if (!location.state._id) {
-      getDetailTeacher()
-    } else {
-      setTeacher(location.state)
-    }
-  }, [TeacherID, SubjectID, location.state])
+    getDetailTeacher()
+  }, [TeacherID, SubjectID])
 
   useEffect(() => {
     if (!!teacher) getTimeTableOfTeacher()
@@ -396,10 +390,7 @@ const BookingPage = () => {
                             width: "350px",
                           }}
                           value={i?.DateAt}
-                          disabledDate={current =>
-                            disabledBeforeDate(current) ||
-                            scheduleInWeek.some(i => dayjs(i.DateAt).isSame(current, "day"))
-                          }
+                          disabledDate={current => disabledBeforeDate(current)}
                           onChange={e => {
                             const copyScheduleInWeek = [...scheduleInWeek]
                             copyScheduleInWeek.splice(idxScheduleInWeek, 1, {

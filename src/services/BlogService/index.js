@@ -2,19 +2,41 @@ import http from "../index"
 import {
   apiCreateBlog,
   apiDeleteBlog,
-  apiGetBlogDetail,
+  apiGetDetailBlog,
   apiGetListBlog,
   apiGetListBlogOfUser,
-  apiUpdateBlog
+  apiSendRequestReceive,
+  apiUpdateBlog,
+  apiChangeReceiveStatus,
+  apiGetListBlogByStudent,
+  apiGetListBlogByTeacher,
+  apiChangeRegisterStatus
+
 } from "./urls"
 
 const createBlog = body => http.post(apiCreateBlog, body)
 const updateBlog = body => http.post(apiUpdateBlog, body)
 const getListBlog = body => http.post(apiGetListBlog, body)
-const getDetailBlog = params => http.get(`${apiGetBlogDetail}/${params}`)
+// const getDetailBlog = params => {
+//   console.log("Fetching blog detail with params:", params);
+//   http.get(`${apiGetDetailBlog}/${params}`)}
+const getDetailBlog = (params) => {
+  const url = `${apiGetDetailBlog}/${params}`;
+  // console.log("Fetching from URL:", url); 
+  return http.get(url); 
+};
 const deleteBlog = params => http.get(`${apiDeleteBlog}/${params}`)
-const followBlog = body => http.post(apiGetListBlog, body)
+// const followBlog = body => http.post(apiGetListBlog, body)
 const getListBlogOfUser = body => http.post(apiGetListBlogOfUser, body)
+const sendRequestReceive = params => {
+  http.get(`${apiSendRequestReceive}/${params}`)
+}
+const getListBlogByStudent = body => http.post(apiGetListBlogByStudent, body)
+const getListBlogByTeacher = body => http.post(apiGetListBlogByTeacher, body)
+
+const ChangeReceiveStatus = body => http.post(apiChangeReceiveStatus, body)
+const ChangeRegisterStatus = body => http.post(apiChangeRegisterStatus, body)
+
 
 const BlogService = {
   createBlog,
@@ -22,8 +44,13 @@ const BlogService = {
   getListBlog,
   getDetailBlog,
   deleteBlog,
-  followBlog,
+  // followBlog,
   getListBlogOfUser,
+  sendRequestReceive,
+  getListBlogByStudent,
+  getListBlogByTeacher,
+  ChangeReceiveStatus,
+  ChangeRegisterStatus
 }
 
 export default BlogService
