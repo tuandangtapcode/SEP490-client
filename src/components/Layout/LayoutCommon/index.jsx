@@ -1,9 +1,8 @@
 import { useSelector } from "react-redux"
 import Footer from "../components/Footer"
-// import ModalChat from "../components/ModalChat"
 import { ContentContainerStyled, ContentStyled, LayoutStyled } from "../styled"
-import ModalChatAI from "../components/ModalChatAI"
 import { globalSelector } from "src/redux/selector"
+import ModalChat from "../components/ModalChat"
 
 const LayoutCommon = ({ children }) => {
 
@@ -22,7 +21,7 @@ const LayoutCommon = ({ children }) => {
       }
       {
         (!!user?._id && !location.pathname.includes("meeting-room")) &&
-        <ModalChatAI />
+        <ModalChat />
       }
     </LayoutStyled>
   )

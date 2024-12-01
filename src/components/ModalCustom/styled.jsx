@@ -22,7 +22,7 @@ export const ModalCustomStyled = styled(Modal)`
 }
 
 .ant-modal-body {
-  padding: 20px 24px 0px 24px;
+  padding: ${props => !!props.footer ? "20px 24px 0px 24px" : "20px 24px 20px 24px"};
 }
 
 .ant-modal-footer {

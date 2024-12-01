@@ -6,6 +6,7 @@ import { getListComboKey } from "src/lib/commonFunction"
 import { SYSTEM_KEY } from "src/lib/constant"
 import { globalSelector } from "src/redux/selector"
 import dayjs from "dayjs"
+import { getRegexPhoneNumber } from "src/lib/stringUtils"
 
 const UpdateProfile = ({ form }) => {
 
@@ -103,6 +104,7 @@ const UpdateProfile = ({ form }) => {
             name='Phone'
             rules={[
               { required: true, message: "Thông tin không được để trống" },
+              { pattern: getRegexPhoneNumber(), message: "Số điện thoại sai định dạng" }
             ]}
           >
             <InputCustom placeholder="Nhập vào số diện thoại" />
