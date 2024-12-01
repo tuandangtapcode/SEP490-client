@@ -5,7 +5,13 @@ import {
   apiGetDetailBlog,
   apiGetListBlog,
   apiGetListBlogOfUser,
-  apiUpdateBlog
+  apiSendRequestReceive,
+  apiUpdateBlog,
+  apiChangeReceiveStatus,
+  apiGetListBlogByStudent,
+  apiGetListBlogByTeacher,
+  apiChangeRegisterStatus
+
 } from "./urls"
 
 const createBlog = body => http.post(apiCreateBlog, body)
@@ -20,8 +26,17 @@ const getDetailBlog = (params) => {
   return http.get(url); 
 };
 const deleteBlog = params => http.get(`${apiDeleteBlog}/${params}`)
-const followBlog = body => http.post(apiGetListBlog, body)
+// const followBlog = body => http.post(apiGetListBlog, body)
 const getListBlogOfUser = body => http.post(apiGetListBlogOfUser, body)
+const sendRequestReceive = params => {
+  http.get(`${apiSendRequestReceive}/${params}`)
+}
+const getListBlogByStudent = body => http.post(apiGetListBlogByStudent, body)
+const getListBlogByTeacher = body => http.post(apiGetListBlogByTeacher, body)
+
+const ChangeReceiveStatus = body => http.post(apiChangeReceiveStatus, body)
+const ChangeRegisterStatus = body => http.post(apiChangeRegisterStatus, body)
+
 
 const BlogService = {
   createBlog,
@@ -29,8 +44,13 @@ const BlogService = {
   getListBlog,
   getDetailBlog,
   deleteBlog,
-  followBlog,
+  // followBlog,
   getListBlogOfUser,
+  sendRequestReceive,
+  getListBlogByStudent,
+  getListBlogByTeacher,
+  ChangeReceiveStatus,
+  ChangeRegisterStatus
 }
 
 export default BlogService

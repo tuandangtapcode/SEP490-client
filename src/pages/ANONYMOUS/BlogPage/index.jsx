@@ -38,10 +38,10 @@ const BlogPage = () => {
 
   const { user } = useSelector(globalSelector)
 
-  const getListBlog = async () => {
+  const getListBlogByTeacher = async () => {
     try {
       setLoading(true)
-      const res = await BlogService.getListBlog(pagination)
+      const res = await BlogService.getListBlogByTeacher(pagination)
       if (!!res?.isError) return toast.error(res?.msg)
       setListBlog(res?.data?.List)
     } finally {
@@ -64,8 +64,8 @@ const BlogPage = () => {
   }
 
   useEffect(() => {
-    getListBlog(),
-    getListSubject();
+    getListSubject(),
+    getListBlogByTeacher()
   }, [pagination])
 
   const getSubjectNameById = (id) => {
@@ -102,7 +102,7 @@ return (
                     <strong>Nội dung:</strong> {blog?.Content || 'Không xác định'}
                   </CardDescription>
                   <CardDescription>
-                    <strong>Môn học:</strong> {getSubjectNameById(blog?.Subject)}
+                    <strong>Môn học:</strong> {getSubjectNameById(blog?.Subject.SubjectName)}
                   </CardDescription>
                   <CardDescription>
                     <strong>Học phí:</strong> {blog?.Price ? `${blog?.Price.toLocaleString()} VNĐ` : 'Miễn phí'} /Buổi
@@ -121,7 +121,7 @@ return (
       <InsertUpdateBlog
         open={modalBlog}
         onCancel={() => setModalBlog(false)}
-        onOk={() => getListBlog()}
+        onOk={() => getListBlogByTeacher()}
       />
     )}
   </Spin>
