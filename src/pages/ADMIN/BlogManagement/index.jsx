@@ -62,18 +62,17 @@ const BlogManagement = () => {
   const getListBlogs = async () => {
     try {
       setLoading(true);
-      const res = await BlogService.getListBlog({ 
+      const res = await BlogService.getListBlog({
         TextSearch: pagination.TextSearch,
         CurrentPage: pagination.CurrentPage,
         PageSize: pagination.PageSize,
         SubjectID: pagination.SubjectID,
       });
-      console.log("Dữ liệu API:", res);
       if (res?.isError) {
         message.error(res?.msg);
       } else {
-        setBlogs(res?.data?.List); 
-        setTotal(res?.data?.Total); 
+        setBlogs(res?.data?.List);
+        setTotal(res?.data?.Total);
       }
     } catch (error) {
       message.error("Không thể tải danh sách blog.");
@@ -88,14 +87,16 @@ const BlogManagement = () => {
 
   const handleApprove = async (record) => {
     try {
-      const res = await BlogService.ChangeRegisterStatus({
+      setLoading(true)
+      const res = await BlogService.changeRegisterStatus({
         BlogID: record?._id,
-        RegisterStatus: 3, 
-        FullName: record?.User?._id?.FullName,
-        Email: record?.User?._id?.Email
+        RegisterStatus: 3,
+        FullName: record?.User?.FullName,
+        Email: record?.User?.Email
       });
+      console.log(res)
       if (res?.isError) return toast.error(res?.msg)
-        getListBlogs(); 
+      getListBlogs();
     } finally {
       setLoading(false)
 
@@ -114,7 +115,7 @@ const BlogManagement = () => {
       disabled: record?.IsConfirm,
       onClick: () => {
         ConfirmModal({
-          description: `Bạn có chắc chắn duyệt bài viết của học sinh ${record?.Student?.FullName} không?`,
+          description: `Bạn có chắc chắn duyệt bài viết của học sinh ${record?.User?.FullName} không?`,
           onOk: async close => {
             handleApprove(record)
             close()
@@ -194,7 +195,7 @@ const BlogManagement = () => {
       ),
     },
     {
-      title: "Trạng thái đăng ký",
+      title: "Trạng thái duyệt",
       width: 60,
       dataIndex: "RegisterStatus",
       align: "center",

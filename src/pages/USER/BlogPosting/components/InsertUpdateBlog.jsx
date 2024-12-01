@@ -9,6 +9,10 @@ import BlogService from "src/services/BlogService"
 import styled from "styled-components"
 import SubjectService from "src/services/SubjectService"
 import moment from "moment";
+import { SYSTEM_KEY } from "src/lib/constant"
+import { useSelector } from "react-redux"
+import { globalSelector } from "src/redux/selector"
+import { getListComboKey } from "src/lib/commonFunction"
 import { disabledBeforeDate } from "src/lib/dateUtils"
 import dayjs from "dayjs";
 import FormItem from "antd/es/form/FormItem"
@@ -23,11 +27,13 @@ const StyleModal = styled.div`
 const InsertUpdateBlog = ({ open, onCancel, onOk }) => {
 
   const [form] = Form.useForm()
-  const [preview, setPreview] = useState()
   const [loading, setLoading] = useState(false)
+  const { listSystemKey, user, profitPercent } = useSelector(globalSelector)
+
+
   const [subjects, setSubjects] = useState([]);
-  const [selectDate, setSelectDate] = useState();
   const [slotInWeek, setSlotInWeek] = useState(0)
+  const [blogInfor, setBlogInfor] = useState({LearnType: 1,})
   const [scheduleInWeek, setScheduleInWeek] = useState([])
   const [selectedTimes, setSelectedTimes] = useState([])
 
@@ -58,18 +64,12 @@ const InsertUpdateBlog = ({ open, onCancel, onOk }) => {
   }
   useEffect(() => {
     getListSubject()
-
   }, []);
 
-  useEffect(() => {
-    const learnType = form.getFieldValue('LearnType') || [];
-    setShowAddress(learnType.includes(2));
-  }, [form.getFieldValue('LearnType')]);
-
-  const formatCurrency = (value) => {
-    if (typeof value !== 'number') return '';
-    return `${value.toLocaleString('vi-VN')} VNĐ`;
-  };
+  // useEffect(() => {
+  //   const learnType = form.getFieldValue('LearnType') || [];
+  //   setShowAddress(learnType.includes(2));
+  // }, [form.getFieldValue('LearnType')]);
 
   const handleTimeChange = (index, { StartTime, EndTime }) => {
     const updatedSchedules = [...schedules];
@@ -78,6 +78,21 @@ const InsertUpdateBlog = ({ open, onCancel, onOk }) => {
     console.log("Updated schedules:", updatedSchedules);
     setSchedules(updatedSchedules);
   };
+
+  const hanleSelectTimesWithFixedSchedule = () => {
+    let selectTimesRaw = []
+    for (let i = 0; selectTimesRaw.length < totalSlot; i++) {
+      scheduleInWeek.forEach(s => {
+        if (selectTimesRaw.length < totalSlot) {
+          selectTimesRaw.push({
+            StartTime: dayjs(s?.StartTime).add(i * 7, "days"),
+            EndTime: dayjs(s?.EndTime).add(i * 7, "days")
+          })
+        }
+      })
+    }
+    setSelectedTimes(selectTimesRaw)
+  }
 
   const handleSubmit = async () => {
     try {
@@ -113,16 +128,17 @@ const InsertUpdateBlog = ({ open, onCancel, onOk }) => {
         Title: values?.Title,
         Content: values?.Content,
         Subject: values?.Subject,
-        Gender: Array.isArray(values.Gender)
-          ? values.Gender.map((value) => Number(value)).filter((value) => [1, 2].includes(value))
-          : [],
-        // Gender: values?.Gender,
+        // Gender: Array.isArray(values.Gender)
+        //   ? values.Gender.map((value) => Number(value)).filter((value) => [1, 2].includes(value))
+        //   : [],
+        Gender: values?.Gender,
         Price: price,
         NumberSlot: values?.NumberSlot,
         Address: values?.Address,
-        LearnType: Array.isArray(values.LearnType)
-        ? values.LearnType.map((value) => Number(value)).filter((value) => [1, 2].includes(value))
-        : [],
+        // LearnType: Array.isArray(values.LearnType)
+        // ? values.LearnType.map((value) => Number(value)).filter((value) => [1, 2].includes(value))
+        // : [],
+        LearnType: values?.LearnType,
         Schedules: formattedSchedules,
       };
       const res = !!open?._id
@@ -137,6 +153,13 @@ const InsertUpdateBlog = ({ open, onCancel, onOk }) => {
     }
   };
 
+  useEffect(() => {
+    setBlogInfor(pre => ({
+      ...pre,
+      LearnType: pre?.LearnType || [1, 2],
+      Gender: pre?.Gender || [1, 2],
+    }));
+  }, [open]);
 
   const renderFooter = () => (
     <div className="d-flex-center">
@@ -217,30 +240,34 @@ const InsertUpdateBlog = ({ open, onCancel, onOk }) => {
 
 
                   <Col span={12}>
-                    <Form.Item name="LearnType" label="Hình thức học" rules={[{ required: true, message: 'Vui lòng nhập hình thức học!' }]}>
-                      <Select
-                        mode="multiple"
-                        placeholder="Chọn hình thức học"
-                        onChange={(value) => {
-                          setShowAddress(value.includes(2)); // Cập nhật showAddress dựa trên giá trị chọn
-                        }}
-                      >
-                        <Select.Option value={1}>Học online</Select.Option>
-                        <Select.Option value={2}>Học offline</Select.Option>
-                      </Select>
-                    </Form.Item>
-                  </Col>
-                  <Col span={12}>
-                    {showAddress && (
-                      <Form.Item name="Address" label="Địa chỉ" rules={[
-                        {
-                          required: true,
-                          message: 'Vui lòng nhập địa chỉ'
-                        }
-                      ]}>
-                        <Input />
-                      </Form.Item>
-                    )}
+                  <Form.Item name="LearnType" label="Hình thức học" rules={[{ required: true, message: 'Vui lòng nhập hình thức học!' }]}>
+      <Radio.Group
+        className="mb-8"
+        onChange={e => {
+          const learnType = e.target.value;
+          setBlogInfor(prev => ({
+  ...prev,
+  LearnType: [learnType] 
+}));
+          setShowAddress(learnType === 2); // Hiển thị Địa chỉ khi LearnType === 2 (học offline)
+        }}
+        value={blogInfor?.LearnType[0]}
+      >
+        {
+          [1, 2].map(i => // Các giá trị có thể thay đổi tùy theo API của bạn
+            <Radio key={i} value={i}>
+              {getListComboKey(SYSTEM_KEY.LEARN_TYPE, listSystemKey)?.find(item => item?.ParentID === i)?.ParentName}
+            </Radio>
+          )
+        }
+      </Radio.Group>
+    </Form.Item>
+
+    {showAddress && (
+      <Form.Item name="Address" label="Địa chỉ" rules={[{ required: true, message: 'Vui lòng nhập địa chỉ!' }]}>
+        <Input />
+      </Form.Item>
+    )}
                   </Col>
                 </Row>
                 <Row gutter={16}>
@@ -278,12 +305,19 @@ const InsertUpdateBlog = ({ open, onCancel, onOk }) => {
                   </Col>
 
                   <Col span={8}>
-                    <Form.Item style={{ width: "100%" }} labelAlign="right" name="Gender" label="Yêu cầu giới tính giáo viên" rules={[{ required: true, message: 'Vui lòng chọn giới tính!' }]}>
-                      <Select
-                        mode="multiple">
-                        <Select.Option value={1}>Nam</Select.Option>
-                        <Select.Option value={2}>Nữ</Select.Option>
-                      </Select>
+                    <Form.Item name="Gender" label="Yêu cầu giới tính giáo viên" rules={[{ required: true, message: 'Vui lòng chọn giới tính!' }]}>
+                      <Radio.Group
+                        onChange={e => setBlogInfor(pre => ({ ...pre, Gender: [e.target.value] }))}
+                        value={blogInfor?.Gender}
+                      >
+                        {
+                          [1, 2].map(i => // Các giá trị có thể thay đổi tùy theo API của bạn
+                            <Radio key={i} value={i}>
+                              {getListComboKey(SYSTEM_KEY.GENDER, listSystemKey)?.find(item => item?.ParentID === i)?.ParentName}
+                            </Radio>
+                          )
+                        }
+                      </Radio.Group>
                     </Form.Item>
                   </Col>
                 </Row>
@@ -321,7 +355,8 @@ const InsertUpdateBlog = ({ open, onCancel, onOk }) => {
                             showTime={{ format: "HH:mm" }}
                             format="YYYY-MM-DD HH:mm"
                             placeholder={["Ngày bắt đầu", "Ngày kết thúc"]}
-                          disabledDate={current => disabledBeforeDate(current)}
+                            disabledDate={current => disabledBeforeDate(current)}
+
                             onChange={(dateRange) => {
                               if (dateRange && dateRange.length === 2) {
                                 const [startDate, endDate] = dateRange;
@@ -335,7 +370,7 @@ const InsertUpdateBlog = ({ open, onCancel, onOk }) => {
                                   toast.error("Thời gian kết thúc phải cách thời gian bắt đầu ít nhất 1 tiếng.");
                                   return;
                                 }
-                                
+
                                 handleTimeChange(idxScheduleInWeek, {
                                   StartTime: startDate,
                                   EndTime: endDate,
