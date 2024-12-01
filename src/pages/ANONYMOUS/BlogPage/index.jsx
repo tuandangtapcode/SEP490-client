@@ -19,6 +19,7 @@ import { useSelector } from "react-redux"
 import { globalSelector } from "src/redux/selector"
 import InsertUpdateBlog from "src/pages/USER/BlogPosting/components/InsertUpdateBlog"
 import CB1 from "src/components/Modal/CB1"
+import SubjectService from "src/services/SubjectService"
 
 
 
@@ -33,82 +34,44 @@ const BlogPage = () => {
     CurrentPage: 1,
     PageSize: 10
   })
+  const [subjects, setSubjects] = useState([]);
 
   const { user } = useSelector(globalSelector)
 
-  const getListBlog = async () => {
+  const getListBlogByTeacher = async () => {
     try {
       setLoading(true)
-      const res = await BlogService.getListBlog(pagination)
+      const res = await BlogService.getListBlogByTeacher(pagination)
       if (!!res?.isError) return toast.error(res?.msg)
       setListBlog(res?.data?.List)
     } finally {
       setLoading(false)
     }
   }
-
-  // const handleDeleteBlog = async (id) => {
-  //   try {
-  //     setLoading(true)
-  //     const res = await BlogService.deleteBlog(id)
-  //     if (!!res?.isError) return toast.error(res?.msg)
-  //     toast.success(res?.msg)
-  //   } catch (error) {
-  //     console.log("Error:", error)
-  //   } finally {
-  //     setLoading(false)
-  //   }
-  // }
+  const getListSubject = async () => {
+    try {
+      setLoading(true)
+      const res = await SubjectService.getListSubject({
+        TextSearch: "",
+        CurrentPage: 0,
+        PageSize: 0
+      })
+      if (!!res?.isError) return toast.error(res?.msg)
+      setSubjects(res?.data?.List)
+    } finally {
+      setLoading(false)
+    }
+  }
 
   useEffect(() => {
-    getListBlog()
+    getListSubject(),
+    getListBlogByTeacher()
   }, [pagination])
 
-//   return (
-//     <SpinCustom spinning={loading}>
-//       <Container>
-//         <Title>Talent LearningHub Blog</Title>
-//         <Description>
-//           Tại đây, bạn sẽ tìm thấy nhiều tài nguyên hữu ích để tham khảo khi học điều gì đó mới - từ hướng dẫn toàn diện đến hướng dẫn từng bước.
-//         </Description>
-//         {listBlog.map((blog) => (
-//           <>
-//             <Card
-//               className="mt-20"
-//               hoverable
-//               title={blog?.Title}
-//               style={{ textTransform: 'uppercase',fontSize: '3em' }}
-//             >
-//               <CardContent>
-//                 <CardDescription>
-//                   {blog?.Content}
-//                 </CardDescription>
-//                 <CardDescription>
-//                   {blog?.Gender}
-//                 </CardDescription>
-//                 <StyledButton
-//                   type="primary"
-//                   onClick={() => navigate(`/blog/${blog?._id}`)}
-//                 >
-//                   Xem chi tiết
-//                 </StyledButton>
-//               </CardContent>
-//             </Card >
-//           </>
-//         ))
-//         }
-//       </Container >
-//       {!!modalBlog && (
-//         <InsertUpdateBlog
-//           open={modalBlog}
-//           onCancel={() => setModalBlog(false)}
-//           onOk={() => getListBlog()}
-//         />
-//       )}
-//     </SpinCustom >
-//   )
-// }
-
+  const getSubjectNameById = (id) => {
+    const subject = subjects.find((sub) => sub._id === id); 
+    return subject ? subject.SubjectName : "Không xác định"; 
+  };
 return (
   <Spin spinning={loading}>
     <Container>
@@ -139,13 +102,13 @@ return (
                     <strong>Nội dung:</strong> {blog?.Content || 'Không xác định'}
                   </CardDescription>
                   <CardDescription>
-                    <strong>Môn học:</strong> {blog?.Subject || 'Không xác định'}
+                    <strong>Môn học:</strong> {getSubjectNameById(blog?.Subject.SubjectName)}
                   </CardDescription>
                   <CardDescription>
                     <strong>Học phí:</strong> {blog?.Price ? `${blog?.Price.toLocaleString()} VNĐ` : 'Miễn phí'} /Buổi
                   </CardDescription>
                   <CardDescription>
-                    <strong>Hình thức học:</strong> {blog?.LearnTypes?.map((type) => (type === 1 ? 'Online' : 'Offline')).join(', ') || 'Không xác định'}
+                    <strong>Hình thức học:</strong> {blog?.LearnType?.map((type) => (type === 1 ? 'Online' : 'Offline')).join(', ') || 'Không xác định'}
                   </CardDescription>
                 </>
               }
@@ -158,7 +121,7 @@ return (
       <InsertUpdateBlog
         open={modalBlog}
         onCancel={() => setModalBlog(false)}
-        onOk={() => getListBlog()}
+        onOk={() => getListBlogByTeacher()}
       />
     )}
   </Spin>
