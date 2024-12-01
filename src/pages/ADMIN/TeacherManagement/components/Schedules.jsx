@@ -2,7 +2,7 @@ import { Empty } from "antd"
 import TimeTableComponent from "src/components/TimeTableComponent"
 import { convertToCurrentEquivalent } from "src/lib/dateUtils"
 
-const TimeTable = ({ user }) => {
+const Schedules = ({ user }) => {
   return (
     <div>
       {!!user?.Schedules?.length
@@ -24,4 +24,4 @@ const TimeTable = ({ user }) => {
   )
 }
 
-export default TimeTable
+export default Schedules

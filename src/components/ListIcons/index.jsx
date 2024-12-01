@@ -47,7 +47,8 @@ import {
   AiFillPlusCircle,
   AiOutlineFileDone,
   AiFillEyeInvisible,
-  AiOutlineFileSearch
+  AiOutlineFileSearch,
+  AiOutlineSync
 } from "react-icons/ai"
 
 import {
@@ -178,7 +179,8 @@ const ListIcons = {
   ICON_NOTED: <AiOutlineFileDone className="fs-18" />,
   ICON_UNVIEW: <AiFillEyeInvisible className="fs-18 green-text" />,
   ICON_SEND_BLACK: <BiSend className="fs-18 black-text" />,
-  ICON_BLOG: <AiOutlineFileSearch className="fs-18 black-text" />
+  ICON_BLOG: <AiOutlineFileSearch className="fs-18 black-text" />,
+  ICON_RESET: <AiOutlineSync className="fs-18" />
 }
 
 export default ListIcons
