@@ -5,7 +5,7 @@ import { Table, Button, Row, Col, Modal, Spin, Descriptions, Divider, Tag, List,
 import { useEffect, useState } from "react";
 import { globalSelector } from "src/redux/selector"
 import { useSelector } from "react-redux"
-
+import ButtonCircle from "src/components/MyButton/ButtonCircle"
 import ButtonCustom from "src/components/MyButton/ButtonCustom";
 import BlogService from "src/services/BlogService";
 import { toast } from "react-toastify";
@@ -166,7 +166,7 @@ const BlogPosting = () => {
       render: (text, record) => {
         return (
           <>
-            <Button
+            <ButtonCircle
               icon={ListIcons?.ICON_VIEW}
               onClick={() =>{
                 // console.log("blog ID:", record._id)
