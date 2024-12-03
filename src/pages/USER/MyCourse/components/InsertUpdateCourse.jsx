@@ -151,9 +151,11 @@ const InsertUpdateCourse = ({ open, onCancel, onOk }) => {
               ]}
             >
               <Radio.Group>
-                {getListComboKey(SYSTEM_KEY.SKILL_LEVEL, listSystemKey)?.map((i, idx) =>
-                  <Radio key={idx} value={i?.ParentID}>{i?.ParentName}</Radio>
-                )}
+                {
+                  getListComboKey(SYSTEM_KEY.SKILL_LEVEL, listSystemKey)?.map((i, idx) =>
+                    <Radio key={idx} value={i?.ParentID}>{i?.ParentName}</Radio>
+                  )
+                }
               </Radio.Group>
             </Form.Item>
           </Col>

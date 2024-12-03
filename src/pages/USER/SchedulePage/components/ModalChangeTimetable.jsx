@@ -40,9 +40,6 @@ const ModalChangeTimetable = ({
     }
   }, [open])
 
-  console.log("documents", documents);
-
-
   const handleBeforeUpload = async (file) => {
     const isAllowedType = file.type.includes("application")
     if (!isAllowedType) {

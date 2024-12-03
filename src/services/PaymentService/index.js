@@ -8,7 +8,6 @@ import {
   apiGetListPayment,
   apiExportExcel,
   apiGetListTransfer,
-  apiSendRequestExplanation
 } from "./urls"
 
 const ClientID = import.meta.env.VITE_PAYOS_CLIENT_ID
@@ -28,13 +27,16 @@ const getDetailPaymentLink = PaymentLinkID => axios.get(`${apiCreatePaymentLink}
 })
 const createPayment = body => http.post(apiCreatePayment, body)
 const getListPaymentHistoryByUser = body => http.post(apiGetListPaymentHistoryByUser, body)
-const changePaymentStatus = body => http.post(apiChangePaymentStatus, body)
+const changePaymentStatus = body => http.post(apiChangePaymentStatus, body, {
+  headers: {
+    'Content-Type': 'multipart/form-data',
+  }
+})
 const getListPayment = body => http.post(apiGetListPayment, body)
 const exportExcel = () => http.get(apiExportExcel, {
   responseType: 'blob',
 })
 const getListTransfer = body => http.post(apiGetListTransfer, body)
-const sendRequestExplanation = body => http.post(apiSendRequestExplanation, body)
 
 const PaymentService = {
   createPaymentLink,
@@ -45,7 +47,6 @@ const PaymentService = {
   getListPayment,
   exportExcel,
   getListTransfer,
-  sendRequestExplanation
 }
 
 export default PaymentService

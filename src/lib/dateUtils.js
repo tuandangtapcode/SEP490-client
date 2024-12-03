@@ -8,34 +8,48 @@ export const disabledAfterDate = current => {
   return current && current >= dayjs().startOf("day")
 }
 
-const defaultDays = [
+export const defaultDays = [
   {
     EngName: "Monday",
-    ViName: "T2"
+    VieName: "T2",
+    VieNameSpecific: "Thứ 2",
+    value: 1
   },
   {
     EngName: "Tuesday",
-    ViName: "T3"
+    VieName: "T3",
+    VieNameSpecific: "Thứ 3",
+    value: 2
   },
   {
     EngName: "Wednesday",
-    ViName: "T4"
+    VieName: "T4",
+    VieNameSpecific: "Thứ 4",
+    value: 3
   },
   {
     EngName: "Thursday",
-    ViName: "T5"
+    VieName: "T5",
+    VieNameSpecific: "Thứ 5",
+    value: 4
   },
   {
     EngName: "Friday",
-    ViName: "T6"
+    VieName: "T6",
+    VieNameSpecific: "Thứ 6",
+    value: 5
   },
   {
     EngName: "Saturday",
-    ViName: "T7"
+    VieName: "T7",
+    VieNameSpecific: "Thứ 7",
+    value: 6
   },
   {
     EngName: "Sunday",
-    ViName: "CN"
+    VieName: "CN",
+    VieNameSpecific: "Chủ nhật",
+    value: 0
   }
 ]
 export const convertSchedules = (schedules) => {
@@ -44,7 +58,7 @@ export const convertSchedules = (schedules) => {
     const listTime = schedules?.filter(item => item.DateAt === i.EngName)
     if (!!listTime.length)
       newSchedules.push({
-        DateAt: i.ViName,
+        DateAt: i.VieName,
         Times: listTime
       })
   })

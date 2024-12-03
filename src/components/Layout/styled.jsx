@@ -102,7 +102,7 @@ export const LayoutUserStyled = styled.div`
 .menu-antd-user {
   padding-left: 11px;
   height: auto;
-  overflow: hidden auto;
+  /* overflow: hidden auto; */
   margin-right: unset;
   border: unset; 
 }

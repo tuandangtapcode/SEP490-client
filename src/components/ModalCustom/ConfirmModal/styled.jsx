@@ -4,7 +4,7 @@ import styled from "styled-components"
 export const ModalStyled = styled(Modal)`
     .ant-modal-content {
       border-radius: 8px;
-      padding: 20px;
+      padding: none !important;
       background: #fff;
     }
     .ant-modal-header {

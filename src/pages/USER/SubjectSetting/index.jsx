@@ -1,24 +1,14 @@
-import { Col, Form, List, message, Row, Space, Tag } from "antd"
+import { Col, Form, Row, Space, Tag } from "antd"
 import { useEffect, useState } from "react"
 import { toast } from "react-toastify"
 import ButtonCustom from "src/components/MyButton/ButtonCustom"
 import SpinCustom from "src/components/SpinCustom"
 import UserService from "src/services/UserService"
-import { SubjectItemStyled } from "./styled"
-import BasicInformation from "./components/BasicInformation"
-import Experiences from "./components/Experiences"
-import Educations from "./components/Educations"
-import Certificates from "./components/Certificates"
-import IntroVideo from "./components/IntroVideo"
 import dayjs from "dayjs"
 import ModalSubject from "./modal/ModalSubject"
-import FileService from "src/services/FileService"
-import NotificationService from "src/services/NotificationService"
-import { ADMIN_ID, SYSTEM_KEY } from "src/lib/constant"
+import { SYSTEM_KEY } from "src/lib/constant"
 import { useSelector } from "react-redux"
 import { globalSelector } from "src/redux/selector"
-import socket from "src/utils/socket"
-import { getRealFee } from "src/lib/stringUtils"
 import { getListComboKey } from "src/lib/commonFunction"
 import ListIcons from "src/components/ListIcons"
 import ButtonCircle from "src/components/MyButton/ButtonCircle"
@@ -31,9 +21,8 @@ const SubjectSetting = () => {
   const [loading, setLoading] = useState(false)
   const [openModalSubject, setOpenModalSubject] = useState(false)
   const [subjectSettings, setSubjectSettings] = useState([])
-  const [subjectSetting, setSubjectSetting] = useState()
   const [form] = Form.useForm()
-  const { profitPercent, listSystemKey } = useSelector(globalSelector)
+  const { listSystemKey } = useSelector(globalSelector)
   const [openModalUpdateSubjectSetting, setModalUpdateSubjectSetting] = useState(false)
 
   const getListSubjectSetting = async () => {
@@ -76,7 +65,7 @@ const SubjectSetting = () => {
     {
       title: !!record?.IsDisabled ? "Hiển thị môn học" : "Ẩn môn học",
       isDisabled: !!record?.IsDisabledBtn,
-      icon: !!record?.IsDisabled ? ListIcons.ICON_VIEW : ListIcons.ICON_UNVIEW,
+      icon: !!record?.IsDisabled ? ListIcons.ICON_UNBLOCK : ListIcons.ICON_BLOCK,
       onClick: () => {
         ConfirmModal({
           icon: "ICON_SUSCESS_MODAL",
