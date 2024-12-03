@@ -108,8 +108,8 @@ const ModalChangeCareerInfor = ({ open, onCancel }) => {
         }))
         : [{}],
       Certificates: user?.Certificates?.map((i, idx) => ({
-        url: i + 1,
-        id: idx
+        url: i,
+        id: idx + 1
       })),
       Description: user?.Description,
       Subjects: user?.SubjectSettings?.map(i => i?.Subject?._id)

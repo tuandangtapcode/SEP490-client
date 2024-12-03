@@ -53,6 +53,11 @@ const MentorForSubject = () => {
       setLoading(false)
     }
   }
+
+  useEffect(() => {
+    
+  })
+
   useEffect(() => {
     getListSubjectCate()
   }, [pagination])

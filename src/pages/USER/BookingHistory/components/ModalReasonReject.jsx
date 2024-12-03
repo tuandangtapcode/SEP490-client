@@ -5,6 +5,7 @@ import { toast } from "react-toastify"
 import InputCustom from "src/components/InputCustom"
 import ModalCustom from "src/components/ModalCustom"
 import ButtonCustom from "src/components/MyButton/ButtonCustom"
+import { Roles } from "src/lib/constant"
 import { globalSelector } from "src/redux/selector"
 import ConfirmService from "src/services/ConfirmService"
 import NotificationService from "src/services/NotificationService"
@@ -16,13 +17,20 @@ const ModalReasonReject = ({ open, onCancel, onOk }) => {
   const [form] = Form.useForm()
   const { user } = useSelector(globalSelector)
 
+  console.log("open", open);
+
+
   const changeConfirmStatus = async () => {
     try {
       setLoading(true)
       const resNotiffication = await NotificationService.createNotification({
-        Content: `Giáo viên ${user?.FullName} đã hủy xác nhận booking của bạn`,
+        Content: user?.RoleID === Roles.ROLE_TEACHER
+          ? `Giáo viên ${user?.FullName} đã hủy xác nhận booking của bạn`
+          : `Học sinh ${user?.FullName} đã hủy booking`,
         Type: "lich-su-booking",
-        Receiver: open?.Sender?._id
+        Receiver: user?.RoleID === Roles.ROLE_TEACHER
+          ? open?.Sender?._id
+          : open?.Receiver?._id
       })
       if (!!resNotiffication?.isError) return toast.error(res?.msg)
       socket.emit('send-notification',
@@ -39,14 +47,19 @@ const ModalReasonReject = ({ open, onCancel, onOk }) => {
       const res = await ConfirmService.changeConfirmStatus({
         ConfirmID: open?._id,
         ConfirmStatus: 3,
-        Recevier: open?.Receiver,
-        RecevierName: user?.FullName,
+        RecevierName: open?.Receiver?.FullName,
+        RecevierEmail: open?.Receiver?.Email,
         SenderName: open?.Sender?.FullName,
         SenderEmail: open?.Sender?.Email,
         Reason: values?.Reason
       })
       if (!!res?.isError) return toast.error(res?.msg)
       toast.success(res?.msg)
+      socket.emit("send-noted-confirm", {
+        ...res?.data,
+        RoleID: user?.RoleID,
+        IsNoted: false
+      })
       onOk()
       onCancel()
     } finally {

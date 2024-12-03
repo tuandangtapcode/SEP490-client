@@ -4,7 +4,7 @@ import { toast } from "react-toastify"
 import InputCustom from "src/components/InputCustom"
 import ModalCustom from "src/components/ModalCustom"
 import ButtonCustom from "src/components/MyButton/ButtonCustom"
-import { getRegexEmail } from "src/lib/stringUtils"
+import { getRegexEmail, getRegexPassowrd, getRegexPhoneNumber } from "src/lib/stringUtils"
 import UserService from "src/services/UserService"
 
 const ModalInsertStaff = ({ open, onCancel, onOk }) => {
@@ -71,6 +71,28 @@ const ModalInsertStaff = ({ open, onCancel, onOk }) => {
               ]}
             >
               <InputCustom placeholder="Email" />
+            </Form.Item>
+          </Col>
+          <Col span={24}>
+            <Form.Item
+              name='Phone'
+              rules={[
+                { required: true, message: "Thông tin không được để trống" },
+                { pattern: getRegexPhoneNumber(), message: "Số điện thoại sai định dạng" }
+              ]}
+            >
+              <InputCustom placeholder="Số diện thoại" />
+            </Form.Item>
+          </Col>
+          <Col span={24}>
+            <Form.Item
+              name="Password"
+              rules={[
+                { required: true, message: "Hãy nhập vào mật khẩu mới của bạn" },
+                { pattern: getRegexPassowrd(), message: "Mật khẩu sai định dạng" }
+              ]}
+            >
+              <InputCustom type="isPassword" placeholder="Mật khẩu" />
             </Form.Item>
           </Col>
         </Row>

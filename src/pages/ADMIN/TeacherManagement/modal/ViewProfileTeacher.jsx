@@ -2,8 +2,9 @@ import ModalCustom from "src/components/ModalCustom"
 import { PatentChildBorder, TabStyled } from "../styled"
 import { Tabs } from "antd"
 import Information from "../components/Information"
-import TimeTable from "../components/TimeTable"
 import BankInfor from "../components/BankInfor"
+import Schedules from "../components/Schedules"
+import LearnHistories from "../components/LearnHistories"
 
 
 const ViewProfileTeacher = ({ open, onCancel }) => {
@@ -23,7 +24,7 @@ const ViewProfileTeacher = ({ open, onCancel }) => {
       label: "Lịch trình giảng dạy",
       children: (
         <PatentChildBorder>
-          <TimeTable user={open} />
+          <Schedules user={open} />
         </PatentChildBorder>
       )
     },
@@ -33,6 +34,15 @@ const ViewProfileTeacher = ({ open, onCancel }) => {
       children: (
         <PatentChildBorder>
           <BankInfor user={open} />
+        </PatentChildBorder>
+      )
+    },
+    {
+      key: 4,
+      label: "Lịch sử giảng dạy",
+      children: (
+        <PatentChildBorder>
+          <LearnHistories user={open} />
         </PatentChildBorder>
       )
     },

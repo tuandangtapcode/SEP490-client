@@ -1,167 +1,94 @@
-import {  Card, Dropdown, Popover, Space, Button, Spin } from "antd"
-
-import {
-  CardContent,
-  CardDescription,
-  Container,
-  Description,
-  StyledButton,
-  Title
-} from "./styled"
+import { List, Button, Spin, Tag, Space, Card, Row, Col } from "antd"
 import { useEffect, useState } from "react"
 import BlogService from "src/services/BlogService"
+import SubjectService from "src/services/SubjectService"
 import { toast } from "react-toastify"
 import { useNavigate } from "react-router-dom"
-import SpinCustom from "src/components/SpinCustom"
-import ListIcons from "src/components/ListIcons"
-import ButtonCircle from "src/components/MyButton/ButtonCircle"
 import { useSelector } from "react-redux"
 import { globalSelector } from "src/redux/selector"
-import InsertUpdateBlog from "src/pages/USER/BlogPosting/components/InsertUpdateBlog"
-import CB1 from "src/components/Modal/CB1"
-
-
-
+import { Container, Description, Title, StyledListItem } from "./styled"
+import SpinCustom from "src/components/SpinCustom"
+import BlogItem from "./components/BlogItem"
 
 const BlogPage = () => {
 
   const navigate = useNavigate()
   const [loading, setLoading] = useState(false)
   const [modalBlog, setModalBlog] = useState(false)
-  const [listBlog, setListBlog] = useState([])
+  const { user } = useSelector(globalSelector)
   const [pagination, setPagination] = useState({
     CurrentPage: 1,
-    PageSize: 10
+    PageSize: 10,
+    TextSearch: "",
+    SubjectID: "",
+    LearnType: 0,
+    RoleID: !!user?.RoleID ? user?.RoleID : 0,
+    UserID: !!user?._id ? user?._id : 0
   })
+  const [subjects, setSubjects] = useState([])
+  const [blogs, setBlogs] = useState()
+  const [total, setTotal] = useState(0)
 
-  const { user } = useSelector(globalSelector)
-
-  const getListBlog = async () => {
+  const getListBlogByTeacher = async () => {
     try {
       setLoading(true)
-      const res = await BlogService.getListBlog(pagination)
+      const res = await BlogService.getListBlogByTeacher(pagination)
       if (!!res?.isError) return toast.error(res?.msg)
-      setListBlog(res?.data?.List)
+      setBlogs(res?.data?.List)
+      setTotal(res?.data?.Total)
     } finally {
       setLoading(false)
     }
   }
 
-  // const handleDeleteBlog = async (id) => {
-  //   try {
-  //     setLoading(true)
-  //     const res = await BlogService.deleteBlog(id)
-  //     if (!!res?.isError) return toast.error(res?.msg)
-  //     toast.success(res?.msg)
-  //   } catch (error) {
-  //     console.log("Error:", error)
-  //   } finally {
-  //     setLoading(false)
-  //   }
-  // }
+  const getListSubject = async () => {
+    try {
+      setLoading(true)
+      const res = await SubjectService.getListSubject({
+        TextSearch: "",
+        CurrentPage: 0,
+        PageSize: 0,
+      })
+      if (!!res?.isError) return toast.error(res?.msg)
+      setSubjects(res?.data?.List)
+    } finally {
+      setLoading(false)
+    }
+  }
 
   useEffect(() => {
-    getListBlog()
+    getListSubject()
+  }, [])
+
+
+  useEffect(() => {
+    getListBlogByTeacher()
   }, [pagination])
 
-//   return (
-//     <SpinCustom spinning={loading}>
-//       <Container>
-//         <Title>Talent LearningHub Blog</Title>
-//         <Description>
-//           Tại đây, bạn sẽ tìm thấy nhiều tài nguyên hữu ích để tham khảo khi học điều gì đó mới - từ hướng dẫn toàn diện đến hướng dẫn từng bước.
-//         </Description>
-//         {listBlog.map((blog) => (
-//           <>
-//             <Card
-//               className="mt-20"
-//               hoverable
-//               title={blog?.Title}
-//               style={{ textTransform: 'uppercase',fontSize: '3em' }}
-//             >
-//               <CardContent>
-//                 <CardDescription>
-//                   {blog?.Content}
-//                 </CardDescription>
-//                 <CardDescription>
-//                   {blog?.Gender}
-//                 </CardDescription>
-//                 <StyledButton
-//                   type="primary"
-//                   onClick={() => navigate(`/blog/${blog?._id}`)}
-//                 >
-//                   Xem chi tiết
-//                 </StyledButton>
-//               </CardContent>
-//             </Card >
-//           </>
-//         ))
-//         }
-//       </Container >
-//       {!!modalBlog && (
-//         <InsertUpdateBlog
-//           open={modalBlog}
-//           onCancel={() => setModalBlog(false)}
-//           onOk={() => getListBlog()}
-//         />
-//       )}
-//     </SpinCustom >
-//   )
-// }
 
-return (
-  <Spin spinning={loading}>
-    <Container>
-      <Title>Talent LearningHub Blog</Title>
-      <Description>
-        Tại đây, bạn sẽ tìm thấy nhiều tài nguyên hữu ích để tham khảo khi học điều gì đó mới - từ hướng dẫn toàn diện đến hướng dẫn từng bước.
-      </Description>
-      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '20px' }}>
-        {listBlog.map((blog) => (
-          <Card
-            key={blog?._id}
-            hoverable
-            title={<span style={{ textTransform: 'uppercase', fontSize: '1.5em' }}>{blog?.Title}</span>}
-            style={{ width: 300 }}
-            actions={[
-              <Button
-                type="primary"
-                onClick={() => navigate(`/blog/${blog?._id}`)}
-              >
-                Xem chi tiết
-              </Button>
-            ]}
-          >
-            <Card.Meta
-              description={
-                <>
-                  <CardDescription>
-                    <strong>Nội dung:</strong> {blog?.Content || 'Không xác định'}
-                  </CardDescription>
-                  <CardDescription>
-                    <strong>Môn học:</strong> {blog?.Subject || 'Không xác định'}
-                  </CardDescription>
-                  <CardDescription>
-                    <strong>Học phí:</strong> {blog?.Price ? `${blog?.Price.toLocaleString()} VNĐ` : 'Miễn phí'} /Buổi
-                  </CardDescription>
-                  <CardDescription>
-                    <strong>Hình thức học:</strong> {blog?.LearnTypes?.map((type) => (type === 1 ? 'Online' : 'Offline')).join(', ') || 'Không xác định'}
-                  </CardDescription>
-                </>
-              }
-            />
-          </Card>
-        ))}
-      </div>
-    </Container>
-    {!!modalBlog && (
-      <InsertUpdateBlog
-        open={modalBlog}
-        onCancel={() => setModalBlog(false)}
-        onOk={() => getListBlog()}
-      />
-    )}
-  </Spin>
-)
+  return (
+
+    <SpinCustom spinning={loading}>
+      <Row gutter={[8, 8]}>
+        <Col span={24} className="mb-12">
+          <Title>Bài đăng tìm kiếm giáo viên</Title>
+          <Description style={{ textAlign: "center" }}>
+            Tại đây, chúng tôi đang kết nối giữa bạn và các học sinh, học viên có nhu cầu học tập. Liên hệ ngay để cùng phát triển!.
+          </Description>
+        </Col>
+        <Col span={24}>
+          {
+            blogs?.map((i, idx) =>
+              <BlogItem
+                key={idx}
+                blog={i}
+              />
+            )
+          }
+        </Col>
+      </Row>
+    </SpinCustom>
+  )
 }
+
 export default BlogPage

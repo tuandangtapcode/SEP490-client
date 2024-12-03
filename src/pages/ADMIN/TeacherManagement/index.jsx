@@ -24,6 +24,7 @@ const TeacherManagement = () => {
   const [loading, setLoading] = useState(false)
   const [teachers, setTeachers] = useState([])
   const [total, setTotal] = useState(0)
+  const [isViewLockUnLock, setIsViewLockUnLock] = useState()
   const [openViewProfile, setOpenViewProfile] = useState(false)
   const [pagination, setPagination] = useState({
     TextSearch: "",
@@ -41,6 +42,7 @@ const TeacherManagement = () => {
       if (!!res?.isError) return toast.error(res?.msg)
       setTeachers(res?.data?.List)
       setTotal(res?.data?.Total)
+      setIsViewLockUnLock(res?.data?.IsViewLockUnLock)
     } finally {
       setLoading(false)
     }
@@ -80,12 +82,14 @@ const TeacherManagement = () => {
 
   const listBtn = record => [
     {
+      isView: true,
       title: "Xem chi tiết",
       disabled: false,
       icon: ListIcons?.ICON_VIEW,
       onClick: () => setOpenViewProfile(record)
     },
     {
+      isView: true,
       title: "Duyệt",
       icon: ListIcons?.ICON_CONFIRM,
       disabled: record?.IsConfirm,
@@ -100,12 +104,14 @@ const TeacherManagement = () => {
       }
     },
     {
+      isView: true,
       title: "Không duyệt",
       icon: ListIcons?.ICON_CLOSE,
       disabled: record?.IsReject,
       onClick: () => setOpenModalReasonReject(record)
     },
     {
+      isView: !!isViewLockUnLock,
       title: !!record?.Account?.IsActive ? "Khóa tài khoản" : "Mở khóa tài khoản",
       icon: !!record?.Account?.IsActive ? ListIcons?.ICON_BLOCK : ListIcons?.ICON_UNBLOCK,
       disabled: record?.IsLockUnLock,
@@ -181,6 +187,7 @@ const TeacherManagement = () => {
         <Space direction="horizontal">
           {
             listBtn(record)?.map((i, idx) =>
+              !!i?.isView &&
               <ButtonCircle
                 key={idx}
                 disabled={i?.disabled}

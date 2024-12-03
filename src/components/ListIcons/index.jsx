@@ -16,7 +16,8 @@ import {
   BsFillPlayFill,
   BsCake2,
   BsBarChartFill,
-  BsCurrencyDollar
+  BsCurrencyDollar,
+  BsGenderAmbiguous
 } from "react-icons/bs"
 
 import {
@@ -47,7 +48,10 @@ import {
   AiFillPlusCircle,
   AiOutlineFileDone,
   AiFillEyeInvisible,
-  AiOutlineFileSearch
+  AiOutlineFileSearch,
+  AiOutlineSync,
+  AiOutlineClockCircle,
+  AiOutlineSchedule
 } from "react-icons/ai"
 
 import {
@@ -178,7 +182,11 @@ const ListIcons = {
   ICON_NOTED: <AiOutlineFileDone className="fs-18" />,
   ICON_UNVIEW: <AiFillEyeInvisible className="fs-18 green-text" />,
   ICON_SEND_BLACK: <BiSend className="fs-18 black-text" />,
-  ICON_BLOG: <AiOutlineFileSearch className="fs-18 black-text" />
+  ICON_BLOG: <AiOutlineFileSearch className="fs-18 black-text" />,
+  ICON_RESET: <AiOutlineSync className="fs-18" />,
+  ICON_CLOCK: <AiOutlineClockCircle className="fs-18" />,
+  ICON_SCHEDULE: <AiOutlineSchedule className="fs-18" />,
+  ICON_GENDER: <BsGenderAmbiguous className="fs-18" />
 }
 
 export default ListIcons

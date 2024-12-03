@@ -1,15 +1,16 @@
 import ListIcons from "src/components/ListIcons"
-import { Col, Row, Select } from "antd"
-import { useEffect, useRef, useState } from "react"
+import { Col, Form, message, Row, Select } from "antd"
+import { useEffect, useState } from "react"
 import { useSelector } from "react-redux"
 import { globalSelector } from "src/redux/selector"
 import { getListComboKey } from "src/lib/commonFunction"
 import { SYSTEM_KEY } from "src/lib/constant"
-import { Link, useNavigate } from "react-router-dom"
 import ButtonCustom from "src/components/MyButton/ButtonCustom"
 import { SearchContainerStyled } from "../styled"
 import SubjectService from "src/services/SubjectService"
 import { toast } from "react-toastify"
+import InputCustom from "src/components/InputCustom"
+import { useNavigate } from "react-router-dom"
 import Router from "src/routers"
 
 const { Option } = Select
@@ -18,13 +19,8 @@ const Search = ({ setPrompt }) => {
 
   const { listSystemKey } = useSelector(globalSelector)
   const [subjects, setSubjects] = useState([])
-  const timeOutRef = useRef(null)
+  const [form] = Form.useForm()
   const navigate = useNavigate()
-  const [pagination, setPagination] = useState({
-    TextSearch: "",
-    CurrentPage: 1,
-    PageSize: 10
-  })
   const [searchData, setSearchData] = useState({
     Subject: "",
     Level: [],
@@ -33,7 +29,11 @@ const Search = ({ setPrompt }) => {
 
   const getListSubject = async () => {
     try {
-      const res = await SubjectService.getListSubject(pagination)
+      const res = await SubjectService.getListSubject({
+        TextSearch: "",
+        CurrentPage: 0,
+        PageSize: 0
+      })
       if (!!res?.isError) return toast.error(res?.msg)
       setSubjects(res?.data?.List)
     } finally {
@@ -43,121 +43,119 @@ const Search = ({ setPrompt }) => {
 
   useEffect(() => {
     getListSubject()
-  }, [pagination])
+  }, [])
 
 
   return (
     <SearchContainerStyled>
-      <Row gutter={[16]} className="d-flex-sb">
-        <Col span={7}>
-          <div className="d-flex align-items-center mb-8">
-            {ListIcons.ICON_SUBJECT_CATE_PRIMARY_COLOR}
-            <p className="primary-text ml-8 fw-500 fs-17">Môn học</p>
-          </div>
-          <div className="ml-24">
-            <Select
-              style={{ width: "100%" }}
-              showSearch
-              allowClear
-              placeholder="Chọn môn học"
-              onChange={e => setSearchData(pre => ({ ...pre, Subject: e }))}
-              // onPopupScroll={e => {
-              //   const target = e.currentTarget
-              //   if (
-              //     !isLoadingMore &&
-              //     target.scrollHeight - target.scrollTop <= target.clientHeight + 1
-              //   ) {
-              //     setIsLoadingMore(true);
-              //     setPagination(prev => ({
-              //       ...prev,
-              //       CurrentPage: prev.CurrentPage + 1
-              //     }))
-              //   }
-              // }}
-              onSearch={(e) => {
-                if (timeOutRef.current) {
-                  clearTimeout(timeOutRef.current)
+      <Form form={form}>
+        <Row gutter={[16, 16]} className="d-flex-center">
+          <Col span={7}>
+            <div className="d-flex align-items-center mb-8">
+              {ListIcons.ICON_SUBJECT_CATE_PRIMARY_COLOR}
+              <p className="primary-text ml-8 fw-500 fs-17">Môn học</p>
+            </div>
+            <div className="ml-24">
+              <Select
+                style={{ width: "100%" }}
+                showSearch
+                allowClear
+                placeholder="Chọn môn học"
+                onChange={e => setSearchData(pre => ({ ...pre, Subject: e }))}
+                filterOption={(input, option) =>
+                  option?.children?.toLowerCase().indexOf(input.toLowerCase()) >= 0
                 }
-                timeOutRef.current = setTimeout(() => {
-                  setPagination((pre) => ({ ...pre, TextSearch: e }))
-                  timeOutRef.current = null
-                }, 400)
+              >
+                {
+                  subjects?.map(i =>
+                    <Option
+                      key={i?._id}
+                      value={i?._id}
+                    >
+                      {i?.SubjectName}
+                    </Option>
+                  )
+                }
+              </Select>
+            </div>
+          </Col>
+          <Col span={7}>
+            <div className="d-flex align-items-center mb-8">
+              {ListIcons.ICON_SUBJECT_CATE_PRIMARY_COLOR}
+              <p className="primary-text ml-8 fw-500 fs-17">Trình độ của bạn</p>
+            </div>
+            <div className="ml-24">
+              <Select
+                style={{ width: "100%" }}
+                mode="multiple"
+                allowClear
+                placeholder="Chọn môn học"
+                onChange={e => setSearchData(pre => ({ ...pre, Level: e }))}
+              >
+                {
+                  getListComboKey(SYSTEM_KEY.SKILL_LEVEL, listSystemKey)?.map(i =>
+                    <Option
+                      key={i?.ParentID}
+                      value={i?.ParentID}
+                    >
+                      {i?.ParentName}
+                    </Option>
+                  )
+                }
+              </Select>
+            </div>
+          </Col>
+          <Col span={7}>
+            <div className="d-flex align-items-center mb-8">
+              {ListIcons.ICON_SUBJECT_CATE_PRIMARY_COLOR}
+              <p className="primary-text ml-8 fw-500 fs-17">Hình thức học bạn muốn</p>
+            </div>
+            <div className="ml-24">
+              <Select
+                mode="multiple"
+                allowClear
+                placeholder="Chọn hình thức học"
+                onChange={e => setSearchData(pre => ({ ...pre, LearnType: e }))}
+              >
+                {
+                  getListComboKey(SYSTEM_KEY.LEARN_TYPE, listSystemKey)?.map(i =>
+                    <Option
+                      key={i?.ParentID}
+                      value={i?.ParentID}
+                    >
+                      {i?.ParentName}
+                    </Option>
+                  )
+                }
+              </Select>
+            </div>
+          </Col>
+          <Col span={3} className="d-flex-center">
+            <ButtonCustom
+              className="yellow-btn submit-btn mt-23"
+              onClick={() => {
+                if (!searchData?.Subject) {
+                  return message.error("Hãy chọn môn học")
+                }
+                navigate(
+                  `${Router.TIM_KIEM_GIAO_VIEN}/${searchData?.Subject}`,
+                  { state: searchData }
+                )
               }}
-              filterOption={false}
             >
-              {
-                subjects?.map(i =>
-                  <Option
-                    key={i?._id}
-                    value={i?._id}
-                  >
-                    {i?.SubjectName}
-                  </Option>
-                )
-              }
-            </Select>
-          </div>
-        </Col>
-        <Col span={7}>
-          <div className="d-flex align-items-center mb-8">
-            {ListIcons.ICON_SUBJECT_CATE_PRIMARY_COLOR}
-            <p className="primary-text ml-8 fw-500 fs-17">Trình độ của bạn</p>
-          </div>
-          <div className="ml-24">
-            <Select
-              style={{ width: "100%" }}
-              mode="multiple"
+              Tìm
+            </ButtonCustom>
+          </Col>
+          <Col span={23}>
+            <InputCustom
+              type="isSearch"
+              placeholder="Tìm theo nhu cầu của bạn..."
               allowClear
-              placeholder="Chọn môn học"
-              onChange={e => setSearchData(pre => ({ ...pre, Level: e }))}
-            >
-              {
-                getListComboKey(SYSTEM_KEY.SKILL_LEVEL, listSystemKey)?.map(i =>
-                  <Option
-                    key={i?.ParentID}
-                    value={i?.ParentID}
-                  >
-                    {i?.ParentName}
-                  </Option>
-                )
-              }
-            </Select>
-          </div>
-        </Col>
-        <Col span={7}>
-          <div className="d-flex align-items-center mb-8">
-            {ListIcons.ICON_SUBJECT_CATE_PRIMARY_COLOR}
-            <p className="primary-text ml-8 fw-500 fs-17">Hình thức học bạn muốn</p>
-          </div>
-          <div className="ml-24">
-            <Select
-              mode="multiple"
-              allowClear
-              placeholder="Chọn hình thức học"
-              onChange={e => setSearchData(pre => ({ ...pre, LearnType: e }))}
-            >
-              {
-                getListComboKey(SYSTEM_KEY.LEARN_TYPE, listSystemKey)?.map(i =>
-                  <Option
-                    key={i?.ParentID}
-                    value={i?.ParentID}
-                  >
-                    {i?.ParentName}
-                  </Option>
-                )
-              }
-            </Select>
-          </div>
-        </Col>
-        <Col span={3} className="d-flex-center">
-          <ButtonCustom
-            className="yellow-btn submit-btn mt-23"
-          // onClick={() => navigate(`${Router.TIM_KIEM_GIAO_VIEN}/${Sear}`)}
-          >
-            Tìm
-          </ButtonCustom>
-        </Col>
-      </Row>
+              onSearch={e => setPrompt(e)}
+            />
+          </Col>
+        </Row>
+      </Form>
     </SearchContainerStyled>
   )
 }

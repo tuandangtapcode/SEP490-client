@@ -10,20 +10,12 @@ export const MenuCommon = () => [
   },
   {
     key: Router.BLOG,
-    label: "Blog"
+    label: "Bài đăng"
   },
-  // {
-  //   key: Router.TIM_KIEM_GIAO_VIEN,
-  //   label: "Tìm kiếm giáo viên"
-  // },
   {
     key: Router.CACH_HOAT_DONG,
     label: "Cách hoạt động"
   }
-  // {
-  //   key: Router.POST_BAI_TIM_GIAO_VIEN,
-  //   label: "Đăng bài tìm giáo viên"
-  // },
 ]
 
 export const MenuUser = (user) => [
@@ -68,24 +60,29 @@ export const MenuUser = (user) => [
     TabID: 7
   },
   {
+    key: Router.BAI_DANG_DA_DANG_KY,
+    label: "Bài đăng đã đăng ký",
+    TabID: 8
+  },
+  {
     key: Router.DANG_BAI_VIET,
     label: "Đăng bài",
-    TabID: 8
+    TabID: 9
   },
   {
     key: Router.HOP_THU_DEN,
     label: "Hộp thư đến",
-    TabID: 9
+    TabID: 10
   },
   {
     key: Router.LICH_SU_GIAO_DICH,
     label: "Lịch sử giao dịch",
-    TabID: 10
+    TabID: 11
   },
   {
     key: Router.CAI_DAT_TAI_KHOAN_NH,
     label: "Cài đặt tài khoản ngân hàng",
-    TabID: 11
+    TabID: 12
   },
 ]
 
@@ -140,15 +137,9 @@ export const MenuAdmin = () => [
   },
   {
     icon: ListIcons.ICON_PAYMENT_MENTOR,
-    label: "Quản lý chuyển khoản",
-    key: Router.QUAN_LY_CHUYEN_KHOAN,
-    RTabID: 9
-  },
-  {
-    icon: ListIcons.ICON_REPORT,
-    label: "Vấn đề giảng dạy",
-    key: Router.QUAN_LY_ISSUE,
-    TabID: 10
+    label: "Quản lý tiền lương",
+    key: Router.QUAN_LY_TIEN_LUONG,
+    TabID: 9
   },
   {
     icon: ListIcons.ICON_RATE,
@@ -165,6 +156,7 @@ export const MenuAdmin = () => [
   {
     icon: <div style={{ marginLeft: '-5px' }}>{ListIcons.ICON_LOGOUT}</div>,
     label: "Đăng xuất",
-    key: 'logout'
+    key: 'logout',
+    TabID: 13
   },
 ]

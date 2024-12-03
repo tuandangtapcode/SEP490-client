@@ -12,18 +12,24 @@ import SubjectCare from "./components/SubjectCare"
 import BackgroundMobileApp from "./components/BackgroundMobileApp"
 import BecomeTeacher from "./components/BecomeTeacher"
 import CommonService from "src/services/CommonService"
+import { useSelector } from "react-redux"
+import { globalSelector } from "src/redux/selector"
+import { Roles } from "src/lib/constant"
 
 const HomePage = () => {
 
   const [loading, setLoading] = useState(false)
   const [teachers, setTeachers] = useState([])
   const [prompt, setPrompt] = useState("")
+  const { user } = useSelector(globalSelector)
 
   const getListTeacherRecommend = async () => {
     try {
       setLoading(true)
       let res
-      if (!!prompt) {
+      if (!!user?._id && user?.RoleID === Roles.ROLE_STUDENT) {
+        res = await CommonService.teacherRecommendationByLearnHistory()
+      } else if (!!prompt) {
         res = await CommonService.teacherRecommend({
           prompt: prompt
         })
@@ -39,7 +45,7 @@ const HomePage = () => {
 
   useEffect(() => {
     getListTeacherRecommend()
-  }, [prompt])
+  }, [prompt, user])
 
   return (
     <SpinCustom spinning={loading}>

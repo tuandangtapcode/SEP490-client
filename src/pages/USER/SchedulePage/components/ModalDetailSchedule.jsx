@@ -13,7 +13,6 @@ import TimeTableService from "src/services/TimeTableService"
 import dayjs from "dayjs"
 import ListIcons from "src/components/ListIcons"
 import ButtonCircle from "src/components/MyButton/ButtonCircle"
-import ModalIssueMentor from "./ModalIssueMentor"
 import ModalChangeTimetable from "./ModalChangeTimetable"
 import { saveAs } from "file-saver"
 
@@ -28,7 +27,6 @@ const ModalDetailSchedule = ({
   const navigate = useNavigate()
   const { listSystemKey } = useSelector(globalSelector)
   const [loading, setLoading] = useState(false)
-  const [modalIssueMentor, setModalIssueMentor] = useState(false)
   const [openModalChangeTimetable, setOpenModalChangeTimetable] = useState(false)
 
   const handleAttendanceTimeTable = async () => {
@@ -60,10 +58,10 @@ const ModalDetailSchedule = ({
             Đóng
           </ButtonCustom>
           {
-            !!buttonShow?.isShowBtnAttendance &&
+            !!buttonShow?.IsShowBtnAttendance &&
             <ButtonCustom
               loading={loading}
-              disabled={!!open?.isAttendance ? false : true}
+              disabled={!!open?.IsAttendance ? false : true}
               className="primary"
               onClick={() => handleAttendanceTimeTable()}
             >
@@ -71,10 +69,10 @@ const ModalDetailSchedule = ({
             </ButtonCustom>
           }
           {
-            !!buttonShow?.isShowBtnUpdateTimeTable &&
+            !!buttonShow?.IsShowBtnUpdateTimeTable &&
             <ButtonCustom
               loading={loading}
-              disabled={!!open?.isUpdateTimeTable ? false : true}
+              disabled={!!open?.IsUpdateTimeTable ? false : true}
               className="third-type-2"
               onClick={() => setOpenModalChangeTimetable(open)}
             >
@@ -92,15 +90,6 @@ const ModalDetailSchedule = ({
           <Col span={17}>
             <div>{dayjs(open?.StartTime).startOf("day").format("dddd DD/MM/YYYY")}</div>
           </Col>
-          <Col span={2} className="d-flex-end">
-            {!!open?.isSubmitIssue &&
-              <ButtonCircle
-                icon={ListIcons.ICON_WARNING}
-                title="Báo cáo Giáo viên"
-                onClick={() => setModalIssueMentor(open)}
-              />
-            }
-          </Col>
           <Col span={5}>
             <div>Thời gian:</div>
           </Col>
@@ -108,18 +97,18 @@ const ModalDetailSchedule = ({
             <div>{dayjs(open?.StartTime).format("HH:mm")} - {dayjs(open?.EndTime).format("HH:mm")}</div>
           </Col>
           <Col span={5}>
-            <div>{!buttonShow?.isShowBtnAttendance ? "Giáo viên:" : "Học sinh:"}</div>
+            <div>{!buttonShow?.IsShowBtnAttendance ? "Giáo viên:" : "Học sinh:"}</div>
           </Col>
           <Col span={19}>
             <div
               onClick={() => {
-                if (!buttonShow?.isShowBtnAttendance) {
+                if (!buttonShow?.IsShowBtnAttendance) {
                   navigate(`${Router.GIAO_VIEN}/${open?.Teacher?._id}${Router.MON_HOC}/${open?.Subject?._id}`)
                 }
               }}
-              className={!buttonShow?.isShowBtnAttendance ? "primary-text cursor-pointer" : ""}
+              className={!buttonShow?.IsShowBtnAttendance ? "primary-text cursor-pointer" : ""}
             >
-              {open[!buttonShow?.isShowBtnAttendance ? "Teacher" : "Student"]?.FullName}
+              {open[!buttonShow?.IsShowBtnAttendance ? "Teacher" : "Student"]?.FullName}
             </div>
           </Col>
           <Col span={5}>
@@ -164,14 +153,6 @@ const ModalDetailSchedule = ({
           }
         </Row>
       </div>
-
-      {
-        !!modalIssueMentor &&
-        <ModalIssueMentor
-          open={modalIssueMentor}
-          onCancel={() => setModalIssueMentor(false)}
-        />
-      }
 
       {
         !!openModalChangeTimetable &&

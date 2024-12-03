@@ -43,17 +43,16 @@ const BookingPage = () => {
   const [selectedTimes, setSelectedTimes] = useState([])
   const [bookingInfor, setBookingInfor] = useState()
   const [times, setTimes] = useState([])
-  const [timeTablesTeacher, SetTimeTablesTeacher] = useState([])
-  const [timeTablesStudent, SetTimeTablesStudent] = useState([])
-  const [openModalConfirmInfor, setOpenModalConfirmInfor] = useState()
+  const [timeTablesTeacher, setTimeTablesTeacher] = useState([])
+  const [timeTablesStudent, setTimeTablesStudent] = useState([])
+  const [openModalConfirmInfor, setOpenModalConfirmInfor] = useState(false)
   const [totalSlot, setTotalSlot] = useState(0)
   const [slotInWeek, setSlotInWeek] = useState(0)
   const [scheduleInWeek, setScheduleInWeek] = useState([])
   const [scheduleType, setScheduleType] = useState(0)
   const [course, setCourse] = useState()
-  const [openModalChangeSchedule, setOpenModalChangeSchedule] = useState()
-  const [openModalChooseCourse, setOpenModalChooseCourse] = useState()
-
+  const [openModalChangeSchedule, setOpenModalChangeSchedule] = useState(false)
+  const [openModalChooseCourse, setOpenModalChooseCourse] = useState(false)
 
   const getDetailTeacher = async () => {
     try {
@@ -66,12 +65,12 @@ const BookingPage = () => {
     }
   }
 
-  const getTimeTableOfStudent = async () => {
+  const getTimeTable = async () => {
     try {
       setLoading(true)
       const res = await TimeTableService.getTimeTableByUser()
       if (!!res?.isError) return toast.error(res?.msg)
-      SetTimeTablesStudent(res?.data?.List)
+      setTimeTablesStudent(res?.data?.List)
     } finally {
       setLoading(false)
     }
@@ -82,7 +81,7 @@ const BookingPage = () => {
       setLoading(true)
       const res = await TimeTableService.getTimeTableOfTeacherOrStudent(TeacherID)
       if (!!res?.isError) return toast.error(res?.msg)
-      SetTimeTablesTeacher(res?.data)
+      setTimeTablesTeacher(res?.data)
     } finally {
       setLoading(false)
     }
@@ -186,7 +185,7 @@ const BookingPage = () => {
   }
 
   useEffect(() => {
-    getTimeTableOfStudent()
+    getTimeTable()
     setBookingInfor(pre => ({
       ...pre,
       Address: !!user?.Address ? user?.Address : ""
@@ -602,7 +601,6 @@ const BookingPage = () => {
           setScheduleInWeek={setScheduleInWeek}
         />
       }
-
     </SpinCustom >
   )
 }

@@ -10,6 +10,7 @@ import TableCustom from "src/components/TableCustom"
 import UserService from "src/services/UserService"
 import socket from "src/utils/socket"
 import ModalInsertStaff from "./components/ModalInsertStaff"
+import { toast } from "react-toastify"
 
 const StaffManagement = () => {
 
@@ -41,6 +42,18 @@ const StaffManagement = () => {
       const res = await UserService.inactiveOrActiveAccount(body)
       if (!!res?.isError) return
       socket.emit("inactive-account", body?.UserID)
+      getListStaff()
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleResetPasswordAccountStaff = async (UserID) => {
+    try {
+      setLoading(true)
+      const res = await UserService.resetPasswordAccountStaff(UserID)
+      if (!!res?.isError) return toast.error(res?.msg)
+      toast.success(res?.msg)
       getListStaff()
     } finally {
       setLoading(false)
@@ -95,6 +108,19 @@ const StaffManagement = () => {
       align: "center",
       render: (_, record) => (
         <Space direction="horizontal">
+          <ButtonCircle
+            title="Reset mật khẩu"
+            icon={ListIcons.ICON_RESET}
+            onClick={() => {
+              ConfirmModal({
+                description: `Bạn có chắc chắn reset mật khẩu tài khoản staff ${record?.FullName} không?`,
+                onOk: async close => {
+                  handleResetPasswordAccountStaff(record?._id)
+                  close()
+                }
+              })
+            }}
+          />
           <ButtonCircle
             title={!!record?.IsActive ? "Khóa tài khoản" : "Mở khóa tài khoản"}
             icon={!!record?.IsActive ? ListIcons?.ICON_BLOCK : ListIcons?.ICON_UNBLOCK}

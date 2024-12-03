@@ -30,10 +30,6 @@ const ModalPaymentTransfer = ({ open, onCancel, onOk }) => {
     try {
       setLoading(true)
       const values = await form.validateFields()
-      const resFile = await FileService.uploadFileSingle({
-        FileSingle: values?.image?.file
-      })
-      if (!!resFile?.isError) return toast.error(res?.msg)
       const res = await PaymentService.changePaymentStatus({
         PaymentID: open?.PaymentID,
         PaymentStatus: 2,
@@ -41,7 +37,7 @@ const ModalPaymentTransfer = ({ open, onCancel, onOk }) => {
         FullName: open?.FullName,
         Email: open?.Email,
         RoleID: open?.RoleID,
-        Image: resFile?.data
+        Image: values?.image?.file
       })
       if (!!res?.isError) return toast.error(res?.msg)
       toast.success(res?.msg)

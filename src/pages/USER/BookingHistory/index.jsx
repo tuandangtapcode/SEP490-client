@@ -1,4 +1,4 @@
-import { Col, Row, Space, Tag } from "antd"
+import { Col, message, Row, Space, Tag } from "antd"
 import { useEffect, useState } from "react"
 import { toast } from "react-toastify"
 import { useNavigate } from "react-router-dom"
@@ -12,13 +12,13 @@ import TableCustom from "src/components/TableCustom"
 import ListIcons from "src/components/ListIcons"
 import ButtonCircle from "src/components/MyButton/ButtonCircle"
 import ModalViewBooking from "./components/ModalViewBooking"
-import ModalUpdateBooking from "./components/ModalUpdateBooking"
 import SpinCustom from "src/components/SpinCustom"
 import ConfirmModal from "src/components/ModalCustom/ConfirmModal"
 import NotificationService from "src/services/NotificationService"
 import socket from "src/utils/socket"
 import Router from "src/routers"
 import ModalReasonReject from "./components/ModalReasonReject"
+import TimeTableService from "src/services/TimeTableService"
 
 
 const BookingHistory = () => {
@@ -29,8 +29,8 @@ const BookingHistory = () => {
   const [confirms, setConfirms] = useState([])
   const [total, setTotal] = useState(0)
   const [openModalViewBooking, setOpenModalViewBooking] = useState(false)
-  const [openModalUpdateBooking, setOpenModalUpdateBooking] = useState(false)
   const [openModalReasonReject, setOpenModalReasonReject] = useState(false)
+  const [timeTables, setTimeTables] = useState([])
   const [pagination, setPagination] = useState({
     CurrentPage: 1,
     PageSize: 10,
@@ -44,6 +44,17 @@ const BookingHistory = () => {
       if (!!res?.isError) return toast.error(res?.msg)
       setConfirms(res?.data?.List)
       setTotal(res?.data?.Total)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const getTimeTable = async () => {
+    try {
+      setLoading(true)
+      const res = await TimeTableService.getTimeTableByUser()
+      if (!!res?.isError) return toast.error(res?.msg)
+      setTimeTables(res?.data?.List)
     } finally {
       setLoading(false)
     }
@@ -73,7 +84,6 @@ const BookingHistory = () => {
       const res = await ConfirmService.changeConfirmStatus({
         ConfirmID: record?._id,
         ConfirmStatus: confirmStatus,
-        Recevier: record?.Receiver,
         RecevierName: user?.FullName,
         SenderName: record?.Sender?.FullName,
         SenderEmail: record?.Sender?.Email
@@ -82,6 +92,7 @@ const BookingHistory = () => {
       if (confirmStatus === 4) {
         socket.emit("send-noted-confirm", {
           ...res?.data,
+          RoleID: user?.RoleID,
           IsReject: false
         })
       }
@@ -96,6 +107,10 @@ const BookingHistory = () => {
     getListConfirm()
   }, [pagination])
 
+  useEffect(() => {
+    getTimeTable()
+  }, [])
+
   const listBtn = record => [
     {
       title: "Xem chi tiết",
@@ -103,12 +118,6 @@ const BookingHistory = () => {
       icon: ListIcons?.ICON_VIEW,
       onClick: () => setOpenModalViewBooking(record)
     },
-    // {
-    //   title: "Chỉnh sửa",
-    //   isView: record?.IsUpdate,
-    //   icon: ListIcons?.ICON_EDIT,
-    //   onClick: () => setOpenModalUpdateBooking(record)
-    // },
     {
       title: !!record?.IsDisabledConfirm ? "Bạn đã có lịch trùng với booking này" : "Duyệt",
       isDisabled: record?.IsDisabledConfirm,
@@ -129,7 +138,33 @@ const BookingHistory = () => {
       title: "Thanh toán",
       isView: record?.IsPaid,
       icon: ListIcons?.ICON_PAYMENT_BOOKING,
-      onClick: () => navigate(`${Router.CHECKOUT}/${record?._id}`)
+      onClick: () => {
+        let timetableExist = []
+        record?.Schedules?.forEach(i => {
+          const checkExist = timeTables?.find(t =>
+            new Date(i?.StartTime) <= new Date(t?.StartTime) &&
+            new Date(i?.EndTime) >= new Date(t?.StartTime)
+          )
+          if (!!checkExist)
+            timetableExist.push(checkExist)
+        })
+        if (!!timetableExist?.length) {
+          ConfirmModal({
+            description: `
+              Bạn đã bị trùng lịch học vào những ngày:
+              ${timetableExist?.map(i =>
+              `${dayjs(i?.StartTime).format("DD/MM/YYYY")} ${dayjs(i?.StartTime).format("HH:mm")}-${dayjs(i?.EndTime).format("HH:mm")}`
+            )}
+            `,
+            onOk: async close => {
+              changeConfirmStatus(record, 2)
+              close()
+            }
+          })
+        } else {
+          navigate(`${Router.CHECKOUT}/${record?._id}`)
+        }
+      }
     },
     {
       title: "Hủy",
@@ -305,16 +340,6 @@ const BookingHistory = () => {
           <ModalViewBooking
             open={openModalViewBooking}
             onCancel={() => setOpenModalViewBooking(false)}
-          />
-        }
-
-        {
-          !!openModalUpdateBooking &&
-          <ModalUpdateBooking
-            open={openModalUpdateBooking}
-            onCancel={() => setOpenModalUpdateBooking(false)}
-            onOk={getListConfirm}
-            setOpenModalUpdateBooking={setOpenModalUpdateBooking}
           />
         }
 
