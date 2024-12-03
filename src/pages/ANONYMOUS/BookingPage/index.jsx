@@ -1,6 +1,6 @@
 import { Col, DatePicker, Empty, message, Radio, Row, Space, Tooltip } from "antd"
 import { useEffect, useState } from "react"
-import { useNavigate, useParams } from "react-router-dom"
+import { useLocation, useNavigate, useParams } from "react-router-dom"
 import SpinCustom from "src/components/SpinCustom"
 import UserService from "src/services/UserService"
 import { MainProfileWrapper } from "../TeacherDetail/styled"
@@ -37,6 +37,7 @@ const BookingPage = () => {
   const { TeacherID, SubjectID } = useParams()
   const { listSystemKey, user, profitPercent } = useSelector(globalSelector)
   const navigate = useNavigate()
+  const location = useLocation()
   const [loading, setLoading] = useState(false)
   const [teacher, setTeacher] = useState()
   const [selectedTimes, setSelectedTimes] = useState([])
@@ -44,14 +45,14 @@ const BookingPage = () => {
   const [times, setTimes] = useState([])
   const [timeTablesTeacher, setTimeTablesTeacher] = useState([])
   const [timeTablesStudent, setTimeTablesStudent] = useState([])
-  const [openModalConfirmInfor, setOpenModalConfirmInfor] = useState()
+  const [openModalConfirmInfor, setOpenModalConfirmInfor] = useState(false)
   const [totalSlot, setTotalSlot] = useState(0)
   const [slotInWeek, setSlotInWeek] = useState(0)
   const [scheduleInWeek, setScheduleInWeek] = useState([])
   const [scheduleType, setScheduleType] = useState(0)
   const [course, setCourse] = useState()
-  const [openModalChangeSchedule, setOpenModalChangeSchedule] = useState()
-  const [openModalChooseCourse, setOpenModalChooseCourse] = useState()
+  const [openModalChangeSchedule, setOpenModalChangeSchedule] = useState(false)
+  const [openModalChooseCourse, setOpenModalChooseCourse] = useState(false)
 
   const getDetailTeacher = async () => {
     try {
@@ -192,8 +193,12 @@ const BookingPage = () => {
   }, [])
 
   useEffect(() => {
-    getDetailTeacher()
-  }, [TeacherID, SubjectID])
+    if (!location.state._id) {
+      getDetailTeacher()
+    } else {
+      setTeacher(location.state)
+    }
+  }, [TeacherID, SubjectID, location.state])
 
   useEffect(() => {
     if (!!teacher) getTimeTableOfTeacher()
@@ -390,7 +395,10 @@ const BookingPage = () => {
                             width: "350px",
                           }}
                           value={i?.DateAt}
-                          disabledDate={current => disabledBeforeDate(current)}
+                          disabledDate={current =>
+                            disabledBeforeDate(current) ||
+                            scheduleInWeek.some(i => dayjs(i.DateAt).isSame(current, "day"))
+                          }
                           onChange={e => {
                             const copyScheduleInWeek = [...scheduleInWeek]
                             copyScheduleInWeek.splice(idxScheduleInWeek, 1, {
@@ -593,7 +601,6 @@ const BookingPage = () => {
           setScheduleInWeek={setScheduleInWeek}
         />
       }
-
     </SpinCustom >
   )
 }

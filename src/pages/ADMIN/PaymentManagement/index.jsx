@@ -12,6 +12,7 @@ import { SYSTEM_KEY } from "src/lib/constant"
 import { formatMoney } from "src/lib/stringUtils"
 import { globalSelector } from "src/redux/selector"
 import PaymentService from "src/services/PaymentService"
+import dayjs from "dayjs"
 
 const PaymentManagement = () => {
 
@@ -60,14 +61,14 @@ const PaymentManagement = () => {
   const columns = [
     {
       title: 'Mã giao dịch',
-      width: 60,
+      width: 70,
       align: 'center',
       dataIndex: 'TraddingCode',
       key: 'TraddingCode',
     },
     {
       title: 'Người giao dịch',
-      width: 100,
+      width: 90,
       align: 'center',
       dataIndex: 'SenderName',
       key: 'SenderName',
@@ -77,7 +78,7 @@ const PaymentManagement = () => {
     },
     {
       title: 'Nội dung giao dịch',
-      width: 300,
+      width: 200,
       align: 'center',
       dataIndex: 'Description',
       key: 'Description',
@@ -90,6 +91,16 @@ const PaymentManagement = () => {
       key: 'TotalFee',
       render: (text, record) => (
         <div>{formatMoney(record.TotalFee)}</div>
+      ),
+    },
+    {
+      title: 'Thời gian giao dịch',
+      width: 80,
+      align: 'center',
+      dataIndex: 'PaymentTime',
+      key: 'PaymentTime',
+      render: (val) => (
+        <div>{dayjs(val).format("DD/MM/YYYY")}</div>
       ),
     },
     {

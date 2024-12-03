@@ -20,7 +20,6 @@ const StatisticManagement = React.lazy(() => import("src/pages/ADMIN/StatisticMa
 const StaffManagement = React.lazy(() => import("src/pages/ADMIN/StaffManagement"))
 const StudentManagement = React.lazy(() => import("src/pages/ADMIN/StudentManagement"))
 const TeacherManagement = React.lazy(() => import("src/pages/ADMIN/TeacherManagement"))
-const IssueManagement = React.lazy(() => import("src/pages/ADMIN/IssueManagement"))
 const PaymentManagement = React.lazy(() => import("src/pages/ADMIN/PaymentManagement"))
 const SubjectCateManagement = React.lazy(() => import("src/pages/ADMIN/SubjectCateManagement"))
 const InboxManagement = React.lazy(() => import("src/pages/ADMIN/InboxManagement"))
@@ -30,15 +29,12 @@ const BlogManagement = React.lazy(() => import("src/pages/ADMIN/BlogManagement")
 const FeedbackManagement = React.lazy(() => import("src/pages/ADMIN/FeedbackManagement"))
 
 // ANONYMOUS
-// const ChatBoxAI = React.lazy(() => import("src/components/ChatBoxAI"))
 const AnonymousRoutes = React.lazy(() => import("src/pages/ANONYMOUS/AnonymousRoutes"))
 const HomePage = React.lazy(() => import("src/pages/ANONYMOUS/HomePage"))
 const LoginPage = React.lazy(() => import("src/pages/ANONYMOUS/LoginPage"))
 const SignupPage = React.lazy(() => import("src/pages/ANONYMOUS/SignupPage"))
 const BlogPage = React.lazy(() => import("src/pages/ANONYMOUS/BlogPage"))
-const BlogDetail = React.lazy(() => import("src/pages/ANONYMOUS/BlogDetail"))
 const HowWordPage = React.lazy(() => import("src/pages/ANONYMOUS/HowWorkPage"))
-// const TeachWithUsPage = React.lazy(() => import("src/pages/ANONYMOUS/TeachWithUsPage"))
 const TeacherDetail = React.lazy(() => import("src/pages/ANONYMOUS/TeacherDetail"))
 const MentorForSubject = React.lazy(() => import("src/pages/ANONYMOUS/MentorForSubject"))
 const BookingPage = React.lazy(() => import("src/pages/ANONYMOUS/BookingPage"))
@@ -61,6 +57,7 @@ const StudiedSubject = React.lazy(() => import("src/pages/USER/StudiedSubject"))
 const BankInfor = React.lazy(() => import("src/pages/USER/BankInfor"))
 const CheckoutPage = React.lazy(() => import("src/pages/USER/CheckoutPage"))
 const MyCourse = React.lazy(() => import("src/pages/USER/MyCourse"))
+const BlogApproval = React.lazy(() => import("src/pages/USER/BlogApproval"))
 
 // ERROR
 const NotFoundPage = React.lazy(() => import("src/pages/ErrorPage/NotFoundPage"))
@@ -128,14 +125,6 @@ const App = () => {
           )
         },
         {
-          path: Router.QUAN_LY_ISSUE,
-          element: (
-            <LazyLoadingComponent>
-              <IssueManagement />
-            </LazyLoadingComponent>
-          )
-        },
-        {
           path: Router.QUAN_LY_GIAO_DICH,
           element: (
             <LazyLoadingComponent>
@@ -160,7 +149,7 @@ const App = () => {
           )
         },
         {
-          path: Router.QUAN_LY_CHUYEN_KHOAN,
+          path: Router.QUAN_LY_TIEN_LUONG,
           element: (
             <LazyLoadingComponent>
               <PaymentTransfer />
@@ -297,6 +286,14 @@ const App = () => {
             </LazyLoadingComponent>
           )
         },
+        {
+          path: Router.BAI_DANG_DA_DANG_KY,
+          element: (
+            <LazyLoadingComponent>
+              <BlogApproval />
+            </LazyLoadingComponent>
+          )
+        }
       ]
     },
     // ANONYMOUS
@@ -332,22 +329,6 @@ const App = () => {
           )
         },
         {
-          path: Router.BLOG,
-          element: (
-            <LazyLoadingComponent>
-              <BlogPage />
-            </LazyLoadingComponent>
-          )
-        },
-        {
-          path: Router.BLOG_DETAIL,
-          element: (
-            <LazyLoadingComponent>
-              <BlogDetail />
-            </LazyLoadingComponent>
-          )
-        },
-        {
           path: Router.CACH_HOAT_DONG,
           element: (
             <LazyLoadingComponent>
@@ -355,14 +336,6 @@ const App = () => {
             </LazyLoadingComponent>
           )
         },
-        // {
-        //   path: Router.POST_BAI_TIM_GIAO_VIEN,
-        //   element: (
-        //     <LazyLoadingComponent>
-        //       <HowWordPage />
-        //     </LazyLoadingComponent>
-        //   )
-        // },
         {
           path: `${Router.DANH_MUC}/:SubjectCateID`,
           element: (
@@ -419,6 +392,14 @@ const App = () => {
             </LazyLoadingComponent>
           )
         },
+        {
+          path: Router.BLOG,
+          element: (
+            <LazyLoadingComponent>
+              <BlogPage />
+            </LazyLoadingComponent>
+          )
+        }
       ]
     },
     {

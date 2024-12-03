@@ -1,72 +1,54 @@
 
 
 
-import { Table, Button, Row, Col, Modal, Spin, Descriptions, Divider, Tag, List, } from "antd";
-import { useEffect, useState } from "react";
+import { Row, Col, Tag, Space, Select } from "antd"
+import { useEffect, useState } from "react"
 import { globalSelector } from "src/redux/selector"
 import { useSelector } from "react-redux"
 import ButtonCircle from "src/components/MyButton/ButtonCircle"
-import ButtonCustom from "src/components/MyButton/ButtonCustom";
-import BlogService from "src/services/BlogService";
-import { toast } from "react-toastify";
-import ListIcons from "src/components/ListIcons";
-import ConfirmModal from "src/components/ModalCustom/ConfirmModal";
-import InsertUpdateBlog from "./components/InsertUpdateBlog";
-import moment from "moment";
-import TableCustom from "src/components/TableCustom";
-import { TableCustomStyled } from "src/components/TableCustom/styled";
-// import BlogDetail from "src/pages/USER/BlogPosting/components/BlogDetail"
-import SubjectService from "src/services/SubjectService";
-import BlogDetail from "./components/BlogDetail";
+import ButtonCustom from "src/components/MyButton/ButtonCustom"
+import BlogService from "src/services/BlogService"
+import { toast } from "react-toastify"
+import ListIcons from "src/components/ListIcons"
+import ConfirmModal from "src/components/ModalCustom/ConfirmModal"
+import TableCustom from "src/components/TableCustom"
+import SubjectService from "src/services/SubjectService"
 import { getListComboKey } from "src/lib/commonFunction"
-import { ADMIN_ID, SYSTEM_KEY } from "src/lib/constant"
-
+import { SYSTEM_KEY } from "src/lib/constant"
+import dayjs from "dayjs"
+import InputCustom from "src/components/InputCustom"
+import SpinCustom from "src/components/SpinCustom"
+import ModalInsertBlog from "./components/ModalInsertBlog"
+import ModalBlogDetail from "./components/ModalBlogDetail"
 
 const BlogPosting = () => {
-  const [loading, setLoading] = useState(false);
-  const [modalBlog, setModalBlog] = useState(false);
-  const [listData, setListData] = useState([]);
-  const [total, setTotal] = useState(0);
-  const [subjects, setSubjects] = useState([]);
-  const [SubjectList, setSubjectList] = useState([]);
-  const [selectedBlog, setSelectedBlog] = useState(null);
-  const { profitPercent, listSystemKey } = useSelector(globalSelector)
 
+  const [loading, setLoading] = useState(false)
+  const [blogs, setBlogs] = useState([])
+  const [total, setTotal] = useState(0)
+  const [subjects, setSubjects] = useState([])
+  const [openModalInsertBlog, setOpenModalInsertBlog] = useState(false)
+  const [openModalDetailBlog, setOpenModalDetailBlog] = useState(false)
+  const { listSystemKey } = useSelector(globalSelector)
   const [pagination, setPagination] = useState({
     CurrentPage: 1,
     PageSize: 10,
-  });
+    TextSearch: "",
+    SubjectID: "",
+    RegisterStatus: 0,
+  })
 
-
-  const getListBlogOfUser = async () => {
+  const getListBlogByUser = async () => {
     try {
-      setLoading(true);
-      
-      const res = await BlogService.getListBlogOfUser(pagination);
-      console.log("Full Blog List Data:", res?.data?.List);
-      if (!!res?.isError) return toast.error(res?.msg);
-
-      const updatedList = res.data.List.map((blog, index) => {
-       const subjectId = blog.Subject;  
-      //  const getSubjectNameById = (id) => {
-      //   const subject = subjects.find((item) => item._id === id);
-      //   return subject ? subject.SubjectName : "Không xác định";
-      // };
-      //  const subjectName = getSubjectNameById(subjectId);
-  // console.log(`Blog ${blog.Title} - SubjectID: ${subjectId} - SubjectName: ${subjectId.SubjectName}`);
-        return {
-          ...blog,
-          index: index + 1,
-          SubjectName: subjectId.SubjectName || "Không xác định",
-        };
-      });
-
-      setListData(updatedList);
-      setTotal(res?.data?.Total);
+      setLoading(true)
+      const res = await BlogService.getListBlogByUser(pagination)
+      if (!!res?.isError) return toast.error(res?.msg)
+      setBlogs(res?.data?.List)
+      setTotal(res?.data?.Total)
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  };
+  }
 
   const getListSubject = async () => {
     try {
@@ -76,7 +58,6 @@ const BlogPosting = () => {
         CurrentPage: 0,
         PageSize: 0
       })
-      // console.log("Subjects List:", res?.data?.List);
       if (!!res?.isError) return toast.error(res?.msg)
       setSubjects(res?.data?.List)
     } finally {
@@ -86,47 +67,67 @@ const BlogPosting = () => {
 
   const handleDeleteBlog = async (id) => {
     try {
-      setLoading(true);
-      const res = await BlogService.deleteBlog(id);
-      if (!!res?.isError) return toast.error(res?.msg);
-      toast.success(res?.msg);
-      getListBlogOfUser();
-    } catch (error) {
-      console.error("Error:", error);
+      setLoading(true)
+      const res = await BlogService.deleteBlog(id)
+      if (!!res?.isError) return toast.error(res?.msg)
+      toast.success(res?.msg)
+      getListBlogByUser()
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  };
-  
-  const handleViewBlogDetail = (blogId) => {
-    // console.log("Blog ID to view:", blogId); 
-    setSelectedBlog(blogId);
-  };
-  
+  }
+
   useEffect(() => {
     getListSubject()
-  }, []);
+  }, [])
   useEffect(() => {
-    getListSubject()
-    getListBlogOfUser();
+    getListBlogByUser()
+  }, [pagination])
 
-  }, [pagination]);
-  
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     await getListSubject(); // Tải danh sách môn học trước
-  //     await getListBlogOfUser(); // Sau đó mới tải danh sách blog
-  //   };
-  //   fetchData();
-  // }, [pagination]);
-
+  const listBtn = record => [
+    {
+      title: "Chi tiết",
+      icon: ListIcons?.ICON_VIEW,
+      onClick: () => setOpenModalDetailBlog(record)
+    },
+    {
+      title: !!record?.IsDeleted ? "Hiển thị bài đăng" : "Ẩn bài đăng",
+      icon: !!record?.IsDeleted ? ListIcons.ICON_UNBLOCK : ListIcons.ICON_BLOCK,
+      onClick: () => {
+        ConfirmModal({
+          icon: "ICON_SUSCESS_MODAL",
+          description: `Bạn có chắc chắn ${!!record?.IsDeleted ? "hiển thị bài đăng" : "ẩn bài đăng"} không?`,
+          onOk: async close => {
+            // disabledOrEnabledSubjectSetting(record, !record?.IsDisabled)
+            close()
+          }
+        })
+      }
+    },
+  ]
 
   const columns = [
-    { title: "STT", align: "center", dataIndex: "index", key: "index" },
-    { title: "Tiêu đề", align: "center", dataIndex: "Title", key: "Title"    },
+    {
+      title: "STT",
+      align: "center",
+      dataIndex: "index",
+      width: 50,
+      key: "index",
+      render: (_, record, index) => (
+        <div className="text-center">{pagination?.PageSize * (pagination?.CurrentPage - 1) + index + 1}</div>
+      ),
+    },
+    {
+      title: "Tiêu đề",
+      align: "center",
+      width: 110,
+      dataIndex: "Title",
+      key: "Title"
+    },
     {
       title: "Môn học",
       align: "center",
+      width: 80,
       dataIndex: "SubjectName",
       key: "SubjectName",
       render: (_, record) => (
@@ -137,128 +138,181 @@ const BlogPosting = () => {
       title: "Ngày đăng",
       align: "center",
       dataIndex: "createdAt",
+      width: 80,
       key: "createdAt",
-      render: (date) => moment(date).format("DD/MM/YYYY"),
+      render: (date) => dayjs(date).format("DD/MM/YYYY HH:mm"),
+    },
+    {
+      title: "Giáo viên nhận",
+      align: "center",
+      width: 30,
+      dataIndex: "TeacherName",
+      key: "TeacherName",
+      render: (_, record) => (
+        <div>{record?.TeacherReceive?.length}</div>
+      )
     },
     {
       title: "Trạng thái",
       align: "center",
+      width: 80,
       dataIndex: "RegisterStatus",
       key: "RegisterStatus",
       render: (val) => (
         <Tag color={["processing", "warning", "success", "error"][val - 1]} className="p-5 fs-16">
           {
-            getListComboKey(SYSTEM_KEY.REGISTER_STATUS, listSystemKey)
-              ?.find(i => i?.ParentID === val)?.ParentName
+            getListComboKey(SYSTEM_KEY.REGISTER_STATUS, listSystemKey)?.find(i => i?.ParentID === val)?.ParentName
           }
         </Tag>
       )
     },
     {
-      title: "Giáo viên nhận",
+      title: "Trạng thái sử dụng",
+      width: 60,
+      dataIndex: "IsDeleted",
       align: "center",
-      dataIndex: "TeacherName",
-      key: "TeacherName",
+      key: "IsDeleted",
+      render: (val) => (
+        <Tag color={!val ? "success" : "error"} className="p-5 fs-16">
+          {
+            !val ? "Đang sử dụng" : "Đã ẩn"
+          }
+        </Tag>
+      )
     },
     {
       title: "Chức năng",
       align: "center",
-      render: (text, record) => {
-        return (
-          <>
-            <ButtonCircle
-              icon={ListIcons?.ICON_VIEW}
-              onClick={() =>{
-                // console.log("blog ID:", record._id)
-               handleViewBlogDetail(record._id)
-              }
-                }
-            />
-            <Button
-              type="link"
-              danger
-              icon={ListIcons?.ICON_DELETE}
-              onClick={() => {
-                ConfirmModal({
-                  description: `Bạn có chắc chắn muốn xoá bài viết "${record.Title}" không?`,
-                  okText: "Đồng ý",
-                  cancelText: "Đóng",
-                  onOk: async (close) => {
-                    handleDeleteBlog(record._id);
-                    close();
-                  },
-                });
-              }}
-            ></Button>
-          </>
-        );
-      }
+      width: 70,
+      render: (text, record) => (
+        <Space direction="horizontal">
+          {
+            listBtn(record)?.map((i, idx) =>
+              <ButtonCircle
+                key={idx}
+                title={i?.title}
+                icon={i?.icon}
+                disabled={i?.isDisabled}
+                onClick={i?.onClick}
+              />
+            )
+          }
+        </Space>
+      )
 
     },
-  ];
+  ]
 
   return (
-    <Row gutter={[16, 16]}>
-      <Col span={24} className="d-flex-sb">
-        <div className="title-type-1">DANH SÁCH BÀI VIẾT ĐÃ ĐĂNG</div>
-        <ButtonCustom className="third-type-2" onClick={() => setModalBlog(true)}>
-          Thêm mới
-        </ButtonCustom>
-      </Col>
-      <Col span={24}>
-        <TableCustom
-          loading={loading}
-          isPrimary
-          bordered
-          noMrb
-          showPagination
-          editableCell
-          sticky={{ offsetHeader: -12 }}
-          textEmpty="Không có dữ liệu"
-          dataSource={listData.map((blog) => ({ ...blog, key: blog._id }))}
-          columns={columns}
-          pagination={
-            !!pagination?.PageSize
-              ? {
-                hideOnSinglePage: total <= 10,
-                current: pagination?.CurrentPage,
-                pageSize: pagination?.PageSize,
-                responsive: true,
-                total,
-                showSizeChanger: total > 10,
-                locale: { items_per_page: "" },
-                onChange: (CurrentPage, PageSize) =>
-                  setPagination((pre) => ({
-                    ...pre,
-                    CurrentPage,
-                    PageSize,
-                  })),
-              }
-              : false
-          }
-        />
-      </Col>
-      <Modal
-         open={!!selectedBlog}
-        onCancel={() => setSelectedBlog(null)} 
-        footer={null}
-        centered
-        width={800}
-      >
-       {selectedBlog && <BlogDetail BlogID={selectedBlog} />}
-      </Modal>
-      {!!modalBlog && (
-        <InsertUpdateBlog
-          open={modalBlog}
-          onCancel={() => setModalBlog(false)}
-          onOk={async () => {
-            await getListBlogOfUser();
-            setModalBlog(false);
-          }}
-        />
-      )}
-    </Row>
-  );
-};
+    <SpinCustom spinning={loading}>
+      <Row gutter={[8, 8]}>
+        <Col span={24} className="d-flex-sb">
+          <div className="title-type-1">DANH SÁCH BÀI VIẾT ĐÃ ĐĂNG</div>
+          <ButtonCustom className="third-type-2" onClick={() => setOpenModalInsertBlog(true)}>
+            Thêm mới
+          </ButtonCustom>
+        </Col>
+        <Col span={16}>
+          <InputCustom
+            type="isSearch"
+            placeholder="Nhập vào tiêu đề bài đăng"
+            allowClear
+            onSearch={e => setPagination(pre => ({ ...pre, TextSearch: e }))}
+          />
+        </Col>
+        <Col span={4}>
+          <Select
+            placeholder="Chọn môn học"
+            allowClear
+            showSearch
+            onChange={e => setPagination(pre => ({ ...pre, SubjectID: e }))}
+            filterOption={(input, option) =>
+              option?.children?.toLowerCase().indexOf(input.toLowerCase()) >= 0
+            }
+          >
+            {
+              subjects?.map(i =>
+                <Select.Option
+                  key={i?._id}
+                  value={i?._id}
+                >
+                  {i?.SubjectName}
+                </Select.Option>
+              )
+            }
+          </Select>
+        </Col>
+        <Col span={4}>
+          <Select
+            placeholder="Tình trạng đăng ký"
+            allowClear
+            onChange={e => setPagination(pre => ({ ...pre, RegisterStatus: e }))}
+          >
+            {
+              getListComboKey(SYSTEM_KEY.REGISTER_STATUS, listSystemKey)?.map(i =>
+                <Select.Option
+                  key={i?.ParentID}
+                  value={i?.ParentID}
+                >
+                  {i?.ParentName}
+                </Select.Option>
+              )
+            }
+          </Select>
+        </Col>
+        <Col span={24}>
+          <TableCustom
+            isPrimary
+            bordered
+            noMrb
+            showPagination
+            editableCell
+            sticky={{ offsetHeader: -12 }}
+            textEmpty="Không có dữ liệu"
+            dataSource={blogs}
+            columns={columns}
+            pagination={
+              !!pagination?.PageSize
+                ? {
+                  hideOnSinglePage: total <= 10,
+                  current: pagination?.CurrentPage,
+                  pageSize: pagination?.PageSize,
+                  responsive: true,
+                  total,
+                  showSizeChanger: total > 10,
+                  locale: { items_per_page: "" },
+                  onChange: (CurrentPage, PageSize) =>
+                    setPagination((pre) => ({
+                      ...pre,
+                      CurrentPage,
+                      PageSize,
+                    })),
+                }
+                : false
+            }
+          />
+        </Col>
 
-export default BlogPosting;
+        {
+          !!openModalInsertBlog &&
+          <ModalInsertBlog
+            open={openModalInsertBlog}
+            onCancel={() => setOpenModalInsertBlog(false)}
+            onOk={getListBlogByUser}
+          />
+        }
+
+        {
+          !!openModalDetailBlog &&
+          <ModalBlogDetail
+            open={openModalDetailBlog}
+            onCancel={() => setOpenModalDetailBlog(false)}
+          />
+        }
+
+      </Row>
+    </SpinCustom>
+  )
+}
+
+export default BlogPosting

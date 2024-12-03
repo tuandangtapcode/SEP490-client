@@ -1,4 +1,4 @@
-import { Col, Row, Select, Space, Tag } from "antd"
+import { Col, message, Row, Select, Space, Tag } from "antd"
 import { useEffect, useState } from "react"
 import { useSelector } from "react-redux"
 import ListIcons from "src/components/ListIcons"
@@ -9,33 +9,32 @@ import { getListComboKey } from "src/lib/commonFunction"
 import { SYSTEM_KEY } from "src/lib/constant"
 import { globalSelector } from "src/redux/selector"
 import InputCustom from "src/components/InputCustom"
-import socket from "src/utils/socket"
 import SpinCustom from "src/components/SpinCustom"
 import { toast } from "react-toastify"
 import SubjectService from "src/services/SubjectService"
 import BlogService from "src/services/BlogService"
-import moment from "moment";
+import moment from "moment"
 
 import { formatMoney } from "src/lib/stringUtils"
-import ModalViewBlogPosting from "./components/ModalViewBlogRequest"
 import ModalReasonReject from "./components/ModalReasonReject"
+import ModalBlogDetail from "src/pages/USER/BlogPosting/components/ModalBlogDetail"
 
 const { Option } = Select
 
 const BlogManagement = () => {
 
   const [loading, setLoading] = useState(false)
-  const [blogs, setBlogs] = useState([]);
+  const [blogs, setBlogs] = useState([])
   const [total, setTotal] = useState(0)
-  const [openViewBlogPosting, setOpenViewBlogPosting] = useState(false)
+  const [openModalDetailBlog, setOpenModalDetailBlog] = useState(false)
   const [openModalReasonReject, setOpenModalReasonReject] = useState(false)
   const [pagination, setPagination] = useState({
     TextSearch: "",
     CurrentPage: 1,
     PageSize: 10,
     SubjectID: "",
-    Level: [],
-    LearnType: 0,
+    LearnType: [],
+    RegisterStatus: 0
   })
   const { listSystemKey } = useSelector(globalSelector)
   const [subjects, setSubjects] = useState([])
@@ -61,29 +60,24 @@ const BlogManagement = () => {
 
   const getListBlogs = async () => {
     try {
-      setLoading(true);
-      const res = await BlogService.getListBlog({
-        TextSearch: pagination.TextSearch,
-        CurrentPage: pagination.CurrentPage,
-        PageSize: pagination.PageSize,
-        SubjectID: pagination.SubjectID,
-      });
+      setLoading(true)
+      const res = await BlogService.getListBlog(pagination)
       if (res?.isError) {
-        message.error(res?.msg);
+        message.error(res?.msg)
       } else {
-        setBlogs(res?.data?.List);
-        setTotal(res?.data?.Total);
+        setBlogs(res?.data?.List)
+        setTotal(res?.data?.Total)
       }
     } catch (error) {
-      message.error("Không thể tải danh sách blog.");
+      message.error("Không thể tải danh sách blog.")
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  };
+  }
 
   useEffect(() => {
-    getListBlogs();
-  }, [pagination]);
+    getListBlogs()
+  }, [pagination])
 
   const handleApprove = async (record) => {
     try {
@@ -93,21 +87,21 @@ const BlogManagement = () => {
         RegisterStatus: 3,
         FullName: record?.User?.FullName,
         Email: record?.User?.Email
-      });
-      console.log(res)
+      })
       if (res?.isError) return toast.error(res?.msg)
-      getListBlogs();
+      toast.success(res?.msg)
+      getListBlogs()
     } finally {
       setLoading(false)
 
     }
-  };
+  }
   const listBtn = record => [
     {
       title: "Xem chi tiết",
       disabled: false,
       icon: ListIcons?.ICON_VIEW,
-      onClick: () => setOpenViewBlogPosting(record)
+      onClick: () => setOpenModalDetailBlog(record)
     },
     {
       title: "Duyệt",
@@ -238,7 +232,7 @@ const BlogManagement = () => {
         <Col span={24} className="mb-16">
           <div className="title-type-1"> QUẢN LÝ BÀI ĐĂNG CỦA HỌC SINH</div>
         </Col>
-        <Col span={12}>
+        <Col span={16}>
           <InputCustom
             type="isSearch"
             placeholder="Nhập vào tên học sinh"
@@ -259,25 +253,6 @@ const BlogManagement = () => {
                   value={i?._id}
                 >
                   {i?.SubjectName}
-                </Option>
-              )
-            }
-          </Select>
-        </Col>
-        <Col span={4}>
-          <Select
-            mode="multiple"
-            allowClear
-            placeholder="Chọn level"
-            onChange={e => setPagination(pre => ({ ...pre, Level: e }))}
-          >
-            {
-              getListComboKey(SYSTEM_KEY.SKILL_LEVEL, listSystemKey)?.map(i =>
-                <Option
-                  key={i?.ParentID}
-                  value={i?.ParentID}
-                >
-                  {i?.ParentName}
                 </Option>
               )
             }
@@ -336,10 +311,10 @@ const BlogManagement = () => {
         </Col>
 
         {
-          !!openViewBlogPosting &&
-          <ModalViewBlogPosting
-            open={openViewBlogPosting}
-            onCancel={() => setOpenViewBlogPosting(false)}
+          !!openModalDetailBlog &&
+          <ModalBlogDetail
+            open={openModalDetailBlog}
+            onCancel={() => setOpenModalDetailBlog(false)}
           />
         }
 

@@ -24,7 +24,7 @@ const ConfirmModal = ({
     // maskClosable: true,
     okButtonProps: {
       style: {
-        padding: "16px, 16px, 16px, 16px",
+        padding: "12px, 12px, 12px, 12px",
         borderRadius: 8,
         height: 32,
         background: `var(--color-primary)`,
@@ -33,7 +33,7 @@ const ConfirmModal = ({
     cancelButtonProps: {
       style: {
         borderRadius: 4,
-        padding: "16px, 16px, 16px, 16px",
+        padding: "12px, 12px, 12px, 12px",
         height: 32,
         color: `#000`,
         border: "1px solid #F1F3F5",
@@ -46,7 +46,7 @@ const ConfirmModal = ({
       <div className="d-flex justify-content-center align-items-center flex-column">
         <div className="d-flex-center">
           <span
-            style={{ fontSize: '100px' }}
+            style={{ fontSize: '80px' }}
           >
             {ListIcons[icon]}
           </span>

@@ -48,7 +48,7 @@ const NotificationItem = ({
 
 const HeaderCommon = () => {
 
-  const { user, isLogin } = useSelector(globalSelector)
+  const { user } = useSelector(globalSelector)
   const dispatch = useDispatch()
   const navigate = useNavigate()
   const [notifications, setNotifications] = useState([])
@@ -157,7 +157,7 @@ const HeaderCommon = () => {
                   }}
                   mode="horizontal"
                   items={MenuCommon()}
-                  selectedKeys={location?.pathname}
+                  selectedKeys={[location?.pathname]}
                   onClick={(e) => navigate(e?.key)}
                 />
               </div>

@@ -9,7 +9,8 @@ export const SYSTEM_KEY = {
   PROFIT_PERCENT: "ProfitPercent",
   PAYMENT_METHOD: "PaymentMethod",
   GENDER: "Gender",
-  CONFIRM_STATUS: "ConfirmStatus"
+  CONFIRM_STATUS: "ConfirmStatus",
+  PROFESSIONAL_LEVEL: "ProfessionalLevel"
 }
 
 export const Roles = {

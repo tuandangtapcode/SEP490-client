@@ -1,166 +1,94 @@
-import { List, Button, Spin, Tag, Space, Card } from "antd";
-import { useEffect, useState } from "react";
-import BlogService from "src/services/BlogService";
-import SubjectService from "src/services/SubjectService";
-import { toast } from "react-toastify";
-import { useNavigate } from "react-router-dom";
-import { useSelector } from "react-redux";
-import { globalSelector } from "src/redux/selector";
-import InsertUpdateBlog from "src/pages/USER/BlogPosting/components/InsertUpdateBlog";
-import { Container, Description, Title, StyledListItem} from "./styled";
+import { List, Button, Spin, Tag, Space, Card, Row, Col } from "antd"
+import { useEffect, useState } from "react"
+import BlogService from "src/services/BlogService"
+import SubjectService from "src/services/SubjectService"
+import { toast } from "react-toastify"
+import { useNavigate } from "react-router-dom"
+import { useSelector } from "react-redux"
+import { globalSelector } from "src/redux/selector"
+import { Container, Description, Title, StyledListItem } from "./styled"
+import SpinCustom from "src/components/SpinCustom"
+import BlogItem from "./components/BlogItem"
 
 const BlogPage = () => {
-  const navigate = useNavigate();
-  const [loading, setLoading] = useState(false);
-  const [modalBlog, setModalBlog] = useState(false);
-  const [listBlog, setListBlog] = useState([]);
+
+  const navigate = useNavigate()
+  const [loading, setLoading] = useState(false)
+  const [modalBlog, setModalBlog] = useState(false)
+  const { user } = useSelector(globalSelector)
   const [pagination, setPagination] = useState({
     CurrentPage: 1,
     PageSize: 10,
-  });
-  const [subjects, setSubjects] = useState([]);
-  const { user } = useSelector(globalSelector);
+    TextSearch: "",
+    SubjectID: "",
+    LearnType: 0,
+    RoleID: !!user?.RoleID ? user?.RoleID : 0,
+    UserID: !!user?._id ? user?._id : 0
+  })
+  const [subjects, setSubjects] = useState([])
+  const [blogs, setBlogs] = useState()
+  const [total, setTotal] = useState(0)
 
   const getListBlogByTeacher = async () => {
     try {
-      setLoading(true);
-      const res = await BlogService.getListBlogByTeacher(pagination);
-      if (!!res?.isError) return toast.error(res?.msg);
-      setListBlog(res?.data?.List);
+      setLoading(true)
+      const res = await BlogService.getListBlogByTeacher(pagination)
+      if (!!res?.isError) return toast.error(res?.msg)
+      setBlogs(res?.data?.List)
+      setTotal(res?.data?.Total)
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  };
+  }
 
   const getListSubject = async () => {
     try {
-      setLoading(true);
+      setLoading(true)
       const res = await SubjectService.getListSubject({
         TextSearch: "",
         CurrentPage: 0,
         PageSize: 0,
-      });
-      if (!!res?.isError) return toast.error(res?.msg);
-      setSubjects(res?.data?.List);
+      })
+      if (!!res?.isError) return toast.error(res?.msg)
+      setSubjects(res?.data?.List)
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  };
+  }
 
-  useEffect(() =>{
-    getListSubject();
+  useEffect(() => {
+    getListSubject()
   }, [])
 
 
   useEffect(() => {
-    // getListSubject();
-    getListBlogByTeacher();
-  }, [pagination]);
+    getListBlogByTeacher()
+  }, [pagination])
 
-  const getSubjectNameById = (id) => {
-    const subject = subjects.find((sub) => sub._id === id);
-    return subject ? subject.SubjectName : "Không xác định";
-  };
 
   return (
-    <Spin spinning={loading}>
-    <Title>Bài đăng tìm kiếm giáo viên</Title>
-        <Description style={{textAlign :"center"}}>
-        Tại đây, chúng tôi đang kết nối giữa bạn và các học sinh, học viên có nhu cầu học tập. Liên hệ ngay để cùng phát triển!.
-        </Description>
-      <Container>
-        <List
-          itemLayout="vertical"
-          dataSource={listBlog}
-          renderItem={(blog) => (
-             <StyledListItem>
-              <Card
-                style={{
-                  border: "1px solid #e8e8e8",
-                  borderRadius: "8px",
-                  boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)",
-                  marginBottom: "16px",
-                }}
-              >
-                <List.Item.Meta
-                  title={
-                    <Space>
-                      <span
-                        style={{
-                          textTransform: "uppercase",
-                          fontSize: "1.5em",
-                          fontWeight: "bold",
-                        }}
-                      >
-                        {blog?.Title}
-                      </span>
-                      {blog?.LearnType?.includes(1) && <Tag color="blue">Online</Tag>}
-                      {blog?.LearnType?.includes(2) && <Tag color="green">Offline</Tag>}
-                    </Space>
-                  }
-                  description={
-                    <>
-                      <div>
-                        <strong>Môn học:</strong>{" "}
-                        {getSubjectNameById(blog?.Subject.SubjectName)}
-                      </div>
-                      <div>
-                        <strong>Học phí:</strong>{" "}
-                        {blog?.Price
-                          ? `${blog?.Price.toLocaleString()} VNĐ`
-                          : "Miễn phí"}{" "}
-                        /Buổi
-                      </div>
-                      {blog?.LearnType?.includes(2) && (
-                        <div>
-                          <strong>Địa chỉ:</strong> {blog?.Address || "Không xác định"}
-                        </div>
-                      )}
-                      <div>
-                        <strong>Yêu cầu giới tính giáo viên:</strong>{" "}
-                        {blog?.GenderRequirement === 1
-                          ? "Nam"
-                          : blog?.GenderRequirement === 2
-                          ? "Nữ"
-                          : "Không yêu cầu"}
-                      </div>
-                      <div>
-                        <strong>Tổng buổi học:</strong>{" "}
-                        {blog?.TotalSessions || "Không xác định"}
-                      </div>
-                      <div>
-                        <strong>Lịch học:</strong> {blog?.Schedule || "Không xác định"}
-                      </div>
-                      <div>
-                        <strong>Thời gian tạo:</strong>{" "}
-                        {new Date(blog?.CreatedAt).toLocaleDateString("vi-VN") ||
-                          "Không xác định"}
-                      </div>
-                    </>
-                  }
-                />
-                <div style={{ textAlign: "right", marginTop: "16px" }}>
-                  <Button
-                    type="primary"
-                    // onClick={() => navigate(`/register-teaching/${blog?._id}`)}
-                  >
-                    Đăng ký dạy
-                  </Button>
-                </div>
-              </Card>
-            </StyledListItem>
-          )}
-        />
-      </Container>
-      {!!modalBlog && (
-        <InsertUpdateBlog
-          open={modalBlog}
-          onCancel={() => setModalBlog(false)}
-          onOk={() => getListBlogByTeacher()}
-        />
-      )}
-    </Spin>
-  );
-};
 
-export default BlogPage;
+    <SpinCustom spinning={loading}>
+      <Row gutter={[8, 8]}>
+        <Col span={24} className="mb-12">
+          <Title>Bài đăng tìm kiếm giáo viên</Title>
+          <Description style={{ textAlign: "center" }}>
+            Tại đây, chúng tôi đang kết nối giữa bạn và các học sinh, học viên có nhu cầu học tập. Liên hệ ngay để cùng phát triển!.
+          </Description>
+        </Col>
+        <Col span={24}>
+          {
+            blogs?.map((i, idx) =>
+              <BlogItem
+                key={idx}
+                blog={i}
+              />
+            )
+          }
+        </Col>
+      </Row>
+    </SpinCustom>
+  )
+}
+
+export default BlogPage

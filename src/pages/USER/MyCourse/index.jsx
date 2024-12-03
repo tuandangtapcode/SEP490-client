@@ -60,7 +60,7 @@ const MyCourse = () => {
     },
     {
       title: !!record?.IsDeleted ? "Hiển thị khóa học" : "Ẩn khóa học",
-      icon: !!record?.IsDeleted ? ListIcons.ICON_VIEW : ListIcons.ICON_UNVIEW,
+      icon: !!record?.IsDeleted ? ListIcons.ICON_UNBLOCK : ListIcons.ICON_BLOCK,
       onClick: () => {
         ConfirmModal({
           description: `Bạn có chắc chắn muốn ${!!record?.IsDeleted ? "hiển thị khóa học" : "ẩn khóa học"} khóa học này không?`,

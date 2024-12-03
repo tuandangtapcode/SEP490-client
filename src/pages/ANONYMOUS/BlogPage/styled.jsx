@@ -1,5 +1,5 @@
-import { Button } from "antd";
-import styled, { keyframes } from "styled-components";
+import { Button } from "antd"
+import styled, { keyframes } from "styled-components"
 
 // Định nghĩa hiệu ứng fade-in
 const fadeIn = keyframes`
@@ -9,32 +9,34 @@ const fadeIn = keyframes`
   100% {
     opacity: 1;
   }
-`;
+`
 
 export const Container = styled.div`
   padding: 20px;
   ${'' /* text-align: center; */}
-`;
+`
 
 export const Title = styled.h1`
   text-align: center;
   color: #333;
   animation: ${fadeIn} 2s ease-in-out;
-`;
+`
 
 export const Description = styled.p`
   color: #666;
   font-size: 1.1em;
   animation: ${fadeIn} 2s ease-in-out;
-`;
+`
 
 export const StyledListItem = styled.div`
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+ padding: 20px;
+ border-radius: 10px;
+ border: 1px solid #ccc;
   &:hover {
-    transform: scale(1.05);  // Tăng kích thước của item khi hover
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);  // Tạo bóng đổ khi hover
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);  
+    cursor: pointer;
   }
-`;
+`
 
 export const Card = styled.div`
   background-color: white;
@@ -49,17 +51,17 @@ export const Card = styled.div`
     transform: translateY(-10px);
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
   }
-`;
+`
 
 export const CardImage = styled.img`
   width: 100%;
   height: 400px;
   object-fit: cover;
-`;
+`
 
 export const CardContent = styled.div`
   padding: 20px;
-`;
+`
 
 export const CardDescription = styled.p`
   color: #333;
@@ -69,7 +71,7 @@ export const CardDescription = styled.p`
   -webkit-box-orient: vertical;
   overflow: hidden;
   text-overflow: ellipsis;
-`;
+`
 
 export const StyledButton = styled(Button)`
   background-color: #1890ff;
@@ -80,4 +82,4 @@ export const StyledButton = styled(Button)`
     background-color: #40a9ff;
     color: white;
   }
-`;
+`

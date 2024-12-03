@@ -16,7 +16,7 @@ import PaymentService from "src/services/PaymentService"
 import ModalPaymentTransfer from "./components/ModalPaymentTransfer"
 import dayjs from "dayjs"
 import { getCurrentWeekRange } from "src/lib/dateUtils"
-import ModalViewIssue from "./components/ModalViewIssue"
+import ButtonCustom from "src/components/MyButton/ButtonCustom"
 
 
 const PaymentTransfer = () => {
@@ -24,14 +24,12 @@ const PaymentTransfer = () => {
   const [loading, setLoading] = useState(false)
   const [listData, setListData] = useState([])
   const [listBank, setListBank] = useState([])
-  const [total, setTotal] = useState(0)
   const [pagination, setPagination] = useState({
     CurrentPage: 1,
     PageSize: 10,
     FromDate: getCurrentWeekRange().startOfWeek,
     ToDate: getCurrentWeekRange().endOfWeek
   })
-  const [openModalViewIssue, setOpenModalViewIssue] = useState(false)
   const [openModalPaymentTransfer, setOpenModalTransfer] = useState(false)
   const { listSystemKey } = useSelector(globalSelector)
   const PaymentStatuskey = getListComboKey(SYSTEM_KEY.PAYMENT_STATUS, listSystemKey)
@@ -54,28 +52,6 @@ const PaymentTransfer = () => {
       const res = await BankingService.getListBank()
       if (!res?.data?.data) return toast.error(res?.data?.desc)
       setListBank(res?.data?.data)
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  const handleSendRequestExplanation = async (record) => {
-    try {
-      setLoading(true)
-      const res = await PaymentService.sendRequestExplanation({
-        PaymentID: record?._id,
-        Email: record?.Receiver?.Email,
-        FullName: record?.Receiver?.FullName,
-        Issues: record?.Receiver?.Issues?.map(i => ({
-          DateAt: dayjs(open?.TimeTables?.find(item => item?._id === i?.Timetable)?.DateAt).format("DD/MM/YYYY"),
-          Time: `${dayjs(open?.TimeTables?.find(item => item?._id === i?.Timetable)?.StartTime).format("HH:mm")} - ${dayjs(open?.TimeTables?.find(item => item?._id === i?.Timetable)?.EndTime).format("HH:mm")}`,
-          Title: i?.Title,
-          Content: i?.Content
-        }))
-      })
-      if (!!res?.isError) return toast.error(res?.msg)
-      toast.success(res?.msg)
-      getListPaymentTransfer()
     } finally {
       setLoading(false)
     }
@@ -114,31 +90,6 @@ const PaymentTransfer = () => {
     if (pagination.PageSize) getListPaymentTransfer()
   }, [pagination])
 
-  const listBtn = record => [
-    {
-      title: "Xem chi tiết phản ánh",
-      disabled: !record?.Receiver?.Issues?.length,
-      icon: ListIcons?.ICON_VIEW,
-      onClick: () => setOpenModalViewIssue({
-        ...record?.Receiver,
-        RequestAxplanationAt: record?.RequestAxplanationAt,
-        PaymentID: record?._id
-      })
-    },
-    {
-      title: "Thanh toán",
-      disabled: false,
-      icon: ListIcons?.ICON_CONFIRM,
-      onClick: () => getBankingInforOfUser(record)
-    },
-    {
-      title: "Gửi yêu cầu giải trình",
-      icon: ListIcons?.ICON_SEND_BLACK,
-      disabled: !record?.Receiver?.Issues?.length || !!record?.RequestAxplanationAt,
-      onClick: () => handleSendRequestExplanation(record)
-    }
-  ]
-
   const columns = [
     {
       title: "STT",
@@ -173,14 +124,6 @@ const PaymentTransfer = () => {
       )
     },
     {
-      title: "Số tiết học bị phản ánh",
-      width: 100,
-      align: "center",
-      render: (_, record) => (
-        <div>{record?.Receiver?.Issues?.length}</div>
-      )
-    },
-    {
       title: "Trạng thái",
       width: 80,
       dataIndex: "PaymentStatus",
@@ -196,20 +139,16 @@ const PaymentTransfer = () => {
     },
     {
       title: "Chức năng",
+      align: "center",
       width: 70,
       render: (_, record) => (
         <Space direction="horizontal">
-          {
-            listBtn(record)?.map((i, idx) =>
-              <ButtonCircle
-                key={idx}
-                disabled={i?.disabled}
-                title={i?.title}
-                icon={i?.icon}
-                onClick={i?.onClick}
-              />
-            )
-          }
+          <ButtonCustom
+            className="third-type-2"
+            onClick={() => getBankingInforOfUser(record)}
+          >
+            Thanh toán
+          </ButtonCustom>
         </Space>
       )
     }
@@ -220,7 +159,7 @@ const PaymentTransfer = () => {
       <Row gutter={[8, 16]}>
         <Col span={24} className="mb-5">
           <div className="title-type-1">
-            QUẢN LÝ CHUYỂN KHOẢN
+            QUẢN LÝ TIỀN LƯƠNG
           </div>
         </Col>
         <Col span={18}>
@@ -268,15 +207,6 @@ const PaymentTransfer = () => {
             rowKey="key"
           />
         </Col>
-
-        {
-          !!openModalViewIssue &&
-          <ModalViewIssue
-            open={openModalViewIssue}
-            onCancel={() => setOpenModalViewIssue(false)}
-            setPagination={setPagination}
-          />
-        }
 
         {
           !!openModalPaymentTransfer &&
