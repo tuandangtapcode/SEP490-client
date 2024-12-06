@@ -8,14 +8,17 @@ import SpinCustom from "src/components/SpinCustom"
 import BlogService from "src/services/BlogService"
 import styled from "styled-components"
 import SubjectService from "src/services/SubjectService"
-import { SYSTEM_KEY } from "src/lib/constant"
+import { STAFF_ID, SYSTEM_KEY } from "src/lib/constant"
 import { useSelector } from "react-redux"
 import { globalSelector } from "src/redux/selector"
 import { getListComboKey } from "src/lib/commonFunction"
 import { defaultDays, disabledBeforeDate } from "src/lib/dateUtils"
 import dayjs from "dayjs"
 import FormItem from "antd/es/form/FormItem"
-import ModalBlogDetail from "./ModalBlogDetail"
+import { getRealFee } from "src/lib/stringUtils"
+import ConfirmModal from "src/components/ModalCustom/ConfirmModal"
+import NotificationService from "src/services/NotificationService"
+import socket from "src/utils/socket"
 
 const StyleModal = styled.div`
   .ant-form-item-label {
@@ -28,12 +31,11 @@ const ModalInsertBlog = ({ open, onCancel, onOk }) => {
 
   const [form] = Form.useForm()
   const [loading, setLoading] = useState(false)
-  const { listSystemKey } = useSelector(globalSelector)
+  const { listSystemKey, profitPercent, user } = useSelector(globalSelector)
   const [subjects, setSubjects] = useState([])
   const [slotInWeek, setSlotInWeek] = useState(0)
   const [scheduleInWeek, setScheduleInWeek] = useState([])
   const [isShowAddress, setIsShowAddress] = useState(false)
-  const [openModalBlogDetail, setOpenModalBlogDetail] = useState(false)
 
   const getListSubject = async () => {
     try {
@@ -65,6 +67,7 @@ const ModalInsertBlog = ({ open, onCancel, onOk }) => {
         Subject: values?.Subject,
         Gender: values?.Gender,
         Price: values?.Price * 1000,
+        ExpensePrice: getRealFee(values?.Price * 1000, profitPercent),
         NumberSlot: values?.NumberSlot,
         Address: values?.Address,
         StartDate: dayjs(values?.StartDate),
@@ -73,7 +76,33 @@ const ModalInsertBlog = ({ open, onCancel, onOk }) => {
         ProfessionalLevel: values?.ProfessionalLevel
       }
       const res = await BlogService.createBlog(body)
-      if (!!res?.isError) return toast.error(res?.msg)
+      if (!!res?.isError) {
+        return ConfirmModal({
+          description: `
+            <div>${res?.msg}:</div>
+            ${res?.data?.map(i =>
+            `<div>${dayjs(i?.StartTime).format("DD/MM/YYYY")} ${dayjs(i?.StartTime).format("HH:mm")}-${dayjs(i?.EndTime).format("HH:mm")}</div>`
+          ).join("")}
+          `,
+          isViewCancelBtn: false
+        })
+      }
+      const resNotification = await NotificationService.createNotification({
+        Content: `${user?.FullName} đã gửi yêu cầu duyệt bài đăng cho bạn`,
+        Type: "blog",
+        Receiver: STAFF_ID
+      })
+      if (!!resNotification?.isError) return
+      socket.emit('send-notification',
+        {
+          Content: resNotification?.data?.Content,
+          IsSeen: resNotification?.IsSeen,
+          _id: resNotification?.data?._id,
+          Type: resNotification?.data?.Type,
+          IsNew: resNotification?.data?.IsNew,
+          Receiver: STAFF_ID,
+          createdAt: resNotification?.data?.createdAt
+        })
       toast.success(res?.msg)
       onOk()
       onCancel()
@@ -81,8 +110,6 @@ const ModalInsertBlog = ({ open, onCancel, onOk }) => {
       setLoading(false)
     }
   }
-
-  console.log("scheduleInWeek", scheduleInWeek?.every(i => !!i?.DateValue && !!i?.StartTime && !!i?.EndTime));
 
 
   return (
@@ -143,7 +170,6 @@ const ModalInsertBlog = ({ open, onCancel, onOk }) => {
                   label="Tiêu đề:"
                   rules={[
                     { required: true, message: 'Vui lòng nhập tiêu đề!' },
-                    // { max: 100, message: 'Tiêu để không được quá 30 ký tự' }
                   ]}
                 >
                   <InputCustom placeholder="Nhập vào tiêu đề bài đăng" />
@@ -311,12 +337,13 @@ const ModalInsertBlog = ({ open, onCancel, onOk }) => {
                             }}
                           >
                             {
-                              defaultDays.map(i => (
+                              defaultDays?.map(de => (
                                 <Select.Option
-                                  key={i?.value}
-                                  value={i?.value}
+                                  disabled={scheduleInWeek?.map(s => s?.DateValue)?.includes(de.value)}
+                                  key={de?.value}
+                                  value={de?.value}
                                 >
-                                  {i?.VieNameSpecific}
+                                  {de?.VieNameSpecific}
                                 </Select.Option>
                               ))
                             }
@@ -374,15 +401,6 @@ const ModalInsertBlog = ({ open, onCancel, onOk }) => {
             </Row>
           </Form>
         </StyleModal>
-
-        {
-          !!openModalBlogDetail &&
-          <ModalBlogDetail
-            open={openModalBlogDetail}
-            onCancel={() => setOpenModalBlogDetail(false)}
-          />
-        }
-
       </SpinCustom>
     </ModalCustom>
   )

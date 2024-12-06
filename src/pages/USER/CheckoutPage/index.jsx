@@ -1,12 +1,12 @@
 import { Col, Radio, Row } from "antd"
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { useSelector } from "react-redux"
 import { useLocation, useNavigate, useParams } from "react-router-dom"
 import SpinCustom from "src/components/SpinCustom"
 import { globalSelector } from "src/redux/selector"
 import ConfirmService from "src/services/ConfirmService"
 import dayjs from "dayjs"
-import { formatMoney } from "src/lib/stringUtils"
+import { formatMoney, getRealFee } from "src/lib/stringUtils"
 import { CheckoutPageContainerStyled, CheckoutPageStyled } from "./styled"
 import { generateSignature, getListComboKey, randomNumber } from "src/lib/commonFunction"
 import { SYSTEM_KEY } from "src/lib/constant"
@@ -20,26 +20,37 @@ import { toast } from "react-toastify"
 import LearnHistoryService from "src/services/LearnHistoryService"
 import TimeTableService from "src/services/TimeTableService"
 import ModalSuccessBooking from "./components/ModalSuccessBooking"
+import BlogService from "src/services/BlogService"
+import Router from "src/routers"
 
 const RootURLWebsite = import.meta.env.VITE_ROOT_URL_WEBSITE
 
 const CheckoutPage = () => {
 
-  const { ConfirmID } = useParams()
+  const { CheckoutID, Type } = useParams()
   const navigate = useNavigate()
-  const [confirm, setConfirm] = useState()
+  const [data, setData] = useState()
   const [loading, setLoading] = useState(false)
-  const { user, listSystemKey } = useSelector(globalSelector)
+  const { user, listSystemKey, profitPercent } = useSelector(globalSelector)
   const location = useLocation()
   const queryParams = new URLSearchParams(location.search)
   const [openModalSuccessBooking, setOpenModalSuccessBooking] = useState(false)
+  const intervalRef = useRef(null)
 
-  const getDetailConfirm = async () => {
+  const getDataToCheckout = async () => {
     try {
       setLoading(true)
-      const res = await ConfirmService.getDetailConfirm(ConfirmID)
-      if (!!res?.isError) return navigate("/not-found")
-      setConfirm(res?.data)
+      let res
+      if (Type === "Confirm") {
+        res = await ConfirmService.getDetailConfirm(CheckoutID)
+        if (!!res?.isError) return navigate("/not-found")
+      } else if (Type === "Blog") {
+        res = await BlogService.getDetailBlog(CheckoutID)
+        if (!!res?.isError) return navigate("/not-found")
+      } else {
+        return navigate(Router.TRANG_CHU)
+      }
+      setData(res?.data)
     } finally {
       setLoading(false)
     }
@@ -54,7 +65,7 @@ const CheckoutPage = () => {
       if (+localStorage.getItem("paymentMethod") === 2) {
         const body = {
           orderCode: randomNumber(),
-          amount: confirm?.TotalFee,
+          amount: data?.TotalFee,
           description: "Thanh toán book giáo viên",
           cancelUrl: `${RootURLWebsite}${location.pathname}`,
           returnUrl: `${RootURLWebsite}${location.pathname}`,
@@ -69,7 +80,7 @@ const CheckoutPage = () => {
       } else if (+localStorage.getItem("paymentMethod") === 1) {
         handleCreatePaymentVNPay(
           "Thanh toán book giáo viên",
-          confirm?.TotalFee * 100,
+          data?.TotalFee * 100,
           `${RootURLWebsite}${location.pathname}`,
           "1.1.1.1"
         )
@@ -82,63 +93,92 @@ const CheckoutPage = () => {
   const handleCompleteBooking = async () => {
     try {
       setLoading(true)
-      const resConfirm = await ConfirmService.changeConfirmPaid(ConfirmID)
+      const resConfirm = await ConfirmService.changeConfirmPaid(CheckoutID)
       if (!!resConfirm?.isError) return
       const resPayment = await PaymentService.createPayment({
         PaymentType: 1,
-        Description: `Thanh toán book giáo viên ${confirm?.Receiver?.FullName}`,
-        TotalFee: confirm?.TotalFee,
+        Description: `Thanh toán book giáo viên ${data?.Receiver?.FullName}`,
+        TotalFee: data?.TotalFee,
         TraddingCode: randomNumber(),
-        PaymentMethod: +localStorage.getItem("paymentMethod")
+        PaymentMethod: +localStorage.getItem("paymentMethod"),
+        Percent: profitPercent
       })
       if (!!resPayment?.isError) return
       const bodyLearnHistory = {
-        Teacher: confirm?.Receiver?._id,
-        Subject: confirm?.Subject?._id,
-        TotalLearned: confirm?.Schedules?.length,
-        TeacherName: confirm?.Receiver?.FullName,
-        TeacherEmail: confirm?.Receiver?.Email,
-        SubjectName: confirm?.Subject?.SubjectName,
+        Teacher: data?.Receiver?._id,
+        Subject: data?.Subject?._id,
+        TotalLearned: data?.Schedules?.length,
+        TeacherName: data?.Receiver?.FullName,
+        TeacherEmail: data?.Receiver?.Email,
+        SubjectName: data?.Subject?.SubjectName,
         StudentName: user?.FullName,
         StudentEmail: user?.Email,
-        Times: confirm?.Schedules?.map(i =>
+        Times: data?.Schedules?.map(i =>
           `Ngày ${dayjs(i?.StartTime).format("DD/MM/YYYY")} ${dayjs(i?.StartTime).format("HH:ss")} - ${dayjs(i?.EndTime).format("HH:ss")}`
         )
       }
       const resLearnHistory = await LearnHistoryService.createLearnHistory(bodyLearnHistory)
       if (!!resLearnHistory?.isError) return
-      const bodyTimeTable = confirm?.Schedules?.map(i => ({
+      const bodyTimeTable = data?.Schedules?.map(i => ({
         LearnHistory: resLearnHistory?.data?._id,
-        Teacher: confirm?.Receiver?._id,
-        Subject: confirm?.Subject?._id,
+        Teacher: data?.Receiver?._id,
+        Subject: data?.Subject?._id,
         StartTime: dayjs(i?.StartTime),
         EndTime: dayjs(i?.EndTime),
-        LearnType: confirm?.LearnType,
-        Address: !!confirm?.Address
-          ? confirm?.Address
+        LearnType: data?.LearnType,
+        Address: !!data?.Address
+          ? data?.Address
           : undefined,
+        Price: getRealFee(data?.TotalFee, profitPercent) / data?.Schedules?.length
       }))
       const resTimeTable = await TimeTableService.createTimeTable(bodyTimeTable)
       if (!!resTimeTable?.isError) return
       localStorage.removeItem("paymentMethod")
-      setOpenModalSuccessBooking({ FullName: confirm?.Receiver?.FullName })
+      setOpenModalSuccessBooking({ FullName: data?.Receiver?.FullName })
     } finally {
       setLoading(false)
     }
   }
 
-  useEffect(() => {
-    getDetailConfirm()
-  }, [ConfirmID])
+  const checkPaymentLinkStatus = async (paymentLinkID) => {
+    const res = await PaymentService.getDetailPaymentLink(paymentLinkID)
+    if (res?.data?.code !== "00") {
+      clearInterval(intervalRef.current)
+    }
+    if (res?.data?.data?.status === "CANCELLED") {
+      clearInterval(intervalRef.current)
+    } else if (res?.data?.data?.status === "PENDING") {
+      window.location.href = `https://pay.payos.vn/web/${paymentLinkID}`
+    } else if (res?.data?.data?.status === "PAID") {
+      clearInterval(intervalRef.current)
+      handleCompleteBooking()
+    }
+  }
 
   useEffect(() => {
-    if (!confirm?.IsPaid) {
-      if (
-        ((!!queryParams.get("status") && queryParams.get("status") === "PAID") ||
-          (!!queryParams.get("vnp_ResponseCode") && queryParams.get("vnp_ResponseCode") === "00")) &&
+    getDataToCheckout()
+  }, [CheckoutID])
+
+
+  useEffect(() => {
+    if (!data?.IsPaid) {
+      if (!!queryParams.get("id") && !!confirm) {
+        const paymentLinkID = queryParams.get("id")
+        if (!intervalRef.current) {
+          intervalRef.current = setInterval(() => checkPaymentLinkStatus(paymentLinkID), 3000)
+        }
+      } else if (
+        !!queryParams.get("vnp_ResponseCode") &&
+        queryParams.get("vnp_ResponseCode") === "00" &&
         !!confirm
       ) {
         handleCompleteBooking()
+      }
+    }
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current)
+        intervalRef.current = null
       }
     }
   }, [location.search, confirm])
@@ -155,25 +195,25 @@ const CheckoutPage = () => {
             <Col span={12}>
               <div className="mb-6">
                 <span className="mr-4 fs-15 fw-600">Giáo viên:</span>
-                <span>{confirm?.Receiver?.FullName}</span>
+                <span>{data?.Receiver?.FullName}</span>
               </div>
               <div className="mb-6">
                 <span className="mr-4 fs-15 fw-600">Môn học:</span>
-                <span>{confirm?.Subject?.SubjectName}</span>
+                <span>{data?.Subject?.SubjectName}</span>
               </div>
               <div className="mb-6">
                 <span className="mr-4 fs-15 fw-600">Hình thức học:</span>
                 <span>
                   {
                     getListComboKey(SYSTEM_KEY.LEARN_TYPE, listSystemKey)
-                      .find(i => i.ParentID === confirm?.LearnType)?.ParentName
+                      .find(i => i.ParentID === data?.LearnType)?.ParentName
                   }
                 </span>
               </div>
               <div className="mb-6">
-                <p className="mb-4 fs-15 fw-600">Lịch học ({confirm?.Schedules?.length} buổi):</p>
+                <p className="mb-4 fs-15 fw-600">Lịch học ({data?.Schedules?.length} buổi):</p>
                 {
-                  confirm?.Schedules?.map((i, idx) =>
+                  data?.Schedules?.map((i, idx) =>
                     <div key={idx} className="mb-4">
                       <span className="mr-2">Ngày</span>
                       <span className="mr-4">{dayjs(i?.StartTime).format("DD/MM/YYYY")}:</span>
@@ -189,7 +229,7 @@ const CheckoutPage = () => {
               <p className="fs-16 fw-600 mb-8">Phương thức thanh toán:</p>
               <Radio.Group
                 onChange={e => localStorage.setItem("paymentMethod", e.target.value)}
-                disabled={confirm?.IsPaid}
+                disabled={data?.IsPaid}
                 className="mb-12"
               >
                 <PaymentMethodStyled
@@ -229,14 +269,14 @@ const CheckoutPage = () => {
               </Radio.Group>
               <div>
                 <span className="gray-text fs-15 fw-600 mr-4">Số tiền thanh toán:</span>
-                <span className="fs-17 fw-700 primary-text">{formatMoney(confirm?.TotalFee)} VNĐ</span>
+                <span className="fs-17 fw-700 primary-text">{formatMoney(data?.TotalFee)} VNĐ</span>
               </div>
             </Col>
             <Col span={12}>
             </Col>
             <Col span={12} className="mt-12">
               {
-                !confirm?.IsPaid
+                !data?.IsPaid
                   ?
                   <ButtonCustom
                     className="medium-size primary"

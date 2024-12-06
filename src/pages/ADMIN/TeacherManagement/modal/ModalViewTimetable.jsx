@@ -49,7 +49,7 @@ const ModalViewTimeTable = ({ open, onCancel, onOk }) => {
   const rowSelection = {
     listTimeTables,
     getCheckboxProps: record => ({
-      disabled: !!record?.Status || !!record?.IsCancel || record?.IsDisabledAtendance,
+      isDisabled: !!record?.Status || !!record?.IsCancel || record?.IsDisabledAtendance,
     }),
     selectedRowKeys: listTimeTables.map(i => i?._id),
     onChange: (newSelectedRowKeys, newSelectedRows) => {

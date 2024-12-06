@@ -8,6 +8,8 @@ export const apiSendRequestReceive = "blog/sendRequestReceive"
 export const apiGetListBlogByTeacher = "blog/getListBlogByTeacher"
 export const apiChangeReceiveStatus = "blog/changeReceiveStatus"
 export const apiChangeRegisterStatus = "blog/changeRegisterStatus"
+export const apiGetListBlogApproval = "blog/getListBlogApproval"
+export const apiChangeBlogPaid = "blog/changeBlogPaid"
 
 
 

@@ -8,7 +8,7 @@ import { useSelector } from "react-redux"
 import { globalSelector } from "src/redux/selector"
 import { useNavigate } from "react-router-dom"
 import Router from "src/routers"
-import { formatMoney, getRealFee } from "src/lib/stringUtils"
+import { formatMoney } from "src/lib/stringUtils"
 const { Meta } = Card
 
 const FamoursTeacher = ({ teachers, prompt }) => {
@@ -77,7 +77,7 @@ const FamoursTeacher = ({ teachers, prompt }) => {
                       <Col span={12} className="d-flex-end align-items-center">
                         <p className="primary-text fs-17 mt-4">{ListIcons.ICON_DOLLAR}</p>
                         <p className="primary-text fs-17 fw-700">
-                          {formatMoney(getRealFee(i?.Price, profitPercent))}
+                          {formatMoney(i?.Price)}
                         </p>
                       </Col>
                       <Col span={12}>

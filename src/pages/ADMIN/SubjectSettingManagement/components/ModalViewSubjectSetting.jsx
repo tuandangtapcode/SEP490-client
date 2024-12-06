@@ -64,7 +64,7 @@ const ModalViewSubjectSetting = ({ open, onCancel }) => {
             <span>
               {
                 !!open?.Price
-                  ? `${formatMoney(open?.Price * 1000)} VNĐ`
+                  ? `${formatMoney(open?.Price)} VNĐ`
                   : "Chưa bổ sung"
               }
             </span>

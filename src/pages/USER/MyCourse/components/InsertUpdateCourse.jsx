@@ -29,7 +29,9 @@ const InsertUpdateCourse = ({ open, onCancel, onOk }) => {
         ...values,
         CourseID: open?._id,
         Teacher: user?._id,
-        Subject: open?.Subject?._id
+        Subject: open?.Subject?._id,
+        Price: values?.Price * 1000,
+        ExpensePrice: totalFee
       }
       const res = !!open?._id
         ? await CourseService.updateCourse(body)
@@ -48,9 +50,12 @@ const InsertUpdateCourse = ({ open, onCancel, onOk }) => {
 
   useEffect(() => {
     if (!!open?._id) {
-      form.setFieldsValue(open)
+      form.setFieldsValue({
+        ...open,
+        Price: open?.Price / 1000
+      })
     }
-    setTotalFee(open?.Price)
+    setTotalFee(getRealFee(open?.Price, profitPercent))
   }, [open?._id])
 
   return (
@@ -108,7 +113,7 @@ const InsertUpdateCourse = ({ open, onCancel, onOk }) => {
           <Col span={8}>
             <Form.Item
               name="Price"
-              label="Giá tiền"
+              label="Giá tiền (x1000 VNĐ)"
               rules={[
                 {
                   validator: (rule, value) => {
@@ -130,14 +135,20 @@ const InsertUpdateCourse = ({ open, onCancel, onOk }) => {
               <InputNumber
                 style={{ width: "200px" }}
                 type='isNumber'
-                suffix=".000 VNĐ"
-                onChange={e => setTotalFee(getRealFee(e, profitPercent))}
+                suffix=".000"
+                onChange={e => setTotalFee(getRealFee(e, profitPercent) * 1000)}
               />
             </Form.Item>
             <div className="d-flex align-items-center">
-              <div className="mr-8">Số tiền học sinh cần trả:</div>
+              <div className="mr-8">Số bạn nhận được:</div>
               <div>
-                <span>{formatMoney(getRealFee(totalFee, profitPercent))}</span>
+                <span>
+                  {
+                    !!totalFee
+                      ? formatMoney(totalFee)
+                      : 0
+                  }
+                </span>
                 <span> VNĐ</span>
               </div>
             </div>

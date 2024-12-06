@@ -13,7 +13,7 @@ const InactiveModal = ({ open, onCancel }) => {
     <ModalCustom
       open={open}
       onCancel={() => {
-        handleLogout(open, dispatch, navigate)
+        handleLogout(dispatch, navigate)
         onCancel()
       }}
       title={<div className="text-center">THÔNG BÁO</div>}
@@ -23,7 +23,7 @@ const InactiveModal = ({ open, onCancel }) => {
           <Button
             className="greendBorder small"
             onClick={() => {
-              handleLogout(open, dispatch, navigate)
+              handleLogout(dispatch, navigate)
               onCancel()
             }}
           >

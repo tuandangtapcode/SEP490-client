@@ -44,7 +44,6 @@ const UpdateProfile = ({ form }) => {
           >
             <Upload.Dragger
               beforeUpload={file => handleBeforeUpload(file)}
-              // style={{ width: '250px' }}
               accept="image/*"
               multiple={false}
               maxCount={1}

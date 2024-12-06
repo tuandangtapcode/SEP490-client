@@ -19,7 +19,7 @@ const LayoutUser = ({ children }) => {
     if (key !== "logout") {
       navigate(key)
     } else {
-      handleLogout(user?._id, dispatch, navigate)
+      handleLogout(dispatch, navigate)
     }
   }
 
@@ -72,7 +72,7 @@ const LayoutUser = ({ children }) => {
           </div>
         </Col>
       </Row>
-      </LayoutUserStyled>
+    </LayoutUserStyled>
   )
 }
 

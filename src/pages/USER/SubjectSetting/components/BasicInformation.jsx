@@ -108,7 +108,7 @@ const BasicInformation = ({ totalFee, setTotalFee, subjectSetting }) => {
             />
           </Form.Item>
           <div className="d-flex align-items-center">
-            <div className='fw-600 fs-15 mr-8'>Số tiền học sinh cần trả:</div>
+            <div className='fw-600 fs-15 mr-8'>Số bạn nhận được:</div>
             <div>
               <span>{formatMoney(totalFee)}</span>
               <span> VNĐ</span>
@@ -126,7 +126,6 @@ const BasicInformation = ({ totalFee, setTotalFee, subjectSetting }) => {
             <Checkbox.Group
               mode='multiple'
               disabled={subjectSetting?.RegisterStatus === 2 ? true : false}
-            // onChange={e => setLearnTypes(e)}
             >
               {getListComboKey(SYSTEM_KEY.SKILL_LEVEL, listSystemKey)?.map((i, idx) =>
                 <Checkbox key={idx} value={i?.ParentID}>{i?.ParentName}</Checkbox>

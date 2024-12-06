@@ -10,13 +10,11 @@ const uploadFileList = body => http.post(apiUploadFileList, body, {
     'Content-Type': 'multipart/form-data',
   }
 })
-
 const uploadFileSingle = body => http.post(apiUploadFileSingle, body, {
   headers: {
     'Content-Type': 'multipart/form-data',
   }
 })
-
 const uploadDocumentist = body => http.post(apiUploadDocumentList, body, {
   headers: {
     'Content-Type': 'multipart/form-data',

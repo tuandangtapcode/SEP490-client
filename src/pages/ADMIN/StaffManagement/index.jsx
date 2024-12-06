@@ -83,7 +83,6 @@ const StaffManagement = () => {
     {
       title: 'Địa chỉ Email',
       width: 100,
-      // align: 'center',
       dataIndex: 'Email',
       key: 'Email',
     },

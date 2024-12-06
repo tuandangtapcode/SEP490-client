@@ -1,5 +1,6 @@
 import ListIcons from "src/components/ListIcons"
 import { ModalStyled } from "./styled"
+import { Button } from "antd"
 
 const ConfirmModal = ({
   width = 600,
@@ -9,6 +10,8 @@ const ConfirmModal = ({
   okText = "Đồng ý",
   cancelText = "Hủy",
   onOk = e => e(),
+  isViewOkBtn = true,
+  isViewCancelBtn = true,
   ...props
 }) => {
   ModalStyled.confirm({
@@ -21,7 +24,6 @@ const ConfirmModal = ({
     cancelText,
     width,
     onOk,
-    // maskClosable: true,
     okButtonProps: {
       style: {
         padding: "12px, 12px, 12px, 12px",
@@ -40,6 +42,16 @@ const ConfirmModal = ({
         background: `#F1F3F5`,
       },
     },
+    footer: (_, { OkBtn, CancelBtn }) => (
+      <>
+        {
+          !!isViewCancelBtn && <CancelBtn />
+        }
+        {
+          !!isViewOkBtn && <OkBtn />
+        }
+      </>
+    ),
     wrapClassName: "cb1",
     ...props,
     content: (
@@ -54,7 +66,7 @@ const ConfirmModal = ({
         {
           !!description &&
           <div className="fw-600 fs-16">
-            {description}
+            <div className="textTitle" dangerouslySetInnerHTML={{ __html: description }} />
           </div>
         }
       </div>

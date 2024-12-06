@@ -1,16 +1,14 @@
-// LineRace.js
-import React, { useEffect, useState } from 'react';
-import ReactEcharts from 'echarts-for-react';
-import styled from 'styled-components';
-import { Card } from 'antd';
-import StatisticService from 'src/services/StatisticService';
-import { toast } from 'react-toastify';
+import { useEffect, useState } from 'react'
+import ReactEcharts from 'echarts-for-react'
+import styled from 'styled-components'
+import { Card } from 'antd'
+import StatisticService from 'src/services/StatisticService'
+import { toast } from 'react-toastify'
 
-// Styled component for the Card
 const LineRaceWrapper = styled(Card)`
   border-radius: 10px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-`;
+`
 
 
 const LineRace = () => {
@@ -24,7 +22,7 @@ const LineRace = () => {
     try {
       setLoading(true)
       const res = await StatisticService.statisticBooking()
-      if (!!res?.isError) return toast.error(res?.msg) 
+      if (!!res?.isError) return toast.error(res?.msg)
       setBooking(res?.data)
     } finally {
       setLoading(false)
@@ -38,24 +36,24 @@ const LineRace = () => {
     if (booking.length > 0) {
       const interval = setInterval(() => {
         setCurrentMonth((prev) => {
-          const nextMonth = prev + 1;
+          const nextMonth = prev + 1
           if (nextMonth > booking.length - 1) {
-            clearInterval(interval);
-            return prev;
+            clearInterval(interval)
+            return prev
           }
-          return nextMonth;
-        });
-      }, 500);
+          return nextMonth
+        })
+      }, 500)
 
-      return () => clearInterval(interval);
+      return () => clearInterval(interval)
     }
-  }, [booking]);
+  }, [booking])
 
   useEffect(() => {
     if (booking[currentMonth]) {
-      setCurrentData((prev) => [...prev, booking[currentMonth]]);
+      setCurrentData((prev) => [...prev, booking[currentMonth]])
     }
-  }, [currentMonth, booking]);
+  }, [currentMonth, booking])
 
   const getOption = () => ({
     title: {
@@ -78,13 +76,13 @@ const LineRace = () => {
         smooth: true,
       },
     ],
-  });
+  })
 
   return (
     <LineRaceWrapper >
       <ReactEcharts option={getOption()} style={{ height: '300px', width: '100%' }} />
     </LineRaceWrapper>
-  );
-};
+  )
+}
 
-export default LineRace;
+export default LineRace

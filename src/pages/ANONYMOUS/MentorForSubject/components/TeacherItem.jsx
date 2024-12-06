@@ -1,7 +1,7 @@
 import { Col, Rate, Row } from "antd"
 import { useSelector } from "react-redux"
 import ListIcons from "src/components/ListIcons"
-import { formatMoney, getRealFee } from "src/lib/stringUtils"
+import { formatMoney } from "src/lib/stringUtils"
 import { globalSelector } from "src/redux/selector"
 import { MainProfileWrapper } from "../../TeacherDetail/styled"
 import { useNavigate } from "react-router-dom"
@@ -55,7 +55,7 @@ const TeacherItem = ({ teacherItem, subjectID }) => {
           <div className="d-flex-end align-items-center">
             <p className="primary-text fs-17 mt-4">{ListIcons.ICON_DOLLAR}</p>
             <p className="primary-text fs-17 fw-700">
-              {formatMoney(getRealFee(teacherItem?.Price, profitPercent))}
+              {formatMoney(teacherItem?.Price * 1000)}
             </p>
           </div>
           <p>mỗi buổi</p>
