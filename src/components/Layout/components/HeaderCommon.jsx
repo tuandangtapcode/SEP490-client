@@ -97,7 +97,7 @@ const HeaderCommon = () => {
       label: (
         <div>Đăng xuất</div>
       ),
-      onClick: () => handleLogout(user?._id, dispatch, navigate)
+      onClick: () => handleLogout(dispatch, navigate)
     },
   ]
 

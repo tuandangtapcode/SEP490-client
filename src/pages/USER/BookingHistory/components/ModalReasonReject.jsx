@@ -17,12 +17,20 @@ const ModalReasonReject = ({ open, onCancel, onOk }) => {
   const [form] = Form.useForm()
   const { user } = useSelector(globalSelector)
 
-  console.log("open", open);
-
-
   const changeConfirmStatus = async () => {
     try {
       setLoading(true)
+      const values = await form.validateFields()
+      const res = await ConfirmService.changeConfirmStatus({
+        ConfirmID: open?._id,
+        ConfirmStatus: 3,
+        RecevierName: open?.Receiver?.FullName,
+        RecevierEmail: open?.Receiver?.Email,
+        SenderName: open?.Sender?.FullName,
+        SenderEmail: open?.Sender?.Email,
+        Reason: values?.Reason
+      })
+      if (!!res?.isError) return toast.error(res?.msg)
       const resNotiffication = await NotificationService.createNotification({
         Content: user?.RoleID === Roles.ROLE_TEACHER
           ? `Giáo viên ${user?.FullName} đã hủy xác nhận booking của bạn`
@@ -43,17 +51,6 @@ const ModalReasonReject = ({ open, onCancel, onOk }) => {
           Receiver: resNotiffication?.data?.Receiver,
           createdAt: resNotiffication?.data?.createdAt
         })
-      const values = await form.validateFields()
-      const res = await ConfirmService.changeConfirmStatus({
-        ConfirmID: open?._id,
-        ConfirmStatus: 3,
-        RecevierName: open?.Receiver?.FullName,
-        RecevierEmail: open?.Receiver?.Email,
-        SenderName: open?.Sender?.FullName,
-        SenderEmail: open?.Sender?.Email,
-        Reason: values?.Reason
-      })
-      if (!!res?.isError) return toast.error(res?.msg)
       toast.success(res?.msg)
       socket.emit("send-noted-confirm", {
         ...res?.data,

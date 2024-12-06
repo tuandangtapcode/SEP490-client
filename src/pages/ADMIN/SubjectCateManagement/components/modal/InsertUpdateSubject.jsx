@@ -1,18 +1,13 @@
-import { Col, Form, Row, Select, Space, Upload, message } from "antd"
+import { Col, Form, Row, Space, Upload, message } from "antd"
 import { useEffect, useState } from "react"
-import { useSelector } from "react-redux"
 import { toast } from "react-toastify"
 import InputCustom from "src/components/InputCustom"
 import ModalCustom from "src/components/Modal/ModalCustom"
 import ButtonCustom from "src/components/MyButton/ButtonCustom"
-import Notice from "src/components/Notice"
 import SpinCustom from "src/components/SpinCustom"
-import { globalSelector } from "src/redux/selector"
 import FileService from "src/services/FileService"
 import SubjectService from "src/services/SubjectService"
 import styled from "styled-components"
-
-const { Option } = Select
 
 const StyleModal = styled.div`
   .ant-form-item-label {

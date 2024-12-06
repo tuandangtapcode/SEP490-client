@@ -1,7 +1,6 @@
 import { Button } from "antd"
 import styled, { keyframes } from "styled-components"
 
-// Định nghĩa hiệu ứng fade-in
 const fadeIn = keyframes`
   0% {
     opacity: 0;
@@ -13,7 +12,6 @@ const fadeIn = keyframes`
 
 export const Container = styled.div`
   padding: 20px;
-  ${'' /* text-align: center; */}
 `
 
 export const Title = styled.h1`
@@ -30,6 +28,7 @@ export const Description = styled.p`
 
 export const StyledListItem = styled.div`
  padding: 20px;
+ margin-bottom: 12px;
  border-radius: 10px;
  border: 1px solid #ccc;
   &:hover {

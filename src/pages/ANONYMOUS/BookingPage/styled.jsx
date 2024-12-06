@@ -18,6 +18,7 @@ export const TimeItemStyled = styled.div`
 
 export const PaymentMethodStyled = styled.div`
   border: 1px solid #ccc;
+  margin-bottom: 12px;
   border-radius: 8px;
   padding: 16px;
   width: 100%;

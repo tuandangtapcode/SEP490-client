@@ -12,6 +12,7 @@ import { formatMoney } from "src/lib/stringUtils"
 import { globalSelector } from "src/redux/selector"
 import CourseService from "src/services/CourseService"
 import InsertUpdateCourse from "./components/InsertUpdateCourse"
+import { toast } from "react-toastify"
 
 const MyCourse = () => {
 
@@ -38,11 +39,13 @@ const MyCourse = () => {
     }
   }
 
-  const handleDeleteCourse = async (CourseID) => {
+  const handleDeleteCourse = async (body) => {
     try {
       setLoading(true)
-      const res = await CourseService.deleteCourse(CourseID)
+      const res = await CourseService.deleteCourse(body)
       if (!!res?.isError) return
+      toast.success(res?.msg)
+      getListCourse()
     } finally {
       setLoading(false)
     }
@@ -67,8 +70,10 @@ const MyCourse = () => {
           okText: "Đồng ý",
           cancelText: "Đóng",
           onOk: async close => {
-            handleDeleteCourse(record?._id)
-            getListCourse()
+            handleDeleteCourse({
+              CourseID: record?._id,
+              IsDeleted: !record?.IsDeleted
+            })
             close()
           },
         })
@@ -116,7 +121,7 @@ const MyCourse = () => {
       dataIndex: "Price",
       key: "Price",
       render: (value) => (
-        <div>{formatMoney(value * 1000)} VNĐ</div>
+        <div>{formatMoney(value)} VNĐ</div>
       )
     },
     {

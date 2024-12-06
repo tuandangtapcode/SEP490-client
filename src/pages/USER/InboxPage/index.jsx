@@ -28,12 +28,11 @@ const InboxPage = () => {
 
   const getChatOfUser = async () => {
     try {
-      // setLoading(true)
       const res = await MessageService.getChatOfUser()
       if (!!res?.isError) return toast.error(res?.msg)
       setChats(res?.data)
     } finally {
-      // setLoading(false)
+      console.log()
     }
   }
 

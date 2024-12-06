@@ -13,14 +13,13 @@ import ModalChangeProfitPercent from "./components/ModalChangeProfitPercent"
 
 const formatter = (value) => <CountUp end={value} separator="," />
 
-// Styled components
 const StatisticCardWrapper = styled(Card)`
   display: flex;
   align-items: center;
   padding: 10px;
   border-radius: 10px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-`;
+`
 
 
 const StatisticManagement = () => {
@@ -68,7 +67,12 @@ const StatisticManagement = () => {
         </Col>
         <Col span={6}>
           <StatisticCardWrapper>
-            <Statistic title="Chi trả cho giáo viên" value={financial?.Expense} formatter={formatter} />
+            <Statistic title="Chi phí cho giáo viên" value={financial?.Expense} formatter={formatter} />
+          </StatisticCardWrapper>
+        </Col>
+        <Col span={6}>
+          <StatisticCardWrapper>
+            <Statistic title="Chi phí đã thanh toán" value={financial?.CostPaid} formatter={formatter} />
           </StatisticCardWrapper>
         </Col>
         <Col span={6}>
@@ -76,11 +80,11 @@ const StatisticManagement = () => {
             <Statistic title="Lợi nhuận" value={financial?.Profit} formatter={formatter} />
           </StatisticCardWrapper>
         </Col>
-        <Col span={6}>
+        {/* <Col span={6}>
           <StatisticCardWrapper onClick={() => setOpenChangeProfitPercent(profitPercent)}>
             <Statistic title="Phần trăm lợi nhuận" value={`${profitPercent * 100}%`} />
           </StatisticCardWrapper>
-        </Col>
+        </Col> */}
         <Col span={12}>
           <Pie
             newRegister={newRegister}

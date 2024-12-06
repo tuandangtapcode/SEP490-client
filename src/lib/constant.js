@@ -10,7 +10,8 @@ export const SYSTEM_KEY = {
   PAYMENT_METHOD: "PaymentMethod",
   GENDER: "Gender",
   CONFIRM_STATUS: "ConfirmStatus",
-  PROFESSIONAL_LEVEL: "ProfessionalLevel"
+  PROFESSIONAL_LEVEL: "ProfessionalLevel",
+  RECEIVE_STATUS: "ReceiveStatus"
 }
 
 export const Roles = {
@@ -21,6 +22,7 @@ export const Roles = {
 }
 
 export const ADMIN_ID = "67476613fa551a62e2f8b72b"
+export const STAFF_ID = "67476613fa551a62e2f8b72b"
 
 export const MONGODB_DATE_FORMATER = "YYYY-MM-DDTHH:mm:ss.SSSZ"
 export const CALENDAR_DATE_FORMATER = "ddd MMM DD YYYY HH:mm:ss [GMT]ZZ"

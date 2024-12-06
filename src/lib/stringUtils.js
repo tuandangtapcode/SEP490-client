@@ -31,7 +31,7 @@ export const getRegexDOB = (dateString) => {
 }
 
 export const getRealFee = (price, profitPrecent) => {
-  return price * (1 + profitPrecent) * 1000
+  return price - price * profitPrecent
 }
 
 export const formatMoney = money => {

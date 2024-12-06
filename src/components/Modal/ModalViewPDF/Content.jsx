@@ -9,21 +9,6 @@ import "@react-pdf-viewer/default-layout/lib/styles/index.css"
 import { toolbarPlugin } from "@react-pdf-viewer/toolbar"
 import { useState } from "react"
 import vi_VN from "./vi_VN.json"
-import styled from "styled-components"
-
-const Styles = styled.div`
-  .pdf-container {
-    height: calc(100vh - 20px);
-    overflow-y: auto;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    .rpv-default-layout__toolbar {
-      position: sticky;
-      top: 0;
-    }
-  }
-`
 
 const ContentViewPDF = ({ fileUrl, theme = "dark" }) => {
 
@@ -35,7 +20,6 @@ const ContentViewPDF = ({ fileUrl, theme = "dark" }) => {
   const themeContext = { currentTheme, setCurrentTheme }
 
   return (
-    // <Styles>
     <div className="pdf-container" style={{ padding: "0 20px 0 20px" }}>
       <ThemeContext.Provider value={themeContext}>
         <LocalizationContext.Provider value={localizationContext}>
@@ -81,7 +65,6 @@ const ContentViewPDF = ({ fileUrl, theme = "dark" }) => {
         </LocalizationContext.Provider>
       </ThemeContext.Provider>
     </div>
-    // </Styles>
   )
 }
 

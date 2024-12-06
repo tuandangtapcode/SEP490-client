@@ -84,7 +84,7 @@ const TeacherManagement = () => {
     {
       isView: true,
       title: "Xem chi tiết",
-      disabled: false,
+      isDisabled: false,
       icon: ListIcons?.ICON_VIEW,
       onClick: () => setOpenViewProfile(record)
     },
@@ -92,7 +92,7 @@ const TeacherManagement = () => {
       isView: true,
       title: "Duyệt",
       icon: ListIcons?.ICON_CONFIRM,
-      disabled: record?.IsConfirm,
+      isDisabled: record?.IsConfirm,
       onClick: () => {
         ConfirmModal({
           description: `Bạn có chắc chắn duyệt tài khoản ${record?.FullName} không?`,
@@ -107,14 +107,14 @@ const TeacherManagement = () => {
       isView: true,
       title: "Không duyệt",
       icon: ListIcons?.ICON_CLOSE,
-      disabled: record?.IsReject,
+      isDisabled: record?.IsReject,
       onClick: () => setOpenModalReasonReject(record)
     },
     {
       isView: !!isViewLockUnLock,
       title: !!record?.Account?.IsActive ? "Khóa tài khoản" : "Mở khóa tài khoản",
       icon: !!record?.Account?.IsActive ? ListIcons?.ICON_BLOCK : ListIcons?.ICON_UNBLOCK,
-      disabled: record?.IsLockUnLock,
+      isDisabled: record?.IsLockUnLock,
       onClick: () => handleInactiveOrActiveAccount({
         UserID: record?._id,
         IsActive: !!record?.Account?.IsActive ? false : true,
@@ -190,7 +190,7 @@ const TeacherManagement = () => {
               !!i?.isView &&
               <ButtonCircle
                 key={idx}
-                disabled={i?.disabled}
+                disabled={i?.isDisabled}
                 title={i?.title}
                 icon={i?.icon}
                 onClick={i?.onClick}
