@@ -11,7 +11,7 @@ import { globalSelector } from "src/redux/selector"
 import { getListComboKey } from "src/lib/commonFunction"
 import InputCustom from "src/components/InputCustom"
 import ButtonCustom from "src/components/MyButton/ButtonCustom"
-import { formatMoney, getRealFee } from "src/lib/stringUtils"
+import { formatMoney } from "src/lib/stringUtils"
 import TimeTableService from "src/services/TimeTableService"
 import { toast } from "react-toastify"
 import { disabledBeforeDate } from "src/lib/dateUtils"
@@ -45,15 +45,14 @@ const BookingPage = () => {
   const [times, setTimes] = useState([])
   const [timeTablesTeacher, setTimeTablesTeacher] = useState([])
   const [timeTablesStudent, setTimeTablesStudent] = useState([])
-  const [openModalConfirmInfor, setOpenModalConfirmInfor] = useState()
+  const [openModalConfirmInfor, setOpenModalConfirmInfor] = useState(false)
   const [totalSlot, setTotalSlot] = useState(0)
   const [slotInWeek, setSlotInWeek] = useState(0)
   const [scheduleInWeek, setScheduleInWeek] = useState([])
   const [scheduleType, setScheduleType] = useState(0)
   const [course, setCourse] = useState()
-  const [openModalChangeSchedule, setOpenModalChangeSchedule] = useState()
-  const [openModalChooseCourse, setOpenModalChooseCourse] = useState()
-
+  const [openModalChangeSchedule, setOpenModalChangeSchedule] = useState(false)
+  const [openModalChooseCourse, setOpenModalChooseCourse] = useState(false)
 
   const getDetailTeacher = async () => {
     try {
@@ -66,7 +65,7 @@ const BookingPage = () => {
     }
   }
 
-  const getTimeTableOfStudent = async () => {
+  const getTimeTable = async () => {
     try {
       setLoading(true)
       const res = await TimeTableService.getTimeTableByUser()
@@ -80,7 +79,10 @@ const BookingPage = () => {
   const getTimeTableOfTeacher = async () => {
     try {
       setLoading(true)
-      const res = await TimeTableService.getTimeTableOfTeacherOrStudent(TeacherID)
+      const res = await TimeTableService.getTimeTableOfTeacherOrStudent({
+        UserID: TeacherID,
+        IsBookingPage: true
+      })
       if (!!res?.isError) return toast.error(res?.msg)
       setTimeTablesTeacher(res?.data)
     } finally {
@@ -186,7 +188,7 @@ const BookingPage = () => {
   }
 
   useEffect(() => {
-    getTimeTableOfStudent()
+    getTimeTable()
     setBookingInfor(pre => ({
       ...pre,
       Address: !!user?.Address ? user?.Address : ""
@@ -249,6 +251,7 @@ const BookingPage = () => {
                   onClick={() => {
                     setOpenModalChooseCourse({ TeacherID, SubjectID })
                     setTotalSlot(0)
+                    setScheduleType(0)
                   }}
                 >
                   Khóa học dài hạn
@@ -302,6 +305,7 @@ const BookingPage = () => {
                   <DatePicker
                     style={{ width: "100%" }}
                     format="DD/MM/YYYY"
+                    allowClear={false}
                     disabledDate={current => disabledBeforeDate(current)}
                     onChange={e => {
                       if (selectedTimes.length === totalSlot) {
@@ -351,7 +355,7 @@ const BookingPage = () => {
                 </div>
                 <div className="d-flex align-items-center">
                   <span className="mr-4">Giá tiền:</span>
-                  <span>{formatMoney(getRealFee(course?.Price, profitPercent))} VNĐ</span>
+                  <span>{formatMoney(course?.Price)} VNĐ</span>
                 </div>
               </div>
             }
@@ -466,6 +470,10 @@ const BookingPage = () => {
               <div>
                 <p className="fs-16 fw-600">{teacher?.Teacher?.FullName}</p>
                 <p>{teacher?.Subject?.SubjectName}</p>
+                <div className="mt-12">
+                  <span className="gray-text mr-4">Học phí/buổi: </span>
+                  <span className="primary-text fw-700 fs-15">{formatMoney(teacher?.Price)} VNĐ</span>
+                </div>
               </div>
             </div>
             <div className="learn-type mb-12">
@@ -534,8 +542,8 @@ const BookingPage = () => {
                 <span className="fs-17 fw-600 primary-text">
                   {
                     !!course
-                      ? formatMoney(getRealFee(course?.Price, profitPercent))
-                      : formatMoney(getRealFee(+teacher?.Price * selectedTimes.length, profitPercent))
+                      ? formatMoney(course?.Price)
+                      : formatMoney(+teacher?.Price * selectedTimes.length)
                   } VNĐ
                 </span>
               </div>
@@ -602,7 +610,6 @@ const BookingPage = () => {
           setScheduleInWeek={setScheduleInWeek}
         />
       }
-
     </SpinCustom >
   )
 }

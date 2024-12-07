@@ -10,7 +10,7 @@ import {
 
 const createCourse = body => http.post(apiCreateCourse, body)
 const updateCourse = body => http.post(apiUpdateCourse, body)
-const deleteCourse = CourseID => http.get(`${apiDeleteCourse}/${CourseID}`)
+const deleteCourse = body => http.post(apiDeleteCourse, body)
 const getListCourse = body => http.post(apiGetListCourse, body)
 const getListCourseByTeacher = body => http.post(apiGetListCourseByTeacher, body)
 const getListCourseOfTeacher = body => http.post(apiGetListCourseOfTeacher, body)

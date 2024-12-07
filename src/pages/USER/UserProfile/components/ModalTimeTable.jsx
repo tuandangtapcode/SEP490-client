@@ -49,9 +49,6 @@ const ModalTimeTable = ({
     setSchedules(newData)
   }
 
-  console.log("schedules", schedules);
-
-
   const handleChangeSchedules = async () => {
     try {
       setLoading(true)

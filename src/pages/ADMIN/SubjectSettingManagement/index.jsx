@@ -93,14 +93,14 @@ const SubjectSettingManagement = () => {
   const listBtn = record => [
     {
       title: "Xem chi tiết",
-      disabled: false,
+      isDisabled: false,
       icon: ListIcons?.ICON_VIEW,
       onClick: () => setOpenViewSubjectSetting(record)
     },
     {
       title: "Duyệt",
       icon: ListIcons?.ICON_CONFIRM,
-      disabled: record?.IsConfirm,
+      isDisabled: record?.IsConfirm,
       onClick: () => {
         ConfirmModal({
           description: `Bạn có chắc chắn duyệt môn học của giáo viên ${record?.Teacher?.FullName} không?`,
@@ -114,7 +114,7 @@ const SubjectSettingManagement = () => {
     {
       title: "Không duyệt",
       icon: ListIcons?.ICON_CLOSE,
-      disabled: record?.IsReject,
+      isDisabled: record?.IsReject,
       onClick: () => setOpenModalReasonReject(record)
     },
   ]
@@ -158,7 +158,7 @@ const SubjectSettingManagement = () => {
         <div className="text-center">
           {
             !!record?.Price
-              ? `${formatMoney(record?.Price * 1000)} VNĐ`
+              ? `${formatMoney(record?.Price)} VNĐ`
               : ""
           }
         </div>
@@ -190,7 +190,7 @@ const SubjectSettingManagement = () => {
             listBtn(record)?.map((i, idx) =>
               <ButtonCircle
                 key={idx}
-                disabled={i?.disabled}
+                disabled={i?.isDisabled}
                 title={i?.title}
                 icon={i?.icon}
                 onClick={i?.onClick}
@@ -220,7 +220,11 @@ const SubjectSettingManagement = () => {
           <Select
             placeholder="Chọn môn học"
             allowClear
+            showSearch
             onChange={e => setPagination(pre => ({ ...pre, SubjectID: e }))}
+            filterOption={(input, option) =>
+              option?.children?.toLowerCase().indexOf(input.toLowerCase()) >= 0
+            }
           >
             {
               subjects?.map(i =>
@@ -238,6 +242,7 @@ const SubjectSettingManagement = () => {
           <Select
             mode="multiple"
             allowClear
+            showSearch={false}
             placeholder="Chọn level"
             onChange={e => setPagination(pre => ({ ...pre, Level: e }))}
           >

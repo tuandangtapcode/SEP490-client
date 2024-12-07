@@ -16,7 +16,7 @@ const ModalChatAI = () => {
 
   const handleSendMessage = async () => {
     if (!content) return;
-    
+
     try {
       setLoading(true);
       setMessages((prev) => [
@@ -24,8 +24,7 @@ const ModalChatAI = () => {
         { sender: "user", content },
       ]);
 
-      const res = await axios.post("http://localhost:9999/generate/generateText", { prompt:content });
-      // const res= await ChatBoxAiService.generateText(prompt=content);
+      const res = await axios.post("http://localhost:9999/generate/generateText", { prompt: content });
       const aiResponse = res?.data?.data || "Không có phản hồi từ AI";
 
       setMessages((prev) => [

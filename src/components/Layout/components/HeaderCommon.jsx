@@ -30,7 +30,7 @@ const NotificationItem = ({
         if (!data?.IsSeen) {
           seenNotification(data?._id)
         }
-        navigate(`/${user?.RoleID === Roles.ROLE_ADMIN ? "dashboard" : "user"}/${data?.Type}`)
+        navigate(`/${[Roles.ROLE_ADMIN, Roles.ROLE_STAFF].includes(user?.RoleID) ? "dashboard" : "user"}/${data?.Type}`)
       }}
       style={{ margin: '8px 0' }}
       className={data?.IsSeen ? "gray-text" : "black-text not-seen-notify"}
@@ -48,7 +48,7 @@ const NotificationItem = ({
 
 const HeaderCommon = () => {
 
-  const { user, isLogin } = useSelector(globalSelector)
+  const { user } = useSelector(globalSelector)
   const dispatch = useDispatch()
   const navigate = useNavigate()
   const [notifications, setNotifications] = useState([])
@@ -97,7 +97,7 @@ const HeaderCommon = () => {
       label: (
         <div>Đăng xuất</div>
       ),
-      onClick: () => handleLogout(user?._id, dispatch, navigate)
+      onClick: () => handleLogout(dispatch, navigate)
     },
   ]
 
@@ -157,7 +157,7 @@ const HeaderCommon = () => {
                   }}
                   mode="horizontal"
                   items={MenuCommon()}
-                  selectedKeys={location?.pathname}
+                  selectedKeys={[location?.pathname]}
                   onClick={(e) => navigate(e?.key)}
                 />
               </div>

@@ -1,4 +1,4 @@
-import { Col, Row, Space, Tag } from "antd"
+import { Col, message, Row, Space, Tag } from "antd"
 import { useEffect, useState } from "react"
 import { toast } from "react-toastify"
 import { useNavigate } from "react-router-dom"
@@ -18,6 +18,7 @@ import NotificationService from "src/services/NotificationService"
 import socket from "src/utils/socket"
 import Router from "src/routers"
 import ModalReasonReject from "./components/ModalReasonReject"
+import TimeTableService from "src/services/TimeTableService"
 
 
 const BookingHistory = () => {
@@ -29,6 +30,7 @@ const BookingHistory = () => {
   const [total, setTotal] = useState(0)
   const [openModalViewBooking, setOpenModalViewBooking] = useState(false)
   const [openModalReasonReject, setOpenModalReasonReject] = useState(false)
+  const [timeTables, setTimeTables] = useState([])
   const [pagination, setPagination] = useState({
     CurrentPage: 1,
     PageSize: 10,
@@ -47,9 +49,28 @@ const BookingHistory = () => {
     }
   }
 
+  const getTimeTable = async () => {
+    try {
+      setLoading(true)
+      const res = await TimeTableService.getTimeTableByUser()
+      if (!!res?.isError) return toast.error(res?.msg)
+      setTimeTables(res?.data?.List)
+    } finally {
+      setLoading(false)
+    }
+  }
+
   const changeConfirmStatus = async (record, confirmStatus) => {
     try {
       setLoading(true)
+      const res = await ConfirmService.changeConfirmStatus({
+        ConfirmID: record?._id,
+        ConfirmStatus: confirmStatus,
+        RecevierName: user?.FullName,
+        SenderName: record?.Sender?.FullName,
+        SenderEmail: record?.Sender?.Email
+      })
+      if (!!res?.isError) return toast.error(res?.msg)
       if (confirmStatus === 4) {
         const resNotiffication = await NotificationService.createNotification({
           Content: `Giáo viên ${user?.FullName} đã ghi nhận xác nhận booking của bạn`,
@@ -67,16 +88,6 @@ const BookingHistory = () => {
             Receiver: resNotiffication?.data?.Receiver,
             createdAt: resNotiffication?.data?.createdAt
           })
-      }
-      const res = await ConfirmService.changeConfirmStatus({
-        ConfirmID: record?._id,
-        ConfirmStatus: confirmStatus,
-        RecevierName: user?.FullName,
-        SenderName: record?.Sender?.FullName,
-        SenderEmail: record?.Sender?.Email
-      })
-      if (!!res?.isError) return toast.error(res?.msg)
-      if (confirmStatus === 4) {
         socket.emit("send-noted-confirm", {
           ...res?.data,
           RoleID: user?.RoleID,
@@ -93,6 +104,10 @@ const BookingHistory = () => {
   useEffect(() => {
     getListConfirm()
   }, [pagination])
+
+  useEffect(() => {
+    getTimeTable()
+  }, [])
 
   const listBtn = record => [
     {
@@ -120,8 +135,33 @@ const BookingHistory = () => {
     {
       title: "Thanh toán",
       isView: record?.IsPaid,
+      isDisabled: record?.IsDisabledPaid,
       icon: ListIcons?.ICON_PAYMENT_BOOKING,
-      onClick: () => navigate(`${Router.CHECKOUT}/${record?._id}`)
+      onClick: () => {
+        let timetableExist = []
+        record?.Schedules?.forEach(i => {
+          const checkExist = timeTables?.find(t =>
+            new Date(i?.StartTime) <= new Date(t?.StartTime) &&
+            new Date(i?.EndTime) >= new Date(t?.StartTime)
+          )
+          if (!!checkExist)
+            timetableExist.push(checkExist)
+        })
+        if (!!timetableExist?.length) {
+          ConfirmModal({
+            description: `
+              <div>Bạn đã bị trùng lịch học vào những ngày:</div>
+              ${timetableExist?.map(i =>
+              `<div>${dayjs(i?.StartTime).format("DD/MM/YYYY")} ${dayjs(i?.StartTime).format("HH:mm")}-${dayjs(i?.EndTime).format("HH:mm")}</div>`
+            ).join("")}
+              <div>Bạn sẽ không thể thanh toán booking này!</div>
+            `,
+            isViewCancelBtn: false
+          })
+        } else {
+          navigate(`${Router.CHECKOUT}/Confirm/${record?._id}`)
+        }
+      }
     },
     {
       title: "Hủy",
@@ -153,7 +193,7 @@ const BookingHistory = () => {
       render: (_, record, index) => (
         <div className="text-center">
           {
-            !!record?.Receiver?._id ? record?.Receiver?.FullName : record?.Sender?.FullName
+            user?.RoleID === Roles.ROLE_STUDENT ? record?.Receiver?.FullName : record?.Sender?.FullName
           }
         </div>
       ),

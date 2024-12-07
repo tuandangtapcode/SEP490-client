@@ -3,8 +3,7 @@ const USER = "/user"
 const Router = {
   // GUEST
   TRANG_CHU: "/",
-  BLOG: "/blog",
-  BLOG_DETAIL: "/blog/:BlogID",
+  BLOG: "/bai-dang",
   CACH_HOAT_DONG: "/cach-hoat-dong",
   DANG_NHAP: "/dang-nhap",
   DANG_KY: "/dang-ky",
@@ -15,13 +14,11 @@ const Router = {
   TIM_KIEM_MON_HOC: "/tim-kiem-mon-hoc",
   TIM_KIEM_GIAO_VIEN: "/tim-kiem-giao-vien",
   MEETING_ROOM: `/meeting-room/:RoomID`,
-  // CHATBOXAI: `/generate/generateText`,
   FORGOT_PASSWORD: "/quen-mat-khau",
 
   // USER
   PROFILE: `${USER}/profile`,
   DANG_BAI_VIET: `${USER}/dang-bai-viet`,
-  // POST_BAI_TIM_GIAO_VIEN: `${USER}/dang-bai-tim-giao-vien`,
   SUBJECT_SETTING: `${USER}/cai-dat-mon-hoc`,
   LICH_HOC: `${USER}/lich-hoc`,
   CAI_DAT_MAT_KHAU: `${USER}/cai-dat-mat-khau`,
@@ -32,6 +29,7 @@ const Router = {
   LICH_SU_GIAO_DICH: `${USER}/lich-su-giao-dich`,
   CAI_DAT_TAI_KHOAN_NH: `${USER}/cai-dat-tai-khoan-ngan-hang`,
   CHECKOUT: `${USER}/checkout`,
+  BAI_DANG_DA_DANG_KY: `${USER}/bai-dang-da-dang-ky`,
 
   // ADMIN
   QUAN_LY_THONG_KE: "/dashboard",
@@ -42,9 +40,8 @@ const Router = {
   QUAN_LY_BAI_DANG: "/dashboard/blog",
   QUAN_LY_MON_HOC: "/dashboard/subject-cate",
   QUAN_LY_GIAO_DICH: "/dashboard/payment",
-  QUAN_LY_CHUYEN_KHOAN: "/dashboard/transfer",
+  QUAN_LY_TIEN_LUONG: "/dashboard/salary",
   QUAN_LY_REPORT: "/dashboard/report",
-  QUAN_LY_ISSUE: "/dashboard/issue",
   QUAN_LY_FEEDBACK: "/dashboard/feedback",
   QUAN_LY_HOP_THU_DEN: "/dashboard/inbox",
 }

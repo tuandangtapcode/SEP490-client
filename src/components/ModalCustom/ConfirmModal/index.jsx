@@ -1,5 +1,6 @@
 import ListIcons from "src/components/ListIcons"
 import { ModalStyled } from "./styled"
+import { Button } from "antd"
 
 const ConfirmModal = ({
   width = 600,
@@ -9,6 +10,8 @@ const ConfirmModal = ({
   okText = "Đồng ý",
   cancelText = "Hủy",
   onOk = e => e(),
+  isViewOkBtn = true,
+  isViewCancelBtn = true,
   ...props
 }) => {
   ModalStyled.confirm({
@@ -21,10 +24,9 @@ const ConfirmModal = ({
     cancelText,
     width,
     onOk,
-    // maskClosable: true,
     okButtonProps: {
       style: {
-        padding: "16px, 16px, 16px, 16px",
+        padding: "12px, 12px, 12px, 12px",
         borderRadius: 8,
         height: 32,
         background: `var(--color-primary)`,
@@ -33,20 +35,30 @@ const ConfirmModal = ({
     cancelButtonProps: {
       style: {
         borderRadius: 4,
-        padding: "16px, 16px, 16px, 16px",
+        padding: "12px, 12px, 12px, 12px",
         height: 32,
         color: `#000`,
         border: "1px solid #F1F3F5",
         background: `#F1F3F5`,
       },
     },
+    footer: (_, { OkBtn, CancelBtn }) => (
+      <>
+        {
+          !!isViewCancelBtn && <CancelBtn />
+        }
+        {
+          !!isViewOkBtn && <OkBtn />
+        }
+      </>
+    ),
     wrapClassName: "cb1",
     ...props,
     content: (
       <div className="d-flex justify-content-center align-items-center flex-column">
         <div className="d-flex-center">
           <span
-            style={{ fontSize: '100px' }}
+            style={{ fontSize: '80px' }}
           >
             {ListIcons[icon]}
           </span>
@@ -54,7 +66,7 @@ const ConfirmModal = ({
         {
           !!description &&
           <div className="fw-600 fs-16">
-            {description}
+            <div className="textTitle" dangerouslySetInnerHTML={{ __html: description }} />
           </div>
         }
       </div>

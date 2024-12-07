@@ -14,8 +14,6 @@ const ModalChangeSchedule = ({
   setSelectedTimes
 }) => {
 
-  console.log("selectedTimes", selectedTimes);
-
 
   return (
     <ModalCustom

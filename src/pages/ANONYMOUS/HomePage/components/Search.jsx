@@ -1,15 +1,16 @@
 import ListIcons from "src/components/ListIcons"
-import { Col, Form, Row, Select } from "antd"
-import { useEffect, useRef, useState } from "react"
+import { Col, Form, message, Row, Select } from "antd"
+import { useEffect, useState } from "react"
 import { useSelector } from "react-redux"
 import { globalSelector } from "src/redux/selector"
 import { getListComboKey } from "src/lib/commonFunction"
 import { SYSTEM_KEY } from "src/lib/constant"
-import { Link, useNavigate } from "react-router-dom"
 import ButtonCustom from "src/components/MyButton/ButtonCustom"
 import { SearchContainerStyled } from "../styled"
 import SubjectService from "src/services/SubjectService"
 import { toast } from "react-toastify"
+import InputCustom from "src/components/InputCustom"
+import { useNavigate } from "react-router-dom"
 import Router from "src/routers"
 
 const { Option } = Select
@@ -18,14 +19,8 @@ const Search = ({ setPrompt }) => {
 
   const { listSystemKey } = useSelector(globalSelector)
   const [subjects, setSubjects] = useState([])
-  const timeOutRef = useRef(null)
-  const navigate = useNavigate()
   const [form] = Form.useForm()
-  const [pagination, setPagination] = useState({
-    TextSearch: "",
-    CurrentPage: 1,
-    PageSize: 10
-  })
+  const navigate = useNavigate()
   const [searchData, setSearchData] = useState({
     Subject: "",
     Level: [],
@@ -34,7 +29,11 @@ const Search = ({ setPrompt }) => {
 
   const getListSubject = async () => {
     try {
-      const res = await SubjectService.getListSubject(pagination)
+      const res = await SubjectService.getListSubject({
+        TextSearch: "",
+        CurrentPage: 0,
+        PageSize: 0
+      })
       if (!!res?.isError) return toast.error(res?.msg)
       setSubjects(res?.data?.List)
     } finally {
@@ -44,13 +43,13 @@ const Search = ({ setPrompt }) => {
 
   useEffect(() => {
     getListSubject()
-  }, [pagination])
+  }, [])
 
 
   return (
     <SearchContainerStyled>
       <Form form={form}>
-        <Row gutter={[16]} className="d-flex-sb">
+        <Row gutter={[16, 16]} className="d-flex-center">
           <Col span={7}>
             <div className="d-flex align-items-center mb-8">
               {ListIcons.ICON_SUBJECT_CATE_PRIMARY_COLOR}
@@ -63,29 +62,9 @@ const Search = ({ setPrompt }) => {
                 allowClear
                 placeholder="Chọn môn học"
                 onChange={e => setSearchData(pre => ({ ...pre, Subject: e }))}
-                // onPopupScroll={e => {
-                //   const target = e.currentTarget
-                //   if (
-                //     !isLoadingMore &&
-                //     target.scrollHeight - target.scrollTop <= target.clientHeight + 1
-                //   ) {
-                //     setIsLoadingMore(true);
-                //     setPagination(prev => ({
-                //       ...prev,
-                //       CurrentPage: prev.CurrentPage + 1
-                //     }))
-                //   }
-                // }}
-                onSearch={(e) => {
-                  if (timeOutRef.current) {
-                    clearTimeout(timeOutRef.current)
-                  }
-                  timeOutRef.current = setTimeout(() => {
-                    setPagination((pre) => ({ ...pre, TextSearch: e }))
-                    timeOutRef.current = null
-                  }, 400)
-                }}
-                filterOption={false}
+                filterOption={(input, option) =>
+                  option?.children?.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                }
               >
                 {
                   subjects?.map(i =>
@@ -154,10 +133,26 @@ const Search = ({ setPrompt }) => {
           <Col span={3} className="d-flex-center">
             <ButtonCustom
               className="yellow-btn submit-btn mt-23"
-            // onClick={() => navigate(`${Router.TIM_KIEM_GIAO_VIEN}/${Sear}`)}
+              onClick={() => {
+                if (!searchData?.Subject) {
+                  return message.error("Hãy chọn môn học")
+                }
+                navigate(
+                  `${Router.TIM_KIEM_GIAO_VIEN}/${searchData?.Subject}`,
+                  { state: searchData }
+                )
+              }}
             >
               Tìm
             </ButtonCustom>
+          </Col>
+          <Col span={23}>
+            <InputCustom
+              type="isSearch"
+              placeholder="Tìm theo nhu cầu của bạn..."
+              allowClear
+              onSearch={e => setPrompt(e)}
+            />
           </Col>
         </Row>
       </Form>
