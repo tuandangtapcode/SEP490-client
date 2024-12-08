@@ -23,7 +23,7 @@ export const HeaderContainerStyled = styled.div`
   box-shadow: rgba(183, 189, 195, 0.2) 0px 8px 24px;
   background-image: ${props => props.isHome ? `url(${BackGroundImage})` : "none"};
   background-size: cover;
-  height: ${props => props.isHome ? "850px" : "auto"};
+  height: ${props => props.isHome ? "650px" : "auto"};
   margin-bottom: 30px;
   border-bottom: 1px solid var(--color-border-matte);
 `
