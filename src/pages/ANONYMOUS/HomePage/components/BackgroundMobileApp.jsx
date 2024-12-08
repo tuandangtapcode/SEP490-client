@@ -14,7 +14,7 @@ const BackgroundMobileApp = () => {
             src={ImageMobileApp}
             alt=""
             style={{
-              width: "400px",
+              width: "300px",
               height: "400px"
             }}
           />
