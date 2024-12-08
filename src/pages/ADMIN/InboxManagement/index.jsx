@@ -27,12 +27,11 @@ const InboxManagement = () => {
 
   const getChatOfAdmin = async () => {
     try {
-      // setLoading(true)
       const res = await MessageService.getChatOfAdmin()
       if (!!res?.isError) return toast.error(res?.msg)
       setChats(res?.data)
     } finally {
-      // setLoading(false)
+      console.log()
     }
   }
 
@@ -54,7 +53,7 @@ const InboxManagement = () => {
       if (!!res?.isError) return toast.error(res?.msg)
       getChatOfAdmin()
     } finally {
-      console.log();
+      console.log()
     }
   }
 

@@ -6,15 +6,15 @@ import { Roles } from "src/lib/constant"
 export const MenuCommon = () => [
   {
     key: Router.TIM_KIEM_MON_HOC,
-    label: "Tìm kiếm môn học",
+    label: <span className="fw-600">Tìm kiếm môn học</span>,
   },
   {
     key: Router.BLOG,
-    label: "Bài đăng"
+    label: <span className="fw-600">Bài đăng</span>,
   },
   {
     key: Router.CACH_HOAT_DONG,
-    label: "Cách hoạt động"
+    label: <span className="fw-600">Cách hoạt động</span>
   }
 ]
 
@@ -100,7 +100,7 @@ export const MenuAdmin = () => [
     TabID: 2
   },
   {
-    icon: ListIcons.ICON_TEACHER,
+    icon: <span className="fs-18">{ListIcons.ICON_TEACHER}</span>,
     label: "Giáo viên",
     key: Router.QUAN_LY_GIAO_VIEN,
     TabID: 3
@@ -112,7 +112,7 @@ export const MenuAdmin = () => [
     TabID: 4
   },
   {
-    icon: ListIcons.ICON_STUDENT,
+    icon: <span className="fs-18">{ListIcons.ICON_STUDENT}</span>,
     label: "Học sinh",
     key: Router.QUAN_LY_HOC_SINH,
     TabID: 5
@@ -124,7 +124,7 @@ export const MenuAdmin = () => [
     TabID: 6
   },
   {
-    icon: ListIcons.ICON_SUBJECT_CATE,
+    icon: <span className="fs-18">{ListIcons.ICON_SUBJECT_CATE}</span>,
     label: "Quản lý danh mục môn học",
     key: Router.QUAN_LY_MON_HOC,
     TabID: 7

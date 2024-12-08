@@ -15,7 +15,7 @@ import FileService from "src/services/FileService"
 import UserService from "src/services/UserService"
 import { toast } from "react-toastify"
 import NotificationService from "src/services/NotificationService"
-import { ADMIN_ID } from "src/lib/constant"
+import { STAFF_ID } from "src/lib/constant"
 import socket from "src/utils/socket"
 
 const ModalUpdateSubjectSetting = ({ open, onCancel, onOk }) => {
@@ -26,10 +26,6 @@ const ModalUpdateSubjectSetting = ({ open, onCancel, onOk }) => {
   const [filesIntroVideo, setFilesIntroVideo] = useState([])
   const [totalFee, setTotalFee] = useState(0)
   const [loading, setLoading] = useState(false)
-
-  console.log("filesIntroVideo", filesIntroVideo);
-  console.log("filesCertificate", filesCertificate);
-
 
   const handleSubmit = async () => {
     try {
@@ -80,14 +76,15 @@ const ModalUpdateSubjectSetting = ({ open, onCancel, onOk }) => {
             EndDate: i?.Date[1]
           }))
           : undefined,
-        Price: values?.Price,
+        Price: values?.Price * 1000,
+        ExpensePrice: getRealFee(values?.Price * 1000, profitPercent),
         LearnTypes: values?.LearnTypes
       })
       if (!!resSubjectSetting?.isError) return toast.error(resSubjectSetting?.msg)
       const resNotification = await NotificationService.createNotification({
         Content: `${user?.FullName} đã gửi yêu cầu duyệt môn học cho bạn`,
         Type: "teacher",
-        Receiver: ADMIN_ID
+        Receiver: STAFF_ID
       })
       if (!!resNotification?.isError) return
       socket.emit('send-notification',
@@ -97,7 +94,7 @@ const ModalUpdateSubjectSetting = ({ open, onCancel, onOk }) => {
           _id: resNotification?.data?._id,
           Type: resNotification?.data?.Type,
           IsNew: resNotification?.data?.IsNew,
-          Receiver: ADMIN_ID,
+          Receiver: STAFF_ID,
           createdAt: resNotification?.data?.createdAt
         })
       toast.success("Yêu cầu kiểm duyệt đã được gửi")
@@ -113,7 +110,7 @@ const ModalUpdateSubjectSetting = ({ open, onCancel, onOk }) => {
       TitleQuote: open?.Quote?.Title,
       ContentQuote: open?.Quote?.Content,
       LearnTypes: open?.LearnTypes,
-      Price: open?.Price,
+      Price: open?.Price / 1000,
       Levels: open?.Levels,
       experiences: !!open?.Experiences?.length
         ? open?.Experiences?.map(i => ({

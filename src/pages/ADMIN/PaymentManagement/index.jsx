@@ -23,7 +23,6 @@ const PaymentManagement = () => {
     TextSearch: "",
     CurrentPage: 1,
     PageSize: 10,
-    // PaymentStatus: 0,
     PaymentType: 0,
   })
 
@@ -127,11 +126,6 @@ const PaymentManagement = () => {
             PaymentStatuskey?.find(i => i?.ParentID === val)?.ParentName
           }
         </Tag>
-        // <div style={{ color: ["#fa8c16", "rgb(29, 185, 84)", "red"][val - 1] }} className="fw-600">
-        //   {
-        //     PaymentStatuskey?.find(i => i?.ParentID === val)?.ParentName
-        //   }
-        // </div >
       )
     },
   ]

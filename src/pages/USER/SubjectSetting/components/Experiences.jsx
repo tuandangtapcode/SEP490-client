@@ -62,7 +62,6 @@ const Experiences = ({ subjectSetting }) => {
                     </Col>
                     <Col span={1}>
                       <ButtonCircle
-                        // disabled={user?.RegisterStatus !== 3 && !!user?.Experiences?.length ? true : false}
                         icon={ListIcons.ICON_DELETE}
                         onClick={() => remove(name)}
                       />

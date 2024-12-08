@@ -8,7 +8,7 @@ import ButtonCustom from "src/components/MyButton/ButtonCustom"
 import Router from "src/routers"
 import { PatentChildBorder, TabStyled } from "src/pages/ADMIN/TeacherManagement/styled"
 import moment from "moment"
-import { formatMoney, getRealFee } from "src/lib/stringUtils"
+import { formatMoney } from "src/lib/stringUtils"
 import { useDispatch, useSelector } from "react-redux"
 import { globalSelector } from "src/redux/selector"
 import { toast } from "react-toastify"
@@ -144,8 +144,8 @@ const TeacherDetail = () => {
               allowHalf
               disabled
               value={
-                !!teacher?.Teacher?.TotalVotes
-                  ? teacher?.Teacher?.TotalVotes / teacher?.Teacher?.Votes?.length
+                !!teacher?.TotalVotes
+                  ? teacher?.TotalVotes / teacher?.Votes?.length
                   : 0
               }
               style={{
@@ -153,7 +153,7 @@ const TeacherDetail = () => {
                 marginRight: "3px"
               }}
             />
-            <span>({teacher?.Teacher?.Votes?.length} đánh giá)</span>
+            <span>({teacher?.Votes?.length} đánh giá)</span>
           </div>
         </Col>
         <Col span={17}>
@@ -293,15 +293,14 @@ const TeacherDetail = () => {
                     items={itemTab}
                     size="small"
                     animated={{
-                      // inkBar: true,
                       tabPane: true,
                     }}
                   />
                 </TabStyled>
               </div>
               <div className="mb-12">
-                <span className="gray-text mr-4">Học phí/Buổi học: </span>
-                <span className="primary-text fw-700 fs-17">{formatMoney(getRealFee(teacher?.Price, profitPercent))} VNĐ</span>
+                <span className="gray-text mr-4">Học phí/buổi: </span>
+                <span className="primary-text fw-700 fs-17">{formatMoney(teacher?.Price)} VNĐ</span>
               </div>
               {
                 user?._id !== TeacherID &&

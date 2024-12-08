@@ -1,4 +1,4 @@
-import { Button, Col, Row, Space, Table } from "antd"
+import { Col, Row, Space } from "antd"
 import { useEffect, useState } from "react"
 import ButtonCircle from "src/components/MyButton/ButtonCircle"
 import ButtonCustom from "src/components/MyButton/ButtonCustom"
@@ -6,10 +6,10 @@ import TableCustom from "src/components/TableCustom"
 import SubjectCateService from "src/services/SubjectCateService"
 import InsertUpdateSubjectCate from "./components/modal/InsertUpdateSubjectCate"
 import ListIcons from "src/components/ListIcons"
-import CB1 from "src/components/Modal/CB1"
 import ModalSubject from "./components/Subject"
 import { toast } from "react-toastify"
 import SpinCustom from "src/components/SpinCustom"
+import ConfirmModal from "src/components/ModalCustom/ConfirmModal"
 
 const SubjectCateManagement = () => {
 
@@ -65,16 +65,13 @@ const SubjectCateManagement = () => {
       title: "Xóa",
       icon: ListIcons?.ICON_DELETE,
       onClick: () => {
-        CB1({
-          title: `Bạn có chắc chắn muốn xoá danh mục "${record?.SubjectCateName}" không?`,
-          // icon: "trashRed",
-          okText: "Đồng ý",
-          cancelText: "Đóng",
+        ConfirmModal({
+          description: `Bạn có chắc chắn muốn xoá môn học "${record?.SubjectName}" không?`,
           onOk: async close => {
             handleDeleteSubjectCate(record?._id)
             getListSubjectCate()
             close()
-          },
+          }
         })
       }
     },

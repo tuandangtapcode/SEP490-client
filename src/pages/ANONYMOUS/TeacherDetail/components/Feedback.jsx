@@ -1,11 +1,6 @@
 import { Col, Empty, Rate, Row } from "antd"
 import moment from "moment"
-import { useState } from "react"
-import { useSelector } from "react-redux"
-import { toast } from "react-toastify"
-import { globalSelector } from "src/redux/selector"
 import styled from "styled-components"
-import ModalSendFeedback from "../../../USER/StudiedSubject/components/ModalSendFeedback"
 
 const FeedbackItemStyled = styled.div`
   border: 1px solid #aaa;
@@ -16,6 +11,7 @@ const FeedbackItemStyled = styled.div`
 
 
 const Feedback = ({ feedbacks }) => {
+
 
   return (
     <Row>
@@ -29,7 +25,18 @@ const Feedback = ({ feedbacks }) => {
               <FeedbackItemStyled key={idx}>
                 <Row>
                   <Col span={4}>
-                    {i?.User?.FullName}
+                    <div className="fw-600 mb-8">{i?.User?.FullName}</div>
+                    <div>
+                      <img
+                        src={i?.User?.AvatarPath}
+                        alt=""
+                        style={{
+                          width: "60px",
+                          height: "60px",
+                          borderRadius: "50%"
+                        }}
+                      />
+                    </div>
                   </Col>
                   <Col span={20}>
                     <Rate

@@ -279,7 +279,7 @@ const App = () => {
           )
         },
         {
-          path: `${Router.CHECKOUT}/:ConfirmID`,
+          path: `${Router.CHECKOUT}/:Type/:CheckoutID`,
           element: (
             <LazyLoadingComponent>
               <CheckoutPage />

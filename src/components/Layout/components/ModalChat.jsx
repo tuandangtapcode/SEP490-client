@@ -12,7 +12,7 @@ import socket from "src/utils/socket"
 import { useSelector } from "react-redux"
 import { globalSelector } from "src/redux/selector"
 import ChatBox from "src/components/ChatBox"
-import { ADMIN_ID } from "src/lib/constant"
+import { STAFF_ID } from "src/lib/constant"
 import NotificationService from "src/services/NotificationService"
 import { toast } from "react-toastify"
 
@@ -34,7 +34,7 @@ const ModalChat = () => {
     try {
       setLoading(true)
       const res = await MessageService.getChatWithUser({
-        Receiver: ADMIN_ID
+        Receiver: STAFF_ID
       })
       if (!!res?.isError) return toast.error(res?.msg)
       setChat(res?.data)
@@ -80,14 +80,14 @@ const ModalChat = () => {
       const bodyNotification = {
         Content: `${user?.FullName} gửi đã tin nhắn cho bạn`,
         Type: "inbox",
-        Receiver: ADMIN_ID
+        Receiver: STAFF_ID
       }
       const resNotification = NotificationService.createNotification(bodyNotification)
       const result = await Promise.all([resMessage, resNotification])
       if (!!result[0]?.isError || !!result[1]?.isError) return
       socket.emit("send-message", {
         ...bodyMessage,
-        Receiver: ADMIN_ID,
+        Receiver: STAFF_ID,
         Sender: {
           _id: user?._id,
           FullName: user?.FullName,
@@ -102,14 +102,14 @@ const ModalChat = () => {
           _id: result[1]?.data?._id,
           Type: result[1]?.data?.Type,
           IsNew: result[1]?.data?.IsNew,
-          Receiver: ADMIN_ID,
+          Receiver: STAFF_ID,
           createdAt: result[1]?.data?.createdAt
         })
       setMessages(pre => [
         ...pre,
         {
           ...bodyMessage,
-          Receiver: ADMIN_ID,
+          Receiver: STAFF_ID,
           Sender: {
             _id: user?._id,
             FullName: user?.FullName,

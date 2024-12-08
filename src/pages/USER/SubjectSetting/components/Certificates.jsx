@@ -59,7 +59,6 @@ const Certificates = ({
               multiple={true}
               onRemove={file => {
                 if (!!file?.id) {
-                  console.log("id", file?.id);
                   const copyFile = [...filesCertificate]
                   const newData = copyFile.filter(i => i?.id !== file?.id)
                   setFilesCertificate(newData)
