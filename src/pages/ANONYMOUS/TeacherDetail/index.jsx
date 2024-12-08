@@ -144,8 +144,8 @@ const TeacherDetail = () => {
               allowHalf
               disabled
               value={
-                !!teacher?.Teacher?.TotalVotes
-                  ? teacher?.Teacher?.TotalVotes / teacher?.Teacher?.Votes?.length
+                !!teacher?.TotalVotes
+                  ? teacher?.TotalVotes / teacher?.Votes?.length
                   : 0
               }
               style={{
@@ -153,7 +153,7 @@ const TeacherDetail = () => {
                 marginRight: "3px"
               }}
             />
-            <span>({teacher?.Teacher?.Votes?.length} đánh giá)</span>
+            <span>({teacher?.Votes?.length} đánh giá)</span>
           </div>
         </Col>
         <Col span={17}>

@@ -261,6 +261,7 @@ const StudiedSubject = () => {
           <ModalSendFeedback
             open={openModalSendFeedback}
             onCancel={() => setOpenModalSendFeedback(false)}
+            onOk={getListLearnHistory}
           />
         }
 

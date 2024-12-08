@@ -9,7 +9,7 @@ import { globalSelector } from "src/redux/selector"
 import FeedbackService from "src/services/FeedbackService"
 import socket from "src/utils/socket"
 
-const ModalSendFeedback = ({ open, onCancel }) => {
+const ModalSendFeedback = ({ open, onCancel, onOk }) => {
 
   const [form] = Form.useForm()
   const [loading, setLoading] = useState(false)
@@ -35,6 +35,7 @@ const ModalSendFeedback = ({ open, onCancel }) => {
         createdAt: Date.now
       })
       toast.success(res?.msg)
+      onOk()
       onCancel()
     } finally {
       setLoading(false)

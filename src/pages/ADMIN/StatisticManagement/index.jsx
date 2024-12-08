@@ -13,7 +13,6 @@ import ModalChangeProfitPercent from "./components/ModalChangeProfitPercent"
 
 const formatter = (value) => <CountUp end={value} separator="," />
 
-// Styled components
 export const StatisticCardWrapper = styled(Card)`
   display: flex;
   align-items: center;

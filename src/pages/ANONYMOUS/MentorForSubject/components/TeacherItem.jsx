@@ -36,15 +36,15 @@ const TeacherItem = ({ teacherItem, subjectID }) => {
                   allowHalf
                   disabled
                   value={
-                    !!teacherItem?.Teacher?.TotalVotes
-                      ? teacherItem?.Teacher?.TotalVotes / teacherItem?.Teacher?.Votes?.length
+                    !!teacherItem?.TotalVotes
+                      ? teacherItem?.TotalVotes / teacherItem?.Votes?.length
                       : 0
                   }
                   style={{
                     fontSize: "15px"
                   }}
                 />
-                <span className="ml-8">({teacherItem?.Teacher?.Votes?.length} Đánh giá)</span>
+                <span className="ml-8">({teacherItem?.Votes?.length} Đánh giá)</span>
               </div>
               <p className="fs-17 fw-700 mb-16">{teacherItem?.Teacher?.FullName}</p>
               <p>{teacherItem?.Teacher?.Address}</p>
@@ -55,7 +55,7 @@ const TeacherItem = ({ teacherItem, subjectID }) => {
           <div className="d-flex-end align-items-center">
             <p className="primary-text fs-17 mt-4">{ListIcons.ICON_DOLLAR}</p>
             <p className="primary-text fs-17 fw-700">
-              {formatMoney(teacherItem?.Price * 1000)}
+              {formatMoney(teacherItem?.Price)}
             </p>
           </div>
           <p>mỗi buổi</p>
