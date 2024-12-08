@@ -25,7 +25,18 @@ const Feedback = ({ feedbacks }) => {
               <FeedbackItemStyled key={idx}>
                 <Row>
                   <Col span={4}>
-                    {i?.User?.FullName}
+                    <div className="fw-600 mb-8">{i?.User?.FullName}</div>
+                    <div>
+                      <img
+                        src={i?.User?.AvatarPath}
+                        alt=""
+                        style={{
+                          width: "60px",
+                          height: "60px",
+                          borderRadius: "50%"
+                        }}
+                      />
+                    </div>
                   </Col>
                   <Col span={20}>
                     <Rate

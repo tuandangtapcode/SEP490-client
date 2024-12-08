@@ -4,6 +4,7 @@ import {
   apiGetListSystemKey,
   apiGetListTabs,
   apiGetProfitPercent,
+  apiGetTotalUserAndSubject,
   apiTeacherRecommend,
   apiTeacherRecommendationByLearnHistory
 } from "./urls"
@@ -14,6 +15,7 @@ const changeProfitPercent = body => http.post(apiChangeProfitPercent, body)
 const teacherRecommend = body => http.post(apiTeacherRecommend, body)
 const getListTabs = body => http.post(apiGetListTabs, body)
 const teacherRecommendationByLearnHistory = () => http.get(apiTeacherRecommendationByLearnHistory)
+const getTotalUserAndSubject = () => http.get(apiGetTotalUserAndSubject)
 
 const CommonService = {
   getListSystemkey,
@@ -21,7 +23,8 @@ const CommonService = {
   changeProfitPercent,
   teacherRecommend,
   getListTabs,
-  teacherRecommendationByLearnHistory
+  teacherRecommendationByLearnHistory,
+  getTotalUserAndSubject
 }
 
 export default CommonService

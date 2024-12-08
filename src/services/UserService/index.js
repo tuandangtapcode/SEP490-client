@@ -10,7 +10,6 @@ import {
   apiGetInforByGoogleLogin,
   apiGetListStudent,
   apiGetListTeacher,
-  apiGetListTeacherBySubject,
   apiGetListTeacherByUser,
   apiGetListTeacherInWeek,
   apiGetListSubjectSettingByTeacher,
@@ -52,7 +51,6 @@ const changeProfile = body => http.post(apiChangeProfile, body)
 const requestConfirmRegister = () => http.get(apiRequestConfirmRegister)
 const responseConfirmRegister = body => http.post(apiResponseConfirmRegister, body)
 const getListTeacher = body => http.post(apiGetListTeacher, body)
-const getListTeacherBySubject = body => http.post(apiGetListTeacherBySubject, body)
 const getDetailTeacher = body => http.post(apiGetDetailTeacher, body)
 const getListTeacherByUser = body => http.post(apiGetListTeacherByUser, body)
 const getListStudent = body => http.post(apiGetListStudent, body)
@@ -86,7 +84,6 @@ const UserService = {
   requestConfirmRegister,
   responseConfirmRegister,
   getListTeacher,
-  getListTeacherBySubject,
   getDetailTeacher,
   getListTeacherByUser,
   getListStudent,
