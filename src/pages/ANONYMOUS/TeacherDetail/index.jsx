@@ -8,7 +8,7 @@ import ButtonCustom from "src/components/MyButton/ButtonCustom"
 import Router from "src/routers"
 import { PatentChildBorder, TabStyled } from "src/pages/ADMIN/TeacherManagement/styled"
 import moment from "moment"
-import { formatMoney, getRealFee } from "src/lib/stringUtils"
+import { formatMoney } from "src/lib/stringUtils"
 import { useDispatch, useSelector } from "react-redux"
 import { globalSelector } from "src/redux/selector"
 import { toast } from "react-toastify"
@@ -293,15 +293,14 @@ const TeacherDetail = () => {
                     items={itemTab}
                     size="small"
                     animated={{
-                      // inkBar: true,
                       tabPane: true,
                     }}
                   />
                 </TabStyled>
               </div>
               <div className="mb-12">
-                <span className="gray-text mr-4">Học phí/Buổi học: </span>
-                <span className="primary-text fw-700 fs-17">{formatMoney(getRealFee(teacher?.Price, profitPercent))} VNĐ</span>
+                <span className="gray-text mr-4">Học phí/buổi: </span>
+                <span className="primary-text fw-700 fs-17">{formatMoney(teacher?.Price)} VNĐ</span>
               </div>
               {
                 user?._id !== TeacherID &&

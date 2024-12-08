@@ -1,10 +1,6 @@
 import { useEffect, useState } from "react"
-import { toast } from "react-toastify"
-import BlogService from "src/services/BlogService"
-import SubjectService from "src/services/SubjectService"
-import { Descriptions, Tag, Spin, Space, Row, Col } from "antd"
-import moment from "moment"
-import { SYSTEM_KEY } from "src/lib/constant"
+import { Tag, Space, Row, Col, Table } from "antd"
+import { Roles, SYSTEM_KEY } from "src/lib/constant"
 import { globalSelector } from "src/redux/selector"
 import { getListComboKey } from "src/lib/commonFunction"
 import { useSelector } from "react-redux"
@@ -13,13 +9,170 @@ import dayjs from "dayjs"
 import ModalCustom from "src/components/ModalCustom"
 import ButtonCustom from "src/components/MyButton/ButtonCustom"
 import { formatMoney } from "src/lib/stringUtils"
+import ListIcons from "src/components/ListIcons"
+import ConfirmModal from "src/components/ModalCustom/ConfirmModal"
+import ButtonCircle from "src/components/MyButton/ButtonCircle"
+import socket from "src/utils/socket"
+import BlogService from "src/services/BlogService"
+import { toast } from "react-toastify"
 
 
-const ModalBlogDetail = ({ open, onCancel }) => {
+const ModalBlogDetail = ({
+  open,
+  onCancel,
+  setOpenModalDetailBlog,
+  onOk
+}) => {
 
   const [loading, setLoading] = useState(false)
-  const { listSystemKey } = useSelector(globalSelector)
+  const { listSystemKey, user } = useSelector(globalSelector)
 
+  const changeReceiveStatus = async (record, ReceiveStatus) => {
+    try {
+      setLoading(true)
+      const res = await BlogService.changeReceiveStatus({
+        BlogID: open?._id,
+        TeacherID: record?.Teacher?._id,
+        ReceiveStatus: ReceiveStatus
+      })
+      if (!!res?.isError) return
+      // const bodyNotification = {
+      //   Content: `${user?.FullName} hủy đăng ký lớp học của bạn`,
+      //   Type: "dang-bai-viet",
+      //   Receiver: record?.User
+      // }
+      // const resNotification = NotificationService.createNotification(bodyNotification)
+      // if (!!resNotification?.isError) return toast.error(resNotification?.msg)
+      // socket.emit('send-notification',
+      //   {
+      //     Content: resNotification?.data?.Content,
+      //     IsSeen: resNotification?.IsSeen,
+      //     _id: resNotification?.data?._id,
+      //     Type: resNotification?.data?.Type,
+      //     IsNew: resNotification?.data?.IsNew,
+      //     Receiver: resNotification?.data?.Receiver,
+      //     createdAt: resNotification?.data?.createdAt
+      //   })
+      toast.success(res?.msg)
+      onOk()
+      if (ReceiveStatus === 3) {
+        res?.data?.TeacherReceive?.forEach(i => {
+          socket.emit("send-change-receive-status", {
+            ...res?.data,
+            Receiver: i?.Teacher?._id,
+          })
+        })
+      } else {
+        socket.emit("send-change-receive-status", {
+          ...res?.data,
+          Receiver: record?.Teacher?._id,
+        })
+      }
+      setOpenModalDetailBlog(res?.data)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const listBtn = record => [
+    {
+      title: "Duyệt",
+      icon: ListIcons?.ICON_CONFIRM,
+      isDisabled: record?.IsConfirm,
+      onClick: () => {
+        ConfirmModal({
+          description: `Bạn có chắc chắn duyệt giáo viên này không?`,
+          onOk: async close => {
+            changeReceiveStatus(record, 3)
+            close()
+          }
+        })
+      }
+    },
+    {
+      title: "Không duyệt",
+      icon: ListIcons?.ICON_CLOSE,
+      isDisabled: record?.IsReject,
+      onClick: () => {
+        ConfirmModal({
+          description: `Bạn có chắc chắn hủy duyệt giáo viên này không?`,
+          onOk: async close => {
+            changeReceiveStatus(record, 2)
+            close()
+          }
+        })
+      }
+    },
+  ]
+
+  const defaultColumns = [
+    {
+      title: "STT",
+      align: "center",
+      dataIndex: "index",
+      width: 50,
+      key: "index",
+      render: (_, record, index) => (
+        <div className="text-center">{index + 1}</div>
+      ),
+    },
+    {
+      title: "Giáo viên",
+      align: "center",
+      width: 100,
+      dataIndex: "FullName",
+      key: "FullName",
+      render: (_, record) => (
+        <div>{record?.Teacher?.FullName}</div>
+      )
+    },
+    {
+      title: "Trạng thái",
+      align: "center",
+      width: 80,
+      dataIndex: "ReceiveStatus",
+      key: "ReceiveStatus",
+      render: (val) => (
+        <Tag color={["processing", "error", "success"][val - 1]} className="p-5 fs-16">
+          {
+            getListComboKey(SYSTEM_KEY.RECEIVE_STATUS, listSystemKey)
+              ?.find(i => i?.ParentID === val)?.ParentName
+          }
+        </Tag>
+      )
+    }
+  ]
+
+  const actionColums = [
+    {
+      title: "Chức năng",
+      width: 70,
+      key: "Function",
+      align: "center",
+      render: (_, record) => (
+        <Space direction="horizontal">
+          {
+            listBtn(record)?.map((i, idx) =>
+              <ButtonCircle
+                key={idx}
+                disabled={i?.isDisabled}
+                title={i?.title}
+                icon={i?.icon}
+                onClick={i?.onClick}
+              />
+            )
+          }
+        </Space>
+      ),
+    },
+  ]
+
+  useEffect(() => {
+    socket.on("listen-change-receive-status", data => {
+      console.log("data", data);
+      setOpenModalDetailBlog(data)
+    })
+  }, [])
 
   return (
     <ModalCustom
@@ -37,10 +190,10 @@ const ModalBlogDetail = ({ open, onCancel }) => {
     >
       <div className="d-flex-center">
         <Row style={{ width: "80%" }} gutter={[16, 0]}>
-          <Col span={4}>
+          <Col span={3}>
             <div>Tiêu đề:</div>
           </Col>
-          <Col span={20}>
+          <Col span={21}>
             <div>{open?.Title}</div>
           </Col>
           <Col span={12} className="mb-12">
@@ -54,19 +207,22 @@ const ModalBlogDetail = ({ open, onCancel }) => {
             </Row>
           </Col>
           <Col span={12} className="mb-12">
-            <Row>
-              <Col span={5}>
-                <div>Trạng thái:</div>
-              </Col>
-              <Col span={19}>
-                <div>
-                  {
-                    getListComboKey(SYSTEM_KEY.REGISTER_STATUS, listSystemKey)
-                      ?.find(i => i?.ParentID === open?.RegisterStatus)?.ParentName
-                  }
-                </div>
-              </Col>
-            </Row>
+            {
+              user?.RoleID !== Roles.ROLE_TEACHER &&
+              <Row>
+                <Col span={5}>
+                  <div>Trạng thái:</div>
+                </Col>
+                <Col span={19}>
+                  <div>
+                    {
+                      getListComboKey(SYSTEM_KEY.REGISTER_STATUS, listSystemKey)
+                        ?.find(i => i?.ParentID === open?.RegisterStatus)?.ParentName
+                    }
+                  </div>
+                </Col>
+              </Row>
+            }
           </Col>
           <Col span={12} className="mb-12">
             <Row>
@@ -151,11 +307,33 @@ const ModalBlogDetail = ({ open, onCancel }) => {
                   )
                 }
               </Col>
+              <Col span={24}>Ngày bắt đầu học: {dayjs(open?.StartDate).format("DD/MM/YYYY")}</Col>
             </Row>
           </Col>
-          <Col span={24}>
-            <p className="fs-16 fw-600">Danh sách giáo viên tham gia</p>
-          </Col>
+          {
+            user?.RoleID !== Roles.ROLE_TEACHER &&
+            <>
+              <Col span={24}>
+                <p className="fs-16 fw-600">Danh sách giáo viên tham gia</p>
+              </Col>
+              <Col span={24}>
+                <Table
+                  bordered
+                  dataSource={open?.TeacherReceive}
+                  columns={
+                    user?.RoleID === Roles.ROLE_STUDENT
+                      ? [...defaultColumns, ...actionColums]
+                      : defaultColumns
+                  }
+                  editableCell
+                  sticky={{ offsetHeader: -12 }}
+                  textEmpty="Không có dữ liệu"
+                  rowKey="key"
+                  pagination={false}
+                />
+              </Col>
+            </>
+          }
         </Row>
       </div>
     </ModalCustom>

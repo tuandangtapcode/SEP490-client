@@ -1,7 +1,6 @@
 import { HomeContainerStyled } from "./styled"
 import { toast } from "react-toastify"
 import { useEffect, useState } from "react"
-import SubjectService from "src/services/SubjectService"
 import { Col, Row } from "antd"
 import SpinCustom from "src/components/SpinCustom"
 import Search from "./components/Search"

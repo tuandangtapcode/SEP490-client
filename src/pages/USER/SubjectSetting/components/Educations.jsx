@@ -62,7 +62,6 @@ const Educations = ({ subjectSetting }) => {
                     </Col>
                     <Col span={1}>
                       <ButtonCircle
-                        // disabled={user?.RegisterStatus !== 3 && !!user?.Educations?.length ? true : false}
                         icon={ListIcons.ICON_DELETE}
                         onClick={() => remove(name)}
                       />

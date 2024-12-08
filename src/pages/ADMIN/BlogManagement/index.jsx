@@ -99,14 +99,14 @@ const BlogManagement = () => {
   const listBtn = record => [
     {
       title: "Xem chi tiết",
-      disabled: false,
+      isDisabled: false,
       icon: ListIcons?.ICON_VIEW,
       onClick: () => setOpenModalDetailBlog(record)
     },
     {
       title: "Duyệt",
       icon: ListIcons?.ICON_CONFIRM,
-      disabled: record?.IsConfirm,
+      isDisabled: record?.IsConfirm,
       onClick: () => {
         ConfirmModal({
           description: `Bạn có chắc chắn duyệt bài viết của học sinh ${record?.User?.FullName} không?`,
@@ -120,7 +120,7 @@ const BlogManagement = () => {
     {
       title: "Không duyệt",
       icon: ListIcons?.ICON_CLOSE,
-      disabled: record?.IsReject,
+      isDisabled: record?.IsReject,
       onClick: () => setOpenModalReasonReject(record)
     },
   ]
@@ -214,7 +214,7 @@ const BlogManagement = () => {
             listBtn(record)?.map((i, idx) =>
               <ButtonCircle
                 key={idx}
-                disabled={i?.disabled}
+                disabled={i?.isDisabled}
                 title={i?.title}
                 icon={i?.icon}
                 onClick={i?.onClick}

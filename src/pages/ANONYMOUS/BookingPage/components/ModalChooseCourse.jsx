@@ -8,7 +8,7 @@ import SpinCustom from "src/components/SpinCustom"
 import TableCustom from "src/components/TableCustom"
 import { getListComboKey } from "src/lib/commonFunction"
 import { SYSTEM_KEY } from "src/lib/constant"
-import { formatMoney, getRealFee } from "src/lib/stringUtils"
+import { formatMoney } from "src/lib/stringUtils"
 import { globalSelector } from "src/redux/selector"
 import CourseService from "src/services/CourseService"
 
@@ -75,7 +75,7 @@ const ModalChooseCourse = ({
       key: "Price",
       render: (value) => (
         <div>
-          {formatMoney(getRealFee(value, profitPercent))} VNĐ
+          {formatMoney(value)} VNĐ
         </div>
       )
     },

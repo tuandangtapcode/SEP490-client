@@ -1,30 +1,30 @@
-import React, { useState } from "react";
-import { Editor } from "@tinymce/tinymce-react";
-import styled from "styled-components";
+import { useState } from "react"
+import { Editor } from "@tinymce/tinymce-react"
+import styled from "styled-components"
 
 const TinyWrapper = styled.div`
   position: relative;
   .tox-statusbar__branding {
-    display: none;
+    display: none
   }
   .tox .tox-menubar {
-    display: ${({ isSimple }) => (isSimple ? "none" : "flex")};
+    display: ${({ isSimple }) => (isSimple ? "none" : "flex")}
   }
-`;
+`
 
 export default function TinyEditor({ setLoading, ...props }) {
   const {
     height = props?.defaultheight || "70vh",
     onWordCount,
     isSimple,
-  } = props;
-  const [isFullScreen, setIsFullScreen] = useState(false);
+  } = props
+  const [isFullScreen, setIsFullScreen] = useState(false)
 
   const toolbar = isSimple
     ? "undo redo | formatselect | bold italic underline | alignleft aligncenter alignright | bullist numlist outdent indent | link emoticons fullscreen"
-    : "undo redo | bold italic underline strikethrough | fontfamily fontsize | alignleft aligncenter alignright alignjustify lineheight | outdent indent | numlist bullist | forecolor backcolor removeformat | pagebreak charmap emoticons | fullscreen preview print | insertfile template link anchor codesample | ltr rtl";
+    : "undo redo | bold italic underline strikethrough | fontfamily fontsize | alignleft aligncenter alignright alignjustify lineheight | outdent indent | numlist bullist | forecolor backcolor removeformat | pagebreak charmap emoticons | fullscreen preview print | insertfile template link anchor codesample | ltr rtl"
 
-  const useDarkMode = window.matchMedia("(prefers-color-scheme: dark)").matches;
+  const useDarkMode = window.matchMedia("(prefers-color-scheme: dark)").matches
 
   return (
     <TinyWrapper isFullScreen={isFullScreen} isSimple={isSimple}>
@@ -35,20 +35,20 @@ export default function TinyEditor({ setLoading, ...props }) {
           height: '450px',
           setup: (ed) => {
             ed.on("init", () => {
-              setLoading && setLoading(false);
-            });
+              setLoading && setLoading(false)
+            })
             ed.on("FullscreenStateChanged", (e) => {
-              setIsFullScreen(e?.state);
-            });
+              setIsFullScreen(e?.state)
+            })
             ed.on("WordCountUpdate", (e) => {
-              onWordCount && onWordCount(e?.wordCount);
-            });
+              onWordCount && onWordCount(e?.wordCount)
+            })
             ed.on('PastePreProcess', (e) => {
               if (e.content.includes('<img') || e.content.includes('<video')) {
-                e.preventDefault();
-                alert("Không được phép dán hình ảnh hoặc video.");
+                e.preventDefault()
+                alert("Không được phép dán hình ảnh hoặc video.")
               }
-            });
+            })
           },
           file_picker_types: "file",
           deprecation_warnings: false,
@@ -96,11 +96,11 @@ export default function TinyEditor({ setLoading, ...props }) {
           contextmenu: "link table",
           skin: useDarkMode ? "oxide-dark" : "oxide",
           content_css: useDarkMode ? "dark" : "default",
-          content_style: "body { font-family:Helvetica,Arial,sans-serif; font-size:14px }",
+          content_style: "body { font-family:Helvetica,Arial,sans-serif font-size:14px }",
         }}
       />
     </TinyWrapper>
-  );
+  )
 }
 
 export const RenderTiny = (props) => (
@@ -109,4 +109,4 @@ export const RenderTiny = (props) => (
     onEditorChange={props?.onChange}
     placeholder="Nhập nội dung"
   />
-);
+)

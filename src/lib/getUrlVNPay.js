@@ -24,7 +24,6 @@ const sortObject = (obj) => {
 }
 
 const handleCreatePaymentVNPay = (orderInfo, amount, returnUrl, ipAddress) => {
-  console.log("amount", amount);
   let vnp_Params
   vnp_Params = {
     vnp_Version: '2.1.0',

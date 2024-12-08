@@ -68,7 +68,6 @@ const SubjectSetting = () => {
       icon: !!record?.IsDisabled ? ListIcons.ICON_UNBLOCK : ListIcons.ICON_BLOCK,
       onClick: () => {
         ConfirmModal({
-          icon: "ICON_SUSCESS_MODAL",
           description: `Bạn có chắc chắn ${!!record?.IsDisabled ? "hiển thị môn học" : "ẩn môn học"} không?`,
           onOk: async close => {
             disabledOrEnabledSubjectSetting(record, !record?.IsDisabled)

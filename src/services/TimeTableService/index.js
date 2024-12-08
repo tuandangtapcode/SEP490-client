@@ -9,7 +9,7 @@ import {
 } from "./urls"
 
 const createTimeTable = body => http.post(apiCreateTimeTable, body)
-const getTimeTableOfTeacherOrStudent = UserID => http.get(`${apiGetTimeTableOfTeacherOrStudent}/${UserID}`)
+const getTimeTableOfTeacherOrStudent = body => http.post(apiGetTimeTableOfTeacherOrStudent, body)
 const attendanceTimeTable = TimeTableID => http.get(`${apiAttendanceTimeTable}/${TimeTableID}`)
 const updateTimeTable = body => http.post(apiUpdateTimeTable, body)
 const getTimeTableByUser = () => http.get(apiGetTimeTableByUser)

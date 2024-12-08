@@ -20,6 +20,9 @@ import InputCustom from "src/components/InputCustom"
 import SpinCustom from "src/components/SpinCustom"
 import ModalInsertBlog from "./components/ModalInsertBlog"
 import ModalBlogDetail from "./components/ModalBlogDetail"
+import socket from "src/utils/socket"
+import Router from "src/routers"
+import { useNavigate } from "react-router-dom"
 
 const BlogPosting = () => {
 
@@ -37,6 +40,7 @@ const BlogPosting = () => {
     SubjectID: "",
     RegisterStatus: 0,
   })
+  const navigate = useNavigate()
 
   const getListBlogByUser = async () => {
     try {
@@ -65,10 +69,13 @@ const BlogPosting = () => {
     }
   }
 
-  const handleDeleteBlog = async (id) => {
+  const handleDeleteBlog = async (BlogID, IsDeleted) => {
     try {
       setLoading(true)
-      const res = await BlogService.deleteBlog(id)
+      const res = await BlogService.deleteBlog({
+        BlogID,
+        IsDeleted
+      })
       if (!!res?.isError) return toast.error(res?.msg)
       toast.success(res?.msg)
       getListBlogByUser()
@@ -80,17 +87,20 @@ const BlogPosting = () => {
   useEffect(() => {
     getListSubject()
   }, [])
+
   useEffect(() => {
     getListBlogByUser()
   }, [pagination])
 
   const listBtn = record => [
     {
+      isView: true,
       title: "Chi tiết",
       icon: ListIcons?.ICON_VIEW,
       onClick: () => setOpenModalDetailBlog(record)
     },
     {
+      isView: true,
       title: !!record?.IsDeleted ? "Hiển thị bài đăng" : "Ẩn bài đăng",
       icon: !!record?.IsDeleted ? ListIcons.ICON_UNBLOCK : ListIcons.ICON_BLOCK,
       onClick: () => {
@@ -98,11 +108,17 @@ const BlogPosting = () => {
           icon: "ICON_SUSCESS_MODAL",
           description: `Bạn có chắc chắn ${!!record?.IsDeleted ? "hiển thị bài đăng" : "ẩn bài đăng"} không?`,
           onOk: async close => {
-            // disabledOrEnabledSubjectSetting(record, !record?.IsDisabled)
+            handleDeleteBlog(record?._id, !record?.IsDeleted)
             close()
           }
         })
       }
+    },
+    {
+      title: "Thanh toán",
+      isView: record?.IsPaid,
+      icon: ListIcons?.ICON_PAYMENT_BOOKING,
+      onClick: () => navigate(`${Router.CHECKOUT}/Blog/${record?._id}`)
     },
   ]
 
@@ -188,7 +204,8 @@ const BlogPosting = () => {
         <Space direction="horizontal">
           {
             listBtn(record)?.map((i, idx) =>
-              <ButtonCircle
+              !!i?.isView &&
+              < ButtonCircle
                 key={idx}
                 title={i?.title}
                 icon={i?.icon}
@@ -202,6 +219,21 @@ const BlogPosting = () => {
 
     },
   ]
+
+  useEffect(() => {
+    socket.on("listen-change-receive-status", data => {
+      setBlogs(pre => {
+        const copyBlogs = [...pre]
+        const index = copyBlogs?.findIndex((i) => i?._id === data?._id)
+        if (index !== -1) {
+          copyBlogs.splice(index, 1, data)
+        } else {
+          copyBlogs.push(data)
+        }
+        return copyBlogs
+      })
+    })
+  }, [])
 
   return (
     <SpinCustom spinning={loading}>
@@ -307,6 +339,8 @@ const BlogPosting = () => {
           <ModalBlogDetail
             open={openModalDetailBlog}
             onCancel={() => setOpenModalDetailBlog(false)}
+            setOpenModalDetailBlog={setOpenModalDetailBlog}
+            onOk={getListBlogByUser}
           />
         }
 

@@ -20,7 +20,7 @@ export const StatisticCardWrapper = styled(Card)`
   padding: 10px;
   border-radius: 10px;
   box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
-`;
+`
 
 
 const StatisticManagement = () => {
@@ -68,7 +68,12 @@ const StatisticManagement = () => {
         </Col>
         <Col span={6}>
           <StatisticCardWrapper>
-            <Statistic title="Chi trả cho giáo viên" value={financial?.Expense} formatter={formatter} />
+            <Statistic title="Chi phí cho giáo viên" value={financial?.Expense} formatter={formatter} />
+          </StatisticCardWrapper>
+        </Col>
+        <Col span={6}>
+          <StatisticCardWrapper>
+            <Statistic title="Chi phí đã thanh toán" value={financial?.CostPaid} formatter={formatter} />
           </StatisticCardWrapper>
         </Col>
         <Col span={6}>
@@ -76,11 +81,11 @@ const StatisticManagement = () => {
             <Statistic title="Lợi nhuận" value={financial?.Profit} formatter={formatter} />
           </StatisticCardWrapper>
         </Col>
-        <Col span={6}>
+        {/* <Col span={6}>
           <StatisticCardWrapper onClick={() => setOpenChangeProfitPercent(profitPercent)}>
             <Statistic title="Phần trăm lợi nhuận" value={`${profitPercent * 100}%`} />
           </StatisticCardWrapper>
-        </Col>
+        </Col> */}
         <Col span={12}>
           <Pie
             newRegister={newRegister}

@@ -61,7 +61,6 @@ const ViewProfileTeacher = ({ open, onCancel }) => {
           type="card"
           items={items}
           animated={{
-            // inkBar: true,
             tabPane: true,
           }}
         />

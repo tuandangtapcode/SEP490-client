@@ -1,7 +1,5 @@
-import { Card } from "antd";
+import { Card } from "antd"
 import ReactECharts from 'echarts-for-react'
-
-
 
 const Pie = ({ newRegister }) => {
 
@@ -24,7 +22,6 @@ const Pie = ({ newRegister }) => {
         data: [
           { value: newRegister.TotalTeacher, name: 'Tài khoản giáo viên' },
           { value: newRegister.TotalStudent, name: 'Tài khoản học sinh' },
-          // { value: data.Total, name: 'Tổng' },
         ],
         emphasis: {
           itemStyle: {
@@ -35,13 +32,13 @@ const Pie = ({ newRegister }) => {
         }
       }
     ]
-  };
+  }
 
   return (
     <Card style={{ width: '100%', borderRadius: '10px', boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)' }}>
       <ReactECharts option={chartOptions} />
     </Card>
-  );
+  )
 }
 
-export default Pie;
+export default Pie

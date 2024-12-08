@@ -3,8 +3,6 @@ import { words } from 'lodash'
 import ListIcons from '../ListIcons'
 import { getMsgClient } from 'src/lib/stringUtils'
 
-// import { getMsgClient } from 'src/lib/stringsUtils'
-
 export default function Notice(props) {
 
   const { msg, desc, place, isSuccess = true } = props

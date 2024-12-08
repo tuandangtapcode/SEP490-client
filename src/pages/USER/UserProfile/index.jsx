@@ -5,7 +5,7 @@ import { useEffect, useState } from "react"
 import { Col, Image, message, Row } from "antd"
 import dayjs from "dayjs"
 import ButtonCustom from "src/components/MyButton/ButtonCustom"
-import { ADMIN_ID, Roles } from "src/lib/constant"
+import { STAFF_ID, Roles } from "src/lib/constant"
 import ModalChangeProfile from "src/components/Layout/components/ModalChangeProfile"
 import ModalChangeCareerInfor from "./components/ModalChangeCareerInfor"
 import ModalTimeTable from "./components/ModalTimeTable"
@@ -57,7 +57,7 @@ const UserProfile = () => {
       const resNotification = NotificationService.createNotification({
         Content: `${user?.FullName} đã gửi yêu cầu duyệt profile`,
         Type: "teacher",
-        Receiver: ADMIN_ID
+        Receiver: STAFF_ID
       })
       const result = await Promise.all([resChangeRegisterStatus, resNotification])
       if (!!result[0]?.isError || !!result[1]?.isError) return
@@ -68,7 +68,7 @@ const UserProfile = () => {
           _id: result[1]?.data?._id,
           Type: result[1]?.data?.Type,
           IsNew: result[1]?.data?.IsNew,
-          Receiver: ADMIN_ID,
+          Receiver: STAFF_ID,
           createdAt: result[1]?.data?.createdAt
         })
       toast.success(result[0]?.msg)
