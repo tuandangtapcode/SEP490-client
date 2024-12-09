@@ -43,10 +43,7 @@ const Certificates = ({
             valuePropName="fileList"
             getValueFromEvent={normFile}
             rules={[
-              {
-                required: form.getFieldValue("Certificates") ? false : true,
-                message: "Hãy chọn file tải lên",
-              },
+              { required: true, message: "Hãy chọn file tải lên" }
             ]}
           >
             <Upload.Dragger

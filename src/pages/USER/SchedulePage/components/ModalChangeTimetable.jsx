@@ -86,8 +86,8 @@ const ModalChangeTimetable = ({
       toast.success(res?.msg)
       setOpenModalDetailSchedule({
         ...res?.data,
-        isAttendance: dataModalDetail?.isAttendance,
-        isUpdateTimeTable: dataModalDetail?.isUpdateTimeTable
+        IsAttendance: dataModalDetail?.isAttendance,
+        IsUpdateTimeTable: dataModalDetail?.isUpdateTimeTable
       })
       getTimeTable()
       onCancel()

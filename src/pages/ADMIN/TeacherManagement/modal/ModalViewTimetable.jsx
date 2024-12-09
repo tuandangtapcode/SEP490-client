@@ -5,6 +5,7 @@ import { toast } from "react-toastify"
 import ModalCustom from "src/components/ModalCustom"
 import ButtonCustom from "src/components/MyButton/ButtonCustom"
 import TableCustom from "src/components/TableCustom"
+import { formatMoney } from "src/lib/stringUtils"
 import LearnHistoryService from "src/services/LearnHistoryService"
 import TimeTableService from "src/services/TimeTableService"
 
@@ -49,7 +50,7 @@ const ModalViewTimeTable = ({ open, onCancel, onOk }) => {
   const rowSelection = {
     listTimeTables,
     getCheckboxProps: record => ({
-      isDisabled: !!record?.Status || !!record?.IsCancel || record?.IsDisabledAtendance,
+      disabled: !!record?.Status || !!record?.IsCancel || record?.IsDisabledAtendance,
     }),
     selectedRowKeys: listTimeTables.map(i => i?._id),
     onChange: (newSelectedRowKeys, newSelectedRows) => {
@@ -95,6 +96,16 @@ const ModalViewTimeTable = ({ open, onCancel, onOk }) => {
       )
     },
     {
+      title: "Thời gian điểm danh",
+      width: 100,
+      dataIndex: "AttendanceTime",
+      align: "center",
+      key: "AttendanceTime",
+      render: (val) => (
+        <div>{dayjs(val).format("DD/MM/YYYY HH:mm")}</div>
+      )
+    },
+    {
       title: "Trạng thái buổi học",
       width: 80,
       dataIndex: "IsCancel",
@@ -106,6 +117,16 @@ const ModalViewTimeTable = ({ open, onCancel, onOk }) => {
             !val ? "Đang sử dụng" : "Đã hủy"
           }
         </Tag>
+      )
+    },
+    {
+      title: "Giá tiền buổi học",
+      width: 80,
+      dataIndex: "Price",
+      align: "center",
+      key: "Price",
+      render: (val) => (
+        <div>{formatMoney(val)} VNĐ</div>
       )
     },
   ]

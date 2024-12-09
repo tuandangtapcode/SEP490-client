@@ -100,7 +100,7 @@ const BlogPosting = () => {
       onClick: () => setOpenModalDetailBlog(record)
     },
     {
-      isView: true,
+      isView: record?.IsDisabled,
       title: !!record?.IsDeleted ? "Hiển thị bài đăng" : "Ẩn bài đăng",
       icon: !!record?.IsDeleted ? ListIcons.ICON_UNBLOCK : ListIcons.ICON_BLOCK,
       onClick: () => {
@@ -116,7 +116,7 @@ const BlogPosting = () => {
     },
     {
       title: "Thanh toán",
-      isView: record?.IsPaid,
+      isView: record?.IsPayment,
       icon: ListIcons?.ICON_PAYMENT_BOOKING,
       onClick: () => navigate(`${Router.CHECKOUT}/Blog/${record?._id}`)
     },

@@ -82,3 +82,26 @@ export const StyledButton = styled(Button)`
     color: white;
   }
 `
+
+export const FilterTitleStyled = styled.div`
+  background-color: var(--color-primary-hover);
+  color: white;
+  width: 100%;
+  text-align: center;
+  padding: 8px;
+  border-radius: 12px;
+  margin-bottom: 12px;
+`
+
+export const SubjectItemStyled = styled.div`
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 8px;
+  cursor: pointer;
+  &.active {
+    border-color: var(--color-yellow);
+  }
+  &:hover {
+    border-color: var(--color-yellow);
+  }
+`

@@ -13,6 +13,7 @@ import { globalSelector } from "src/redux/selector"
 import CourseService from "src/services/CourseService"
 import InsertUpdateCourse from "./components/InsertUpdateCourse"
 import { toast } from "react-toastify"
+import ButtonCustom from "src/components/MyButton/ButtonCustom"
 
 const MyCourse = () => {
 
@@ -183,10 +184,18 @@ const MyCourse = () => {
   return (
     <SpinCustom spinning={loading}>
       <Row gutter={[16, 16]}>
-        <Col span={24} className="mb-5">
+        <Col span={24} className="mb-5 d-flex-sb">
           <div className="title-type-1">
             Khóa học của bạn
           </div>
+          <Space>
+            <ButtonCustom
+              className="third-type-2"
+              onClick={() => setOpenModalUpdateCourse(true)}
+            >
+              Thêm khóa học
+            </ButtonCustom>
+          </Space>
         </Col>
         <Col span={24} className="mt-16">
           <TableCustom

@@ -61,7 +61,7 @@ const createSubjectSetting = SubjectID => http.get(`${apiCreateSubjectSetting}/$
 const updateSubjectSetting = body => http.post(apiUpdateSubjectSetting, body)
 const deleteSubjectSetting = SubjectSettingID => http.get(`${apiDeleteSubjectSetting}/${SubjectSettingID}`)
 const responseConfirmSubjectSetting = body => http.post(apiResponseConfirmSubjectSetting, body)
-const getListTopTeacher = () => http.get(apiGetListTopTeacher)
+const getListTopTeacher = body => http.post(apiGetListTopTeacher, body)
 const changeCareerInformation = body => http.post(apiChangeCareerInformation, body)
 const updateSchedule = body => http.post(apiUpdateSchedule, body)
 const getListSubjectSetting = body => http.post(apiGetListSubjectSetting, body)

@@ -24,7 +24,7 @@ const CommonService = {
   teacherRecommend,
   getListTabs,
   teacherRecommendationByLearnHistory,
-  getTotalUserAndSubject
+  getTotalUserAndSubject,
 }
 
 export default CommonService

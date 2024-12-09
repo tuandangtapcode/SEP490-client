@@ -68,7 +68,11 @@ const ModalReasonReject = ({ open, onCancel, onOk }) => {
     <ModalCustom
       open={open}
       onCancel={onCancel}
-      title="Lý do không duyệt"
+      title={
+        user?.RoleID === Roles.ROLE_STUDENT
+          ? "Lý do hủy"
+          : "Lý do khong duyệt"
+      }
       width="50vw"
       footer={
         <Space className="d-flex-end">
@@ -95,7 +99,13 @@ const ModalReasonReject = ({ open, onCancel, onOk }) => {
             { required: true, message: "Thông tin không được để trống" },
           ]}
         >
-          <InputCustom placeholder="Nhập vào lý do không duyệt" />
+          <InputCustom
+            placeholder={
+              user?.RoleID === Roles.ROLE_STUDENT
+                ? "Nhập vào lý do hủy"
+                : "Nhập vào lý do khong duyệt"
+            }
+          />
         </Form.Item>
       </Form>
     </ModalCustom>

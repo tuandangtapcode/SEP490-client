@@ -16,7 +16,8 @@ import SpinCustom from 'src/components/SpinCustom'
 import UserService from 'src/services/UserService'
 import { useNavigate, useParams } from 'react-router-dom'
 import TeacherItem from './components/TeacherItem'
-import Router from "src/routers"
+import SubjectService from "src/services/SubjectService"
+import { toast } from "react-toastify"
 
 const MentorForSubject = () => {
 
@@ -41,38 +42,45 @@ const MentorForSubject = () => {
 
   const { listSystemKey } = useSelector(globalSelector)
 
-  const getListSubjectCate = async () => {
+  const getListTeacherByUser = async () => {
     try {
       setLoading(true)
       const res = await UserService.getListTeacherByUser(pagination)
       if (!!res?.isError) return navigate("/not-found")
       setTeachers(res?.data?.List)
       setTotal(res?.data?.Total)
-      setSubject(res?.data?.Subject)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const getDetailSubject = async () => {
+    try {
+      const res = await SubjectService.getDetailSubject(SubjectID)
+      if (!!res?.isError) return toast.error(res?.msg)
+      setSubject(res?.data)
     } finally {
       setLoading(false)
     }
   }
 
   useEffect(() => {
-    
-  })
+    getDetailSubject()
+  }, [SubjectID])
 
   useEffect(() => {
-    getListSubjectCate()
-  }, [pagination])
+    if (!!subject) {
+      getListTeacherByUser()
+    }
+  }, [pagination, subject])
 
   return (
     <SpinCustom spinning={loading}>
       <MentorForSubjectContainer>
         <Row gutter={[16, 16]}>
-          <Col span={24} className='mb-20'>
-            <p className='fs-20 fw-700 mb-6'>Bạn đang tìm kiếm: {subject?.SubjectName}</p>
-            <p className='gray-text'>{total} Kết quả tìm được</p>
-          </Col>
           <Col span={6}>
             <Sidebar>
-              <FilterSection>
+              <FilterSection className="mb-10">
                 <InputCustom
                   type="isSearch"
                   allowClear
@@ -85,7 +93,7 @@ const MentorForSubject = () => {
                   placeholder="Nhập tên giáo viên cần tìm..."
                 />
               </FilterSection>
-              <FilterSection>
+              <FilterSection className="mb-10">
                 <FilterTitle level={5}>Hình thức học tập</FilterTitle>
                 <Checkbox.Group>
                   <Row>
@@ -98,20 +106,22 @@ const MentorForSubject = () => {
                           })
                         }
                       >
-                        {getListComboKey(SYSTEM_KEY.LEARN_TYPE, listSystemKey).map(type => (
-                          <Checkbox key={type?.ParentID} value={type?.ParentID}>
-                            <div className="d-flex align-items-center">
-                              <p>{type?.ParentName}</p>
-                            </div>
-                          </Checkbox>
-                        ))}
+                        {
+                          getListComboKey(SYSTEM_KEY.LEARN_TYPE, listSystemKey).map(type => (
+                            <Checkbox key={type?.ParentID} value={type?.ParentID}>
+                              <div className="d-flex align-items-center">
+                                <p>{type?.ParentName}</p>
+                              </div>
+                            </Checkbox>
+                          ))
+                        }
                       </Checkbox.Group>
                     </Col>
 
                   </Row>
                 </Checkbox.Group>
               </FilterSection>
-              <FilterSection>
+              <FilterSection className="mb-10">
                 <FilterTitle level={5}>Học phí (VNĐ)</FilterTitle>
                 <Slider
                   range
@@ -128,7 +138,7 @@ const MentorForSubject = () => {
                   }
                 />
               </FilterSection>
-              <FilterSection>
+              <FilterSection className="mb-10">
                 <FilterTitle level={5}>Mức độ học tập</FilterTitle>
                 <Checkbox.Group
                   onChange={(e) =>
@@ -138,11 +148,13 @@ const MentorForSubject = () => {
                     })
                   }
                 >
-                  {getListComboKey(SYSTEM_KEY.SKILL_LEVEL, listSystemKey).map(level => (
-                    <Checkbox key={level?.ParentID} value={level?.ParentID}>
-                      {level?.ParentName}
-                    </Checkbox>
-                  ))}
+                  {
+                    getListComboKey(SYSTEM_KEY.SKILL_LEVEL, listSystemKey).map(level => (
+                      <Checkbox key={level?.ParentID} value={level?.ParentID}>
+                        {level?.ParentName}
+                      </Checkbox>
+                    ))
+                  }
                 </Checkbox.Group>
               </FilterSection>
               <FilterSection>
@@ -155,28 +167,45 @@ const MentorForSubject = () => {
                     })
                   }
                 >
-                  {getListComboKey(SYSTEM_KEY.GENDER, listSystemKey).map(level => (
-                    <Radio key={level?.ParentID} value={level?.ParentID}>
-                      {level?.ParentName}
-                    </Radio>
-                  ))}
+                  {
+                    getListComboKey(SYSTEM_KEY.GENDER, listSystemKey).map(level => (
+                      <Radio key={level?.ParentID} value={level?.ParentID}>
+                        {level?.ParentName}
+                      </Radio>
+                    ))
+                  }
                 </Radio.Group>
               </FilterSection>
             </Sidebar>
           </Col>
           <Col span={18}>
-            {
-              !!teachers.length ?
-                teachers?.map((i, idx) =>
-                  <TeacherItem
-                    key={idx}
-                    teacherItem={i}
-                    subjectID={SubjectID}
-                  />
-                )
-                :
-                <h2 className='center-text'>Không có giáo viên nào!</h2>
-            }
+            <Sidebar>
+              <div className="d-flex align-items-center mb-12">
+                <div className="fs-17 fw-700 mr-4">{subject?.SubjectName}</div>
+                <p className='gray-text'>({total} Kết quả tìm được)</p>
+              </div>
+              <div className="mb-12">{subject?.Description}</div>
+              <div className="d-flex-center">
+                <img src={subject?.AvatarPath} alt="" />
+              </div>
+            </Sidebar>
+          </Col>
+          <Col span={24}>
+            <Row>
+              {
+                !!teachers.length ?
+                  teachers?.map((i, idx) =>
+                    <Col span={6} key={idx}>
+                      <TeacherItem
+                        teacherItem={i}
+                        subjectID={SubjectID}
+                      />
+                    </Col>
+                  )
+                  :
+                  <h2 className='center-text'>Không có giáo viên nào!</h2>
+              }
+            </Row>
           </Col>
         </Row>
       </MentorForSubjectContainer >
