@@ -1,24 +1,16 @@
-import { Card, Col, Rate, Row } from "antd"
-import { SearchByAIContainerStyled, TopTeacherItemStyled } from "../styled"
-import ListIcons from "src/components/ListIcons"
-import { getListComboKey } from "src/lib/commonFunction"
-import { SYSTEM_KEY } from "src/lib/constant"
-import { useSelector } from "react-redux"
-import { globalSelector } from "src/redux/selector"
+import { Col, Row } from "antd"
+import { SearchByAIContainerStyled } from "../styled"
 import { useNavigate } from "react-router-dom"
 import Router from "src/routers"
-import { formatMoney } from "src/lib/stringUtils"
 import InputCustom from "src/components/InputCustom"
 import { Swiper, SwiperSlide } from 'swiper/react'
 import 'swiper/css'
 import 'swiper/css/autoplay'
 import { Autoplay } from 'swiper/modules'
-
-const { Meta } = Card
+import TeacherItem from "../../MentorForSubject/components/TeacherItem"
 
 const FamoursTeacher = ({ teachers, setPrompt, subjects }) => {
 
-  const { listSystemKey } = useSelector(globalSelector)
   const navigate = useNavigate()
 
   return (
@@ -106,63 +98,7 @@ const FamoursTeacher = ({ teachers, setPrompt, subjects }) => {
           {
             teachers?.map((i, idx) =>
               <SwiperSlide key={idx}>
-                <TopTeacherItemStyled>
-                  <Card
-                    hoverable
-                    cover={<img alt="example" style={{ width: "100%", height: "300px" }} src={i?.Teacher?.AvatarPath} />}
-                    onClick={() => navigate(`${Router.GIAO_VIEN}/${i?.Teacher?._id}${Router.MON_HOC}/${i?.Subject?._id}`)}
-                  >
-                    <Meta title={i?.Teacher?.FullName} className="mb-8" />
-                    <div className="d-flex align-items-center">
-                      <span className="mt-6 mr-6">{ListIcons.ICON_SUBJECT_CATE}</span>
-                      {i?.Subject?.SubjectName}
-                    </div>
-                    <div className="d-flex align-items-center">
-                      <span className="mt-6 mr-6">{ListIcons.ICON_LEVEL}</span>
-                      {
-                        getListComboKey(SYSTEM_KEY.SKILL_LEVEL, listSystemKey)
-                          ?.map((item, idx) => {
-                            if (i?.Levels?.includes(item?.ParentID))
-                              return <span key={idx} className="mr-4">{item?.ParentName}</span>
-                          })
-                      }
-                    </div>
-                    <div className="d-flex align-items-center mb-8">
-                      <span className="mt-6 mr-6">{ListIcons.ICON_LEARN_TYPE}</span>
-                      {
-                        getListComboKey(SYSTEM_KEY.LEARN_TYPE, listSystemKey)
-                          ?.map((item, idx) => {
-                            if (i?.LearnTypes?.includes(item?.ParentID))
-                              return <span key={idx} className="mr-4">{item?.ParentName}</span>
-                          })
-                      }
-                    </div>
-                    <Row className="d-flex-sb">
-                      <Col span={12}>
-                        <Rate
-                          allowHalf
-                          disabled
-                          value={!!i?.TotalVotes ? i?.TotalVotes / i?.Votes?.length : 0}
-                          style={{
-                            fontSize: "15px"
-                          }}
-                        />
-                      </Col>
-                      <Col span={12} className="d-flex-end align-items-center">
-                        <p className="primary-text fs-17 mt-4">{ListIcons.ICON_DOLLAR}</p>
-                        <p className="primary-text fs-17 fw-700">
-                          {formatMoney(i?.Price)}
-                        </p>
-                      </Col>
-                      <Col span={12}>
-                        <p>{i?.Votes?.length} đánh giá</p>
-                      </Col>
-                      <Col span={12} className="d-flex-end">
-                        <p>1 buổi</p>
-                      </Col>
-                    </Row>
-                  </Card>
-                </TopTeacherItemStyled>
+                <TeacherItem teacherItem={i} />
               </SwiperSlide>
             )
           }

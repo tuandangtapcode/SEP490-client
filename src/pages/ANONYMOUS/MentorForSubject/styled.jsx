@@ -9,7 +9,7 @@ export const MentorForSubjectContainer = styled.div`
 `
 
 export const Sidebar = styled.div`
-  padding: 20px;
+  padding: 16px 20px;
   background-color: #e8eff9;
   border-radius: 8px;
 `
@@ -19,8 +19,8 @@ export const FilterTitle = styled(Title)`
 `
 
 export const FilterSection = styled.div`
-  padding-top: 20px;
-  margin-bottom: 20px;
+  /* padding-top: 20px; */
+  /* margin-bottom: 10px; */
 `
 
 export const StyledCard = styled(Card)`
@@ -53,4 +53,9 @@ export const DayContainer = styled(Space)`
   flex-wrap: wrap;
   justify-content: space-between;
   margin-bottom: 10px;
+`
+
+export const TopTeacherItemStyled = styled.div`
+  box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+  padding: 12px;
 `

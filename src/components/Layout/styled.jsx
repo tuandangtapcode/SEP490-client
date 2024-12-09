@@ -95,9 +95,9 @@ export const LayoutUserStyled = styled.div`
     background: #c5ced9;
     border-radius: 30px;
   }
-   display: flex;
+  /* display: flex;
   flex-direction: column;
-  justify-content: space-between; 
+  justify-content: space-between;  */
 }
 .menu-antd-user {
   padding-left: 11px;

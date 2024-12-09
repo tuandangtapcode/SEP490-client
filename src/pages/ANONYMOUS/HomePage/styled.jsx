@@ -24,11 +24,6 @@ export const SearchByAIContainerStyled = styled.div`
     }
   }
 `
-
-export const TopTeacherItemStyled = styled.div`
-  box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
-  padding: 12px;
-`
 export const BackgroundImageStyled = styled.div`
   background-image: url(${props => props.bgImage});
   background-size: cover;

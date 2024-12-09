@@ -27,14 +27,14 @@ body {
   width: 100%;
 }
 
-.ant-menu-light.ant-menu-horizontal > .ant-menu-item-selected {
+.ant-menu-light.ant-menu-horizontal>.ant-menu-item-selected {
   color: black !important;
 }
 
-.ant-menu-light.ant-menu-horizontal > .ant-menu-item:hover::after,
-.ant-menu-light.ant-menu-horizontal > .ant-menu-item-active::after,
-.ant-menu-light.ant-menu-horizontal > .ant-menu-item-selected::after {
-  border-bottom: 3px solid #7bbcb0;
+.ant-menu-light.ant-menu-horizontal>.ant-menu-item:hover::after,
+.ant-menu-light.ant-menu-horizontal>.ant-menu-item-active::after,
+.ant-menu-light.ant-menu-horizontal>.ant-menu-item-selected::after {
+  border-bottom: 3px solid var(--color-primary);
 }
 
 .ant-menu .ant-menu-title-content {
@@ -45,19 +45,11 @@ body {
   width: 100% !important;
 }
 
-.ant-select-outlined:not(.ant-select-disabled):not(
-    .ant-select-customize-input
-  ):not(.ant-pagination-size-changer):hover
-  .ant-select-selector {
+.ant-select-outlined:not(.ant-select-disabled):not(.ant-select-customize-input):not(.ant-pagination-size-changer):hover .ant-select-selector {
   border-color: var(--color-primary-hover) !important;
 }
 
-.ant-select-focused:where(
-    .css-dev-only-do-not-override-1okl62o
-  ).ant-select-outlined:not(.ant-select-disabled):not(
-    .ant-select-customize-input
-  ):not(.ant-pagination-size-changer)
-  .ant-select-selector {
+.ant-select-focused:where(.css-dev-only-do-not-override-1okl62o).ant-select-outlined:not(.ant-select-disabled):not(.ant-select-customize-input):not(.ant-pagination-size-changer) .ant-select-selector {
   border-color: var(--color-primary) !important;
 }
 
@@ -65,7 +57,7 @@ body {
   color: white;
 }
 
-.rcw-conversation-container > .rcw-header {
+.rcw-conversation-container>.rcw-header {
   background-color: var(--color-primary);
 }
 
@@ -77,11 +69,7 @@ body {
   cursor: not-allowed;
 }
 
-.ant-upload-wrapper
-  .ant-upload-list
-  .ant-upload-list-item
-  .ant-upload-list-item-actions
-  .anticon {
+.ant-upload-wrapper .ant-upload-list .ant-upload-list-item .ant-upload-list-item-actions .anticon {
   color: red;
 }
 

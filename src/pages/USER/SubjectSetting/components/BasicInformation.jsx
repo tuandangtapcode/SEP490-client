@@ -81,7 +81,7 @@ const BasicInformation = ({ totalFee, setTotalFee, subjectSetting }) => {
         <Col span={12}>
           <Form.Item
             name='Price'
-            label={<div className="fw-500">Giá tiền cho mỗi buổi học:</div>}
+            label={<div className="fw-500">Giá tiền cho mỗi buổi học (VNĐ)</div>}
             rules={[
               {
                 validator: (rule, value) => {
@@ -102,9 +102,9 @@ const BasicInformation = ({ totalFee, setTotalFee, subjectSetting }) => {
             <InputNumber
               style={{ width: "200px" }}
               type='isNumber'
-              suffix=".000 VNĐ"
+              suffix=".000"
               disabled={subjectSetting?.RegisterStatus === 2 ? true : false}
-              onChange={e => setTotalFee(getRealFee(e, profitPercent))}
+              onChange={e => setTotalFee(getRealFee(e * 1000, profitPercent))}
             />
           </Form.Item>
           <div className="d-flex align-items-center">

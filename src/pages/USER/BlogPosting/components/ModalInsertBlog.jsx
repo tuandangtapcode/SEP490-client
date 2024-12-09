@@ -111,6 +111,8 @@ const ModalInsertBlog = ({ open, onCancel, onOk }) => {
     }
   }
 
+  console.log("scheduleInWeek", scheduleInWeek);
+
 
   return (
     <ModalCustom
@@ -233,7 +235,7 @@ const ModalInsertBlog = ({ open, onCancel, onOk }) => {
               <Col span={6}>
                 <Form.Item
                   name="Price"
-                  label="Giá tiền/buổi"
+                  label="Giá tiền/buổi(VNĐ)"
                   rules={[
                     {
                       validator: (rule, value) => {
@@ -255,7 +257,7 @@ const ModalInsertBlog = ({ open, onCancel, onOk }) => {
                   <InputCustom
                     type="isNumber"
                     style={{ width: "100%" }}
-                    suffix=".000 VNĐ"
+                    suffix=".000"
                   />
                 </Form.Item>
               </Col>
@@ -382,7 +384,10 @@ const ModalInsertBlog = ({ open, onCancel, onOk }) => {
               <Col span={24}>
                 {
                   !!scheduleInWeek?.length &&
-                  !!scheduleInWeek?.every(i => !!i?.DateValue && !!i?.StartTime && !!i?.EndTime) &&
+                  !!scheduleInWeek?.every(i =>
+                    i?.DateValue !== "" &&
+                    i?.StartTime !== "" &&
+                    i?.EndTime !== "") &&
                   <FormItem
                     name="StartDate"
                     rules={[

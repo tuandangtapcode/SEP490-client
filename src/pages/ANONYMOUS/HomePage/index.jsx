@@ -36,7 +36,9 @@ const HomePage = () => {
           prompt: prompt
         })
       } else {
-        res = await UserService.getListTopTeacher()
+        res = await UserService.getListTopTeacher({
+          IsBlogPage: false
+        })
       }
       if (!!res?.isError) return toast.error(res?.msg)
       setTeachers(res?.data)
