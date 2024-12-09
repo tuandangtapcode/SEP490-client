@@ -10,7 +10,6 @@ import {
   apiGetInforByGoogleLogin,
   apiGetListStudent,
   apiGetListTeacher,
-  apiGetListTeacherBySubject,
   apiGetListTeacherByUser,
   apiGetListTeacherInWeek,
   apiGetListSubjectSettingByTeacher,
@@ -52,7 +51,6 @@ const changeProfile = body => http.post(apiChangeProfile, body)
 const requestConfirmRegister = () => http.get(apiRequestConfirmRegister)
 const responseConfirmRegister = body => http.post(apiResponseConfirmRegister, body)
 const getListTeacher = body => http.post(apiGetListTeacher, body)
-const getListTeacherBySubject = body => http.post(apiGetListTeacherBySubject, body)
 const getDetailTeacher = body => http.post(apiGetDetailTeacher, body)
 const getListTeacherByUser = body => http.post(apiGetListTeacherByUser, body)
 const getListStudent = body => http.post(apiGetListStudent, body)
@@ -63,7 +61,7 @@ const createSubjectSetting = SubjectID => http.get(`${apiCreateSubjectSetting}/$
 const updateSubjectSetting = body => http.post(apiUpdateSubjectSetting, body)
 const deleteSubjectSetting = SubjectSettingID => http.get(`${apiDeleteSubjectSetting}/${SubjectSettingID}`)
 const responseConfirmSubjectSetting = body => http.post(apiResponseConfirmSubjectSetting, body)
-const getListTopTeacher = () => http.get(apiGetListTopTeacher)
+const getListTopTeacher = body => http.post(apiGetListTopTeacher, body)
 const changeCareerInformation = body => http.post(apiChangeCareerInformation, body)
 const updateSchedule = body => http.post(apiUpdateSchedule, body)
 const getListSubjectSetting = body => http.post(apiGetListSubjectSetting, body)
@@ -86,7 +84,6 @@ const UserService = {
   requestConfirmRegister,
   responseConfirmRegister,
   getListTeacher,
-  getListTeacherBySubject,
   getDetailTeacher,
   getListTeacherByUser,
   getListStudent,

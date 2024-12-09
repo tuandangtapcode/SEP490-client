@@ -1,7 +1,22 @@
-import { Card } from "antd"
+import { Card, Select } from "antd"
 import ReactECharts from 'echarts-for-react'
 
-const Pie = ({ newRegister }) => {
+const listKey = [
+  {
+    id: "Day",
+    title: "Ngày",
+  },
+  {
+    id: "Week",
+    title: "Tuần",
+  },
+  {
+    id: "Month",
+    title: "Tháng",
+  }
+]
+
+const Pie = ({ newRegister, setKey }) => {
 
   const chartOptions = {
     title: {
@@ -36,6 +51,23 @@ const Pie = ({ newRegister }) => {
 
   return (
     <Card style={{ width: '100%', borderRadius: '10px', boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)' }}>
+      <Select
+        placeholder="Tìm theo ngày/tuần/tháng"
+        allowClear
+        onChange={e => setKey(e)}
+        className="mb-12"
+      >
+        {
+          listKey?.map(i =>
+            <Select.Option
+              key={i?.id}
+              value={i?.id}
+            >
+              {i?.title}
+            </Select.Option>
+          )
+        }
+      </Select>
       <ReactECharts option={chartOptions} />
     </Card>
   )

@@ -163,15 +163,15 @@ const SubjectSetting = () => {
   return (
     <SpinCustom spinning={loading}>
       <Form form={form} layout="vertical">
-        <Row>
+        <Row gutter={[16, 16]}>
           <Col span={24} className="d-flex-sb mb-10">
-            <div className="fs-18 fw-600">Danh sách môn học</div>
+            <div className="title-type-1">Danh sách môn học</div>
             <Space>
               <ButtonCustom
                 className="third-type-2"
                 onClick={() => setOpenModalSubject(true)}
               >
-                Thêm Môn học
+                Thêm môn học
               </ButtonCustom>
             </Space>
           </Col>

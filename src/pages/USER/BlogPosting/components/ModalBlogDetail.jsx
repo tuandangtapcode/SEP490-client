@@ -15,6 +15,8 @@ import ButtonCircle from "src/components/MyButton/ButtonCircle"
 import socket from "src/utils/socket"
 import BlogService from "src/services/BlogService"
 import { toast } from "react-toastify"
+import { Link } from "react-router-dom"
+import Router from "src/routers"
 
 
 const ModalBlogDetail = ({
@@ -123,7 +125,9 @@ const ModalBlogDetail = ({
       dataIndex: "FullName",
       key: "FullName",
       render: (_, record) => (
-        <div>{record?.Teacher?.FullName}</div>
+        <Link to={`${Router.GIAO_VIEN}/${record?.Teacher?._id}${Router.MON_HOC}/${open?.Subject?._id}`}>
+          {record?.Teacher?.FullName}
+        </Link>
       )
     },
     {

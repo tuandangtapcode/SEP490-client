@@ -29,15 +29,19 @@ const BlogItem = ({ blog }) => {
       setLoading(true)
       const res = await BlogService.sendRequestReceive(blog?._id)
       if (!!res?.isError) {
-        return ConfirmModal({
-          description: `
-            <div>${res?.msg}:</div>
-            ${res?.data?.map(i =>
-            `<div>${dayjs(i?.StartTime).format("DD/MM/YYYY")} ${dayjs(i?.StartTime).format("HH:mm")}-${dayjs(i?.EndTime).format("HH:mm")}</div>`
-          ).join("")}
-          `,
-          isViewCancelBtn: false
-        })
+        if (!!res?.data?.length) {
+          return ConfirmModal({
+            description: `
+              <div>${res?.msg}:</div>
+              ${res?.data?.map(i =>
+              `<div>${dayjs(i?.StartTime).format("DD/MM/YYYY")} ${dayjs(i?.StartTime).format("HH:mm")}-${dayjs(i?.EndTime).format("HH:mm")}</div>`
+            ).join("")}
+            `,
+            isViewCancelBtn: false
+          })
+        } else {
+          return toast.warn(res?.msg)
+        }
       }
       const bodyNotification = {
         Content: `${user?.FullName} đăng ký lớp học của bạn`,

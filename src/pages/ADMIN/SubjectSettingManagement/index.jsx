@@ -206,7 +206,7 @@ const SubjectSettingManagement = () => {
     <SpinCustom spinning={loading}>
       <Row gutter={[8, 16]}>
         <Col span={24} className="mb-16">
-          <div className="title-type-1"> QUẢN LÝ TÀI KHOẢN GIÁO VIÊN</div>
+          <div className="title-type-1">QUẢN LÝ MÔN HỌC GIÁO VIÊN</div>
         </Col>
         <Col span={12}>
           <InputCustom

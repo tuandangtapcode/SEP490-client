@@ -134,7 +134,7 @@ const BookingHistory = () => {
     },
     {
       title: "Thanh toán",
-      isView: record?.IsPaid,
+      isView: record?.IsPayment,
       isDisabled: record?.IsDisabledPaid,
       icon: ListIcons?.ICON_PAYMENT_BOOKING,
       onClick: () => {

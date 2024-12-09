@@ -6,6 +6,7 @@ import { toast } from "react-toastify"
 import InputCustom from "src/components/InputCustom"
 import ModalCustom from "src/components/ModalCustom"
 import ButtonCustom from "src/components/MyButton/ButtonCustom"
+import SpinCustom from "src/components/SpinCustom"
 import { getListComboKey } from "src/lib/commonFunction"
 import { SYSTEM_KEY } from "src/lib/constant"
 import { formatMoney, getRealFee } from "src/lib/stringUtils"
@@ -29,7 +30,9 @@ const InsertUpdateCourse = ({ open, onCancel, onOk }) => {
         ...values,
         CourseID: open?._id,
         Teacher: user?._id,
-        Subject: open?.Subject?._id,
+        Subject: !!open?.Subject?._id
+          ? open?.Subject?._id
+          : values?.Subject,
         Price: values?.Price * 1000,
         ExpensePrice: totalFee
       }
@@ -37,11 +40,12 @@ const InsertUpdateCourse = ({ open, onCancel, onOk }) => {
         ? await CourseService.updateCourse(body)
         : await CourseService.createCourse(body)
       if (!!res?.isError) return toast.error(res?.msg)
-      if (!!open?._id) {
+      toast.success(res?.msg)
+      if (!!open?.Subject) {
+        navigate(`${Router.KHOA_HOC}`)
+      } else {
         onOk()
         onCancel()
-      } else {
-        navigate(`${Router.KHOA_HOC}`)
       }
     } finally {
       setLoading(false)
@@ -57,6 +61,7 @@ const InsertUpdateCourse = ({ open, onCancel, onOk }) => {
     }
     setTotalFee(getRealFee(open?.Price, profitPercent))
   }, [open?._id])
+
 
   return (
     <ModalCustom
@@ -84,10 +89,43 @@ const InsertUpdateCourse = ({ open, onCancel, onOk }) => {
     >
       <Form form={form} layout="vertical">
         <Row>
-          <Col span={24} className="d-flex mb-24">
-            <div className="mr-6">Môn học:</div>
-            <div className='fw-600 fs-15 mr-8'>{open?.Subject?.SubjectName}</div>
-          </Col>
+          {
+            !!open?.Subject
+              ?
+              <Col span={24} className="d-flex mb-24">
+                <div className="mr-6">Môn học:</div>
+                <div className='fw-600 fs-15 mr-8'>{open?.Subject?.SubjectName}</div>
+              </Col>
+              :
+              <Col span={24}>
+                <Form.Item
+                  name="Subject"
+                  label="Chọn môn học"
+                  rules={[
+                    { required: true, message: "Hãy nhập vào tên của bạn" },
+                  ]}
+                >
+                  <Select
+                    showSearch
+                    placeholder="Chọn môn học"
+                    filterOption={(input, option) =>
+                      option?.children?.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                    }
+                  >
+                    {
+                      user?.SubjectSettings?.map(s => s?.Subject)?.map(i =>
+                        <Select.Option
+                          key={i?._id}
+                          value={i?._id}
+                        >
+                          {i?.SubjectName}
+                        </Select.Option>
+                      )
+                    }
+                  </Select>
+                </Form.Item>
+              </Col>
+          }
           <Col span={8}>
             <Form.Item
               name="QuantitySlot"
@@ -113,7 +151,7 @@ const InsertUpdateCourse = ({ open, onCancel, onOk }) => {
           <Col span={8}>
             <Form.Item
               name="Price"
-              label="Giá tiền (x1000 VNĐ)"
+              label="Giá tiền (VNĐ)"
               rules={[
                 {
                   validator: (rule, value) => {

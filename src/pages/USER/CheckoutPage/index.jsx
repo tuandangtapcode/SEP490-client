@@ -29,7 +29,7 @@ const CheckoutPage = () => {
 
   const { CheckoutID, Type } = useParams()
   const navigate = useNavigate()
-  const [data, setData] = useState()
+  const [dataPayment, setDataPayment] = useState()
   const [loading, setLoading] = useState(false)
   const { user, listSystemKey, profitPercent } = useSelector(globalSelector)
   const location = useLocation()
@@ -50,7 +50,7 @@ const CheckoutPage = () => {
       } else {
         return navigate(Router.TRANG_CHU)
       }
-      setData(res?.data)
+      setDataPayment(res?.data)
     } finally {
       setLoading(false)
     }
@@ -65,7 +65,7 @@ const CheckoutPage = () => {
       if (+localStorage.getItem("paymentMethod") === 2) {
         const body = {
           orderCode: randomNumber(),
-          amount: data?.TotalFee,
+          amount: dataPayment?.TotalFee,
           description: "Thanh toán book giáo viên",
           cancelUrl: `${RootURLWebsite}${location.pathname}`,
           returnUrl: `${RootURLWebsite}${location.pathname}`,
@@ -80,7 +80,7 @@ const CheckoutPage = () => {
       } else if (+localStorage.getItem("paymentMethod") === 1) {
         handleCreatePaymentVNPay(
           "Thanh toán book giáo viên",
-          data?.TotalFee * 100,
+          dataPayment?.TotalFee * 100,
           `${RootURLWebsite}${location.pathname}`,
           "1.1.1.1"
         )
@@ -97,44 +97,44 @@ const CheckoutPage = () => {
       if (!!resConfirm?.isError) return
       const resPayment = await PaymentService.createPayment({
         PaymentType: 1,
-        Description: `Thanh toán book giáo viên ${data?.Receiver?.FullName}`,
-        TotalFee: data?.TotalFee,
+        Description: `Thanh toán book giáo viên ${dataPayment?.Receiver?.FullName}`,
+        TotalFee: dataPayment?.TotalFee,
         TraddingCode: randomNumber(),
         PaymentMethod: +localStorage.getItem("paymentMethod"),
         Percent: profitPercent
       })
       if (!!resPayment?.isError) return
       const bodyLearnHistory = {
-        Teacher: data?.Receiver?._id,
-        Subject: data?.Subject?._id,
-        TotalLearned: data?.Schedules?.length,
-        TeacherName: data?.Receiver?.FullName,
-        TeacherEmail: data?.Receiver?.Email,
-        SubjectName: data?.Subject?.SubjectName,
+        Teacher: dataPayment?.Receiver?._id,
+        Subject: dataPayment?.Subject?._id,
+        TotalLearned: dataPayment?.Schedules?.length,
+        TeacherName: dataPayment?.Receiver?.FullName,
+        TeacherEmail: dataPayment?.Receiver?.Email,
+        SubjectName: dataPayment?.Subject?.SubjectName,
         StudentName: user?.FullName,
         StudentEmail: user?.Email,
-        Times: data?.Schedules?.map(i =>
+        Times: dataPayment?.Schedules?.map(i =>
           `Ngày ${dayjs(i?.StartTime).format("DD/MM/YYYY")} ${dayjs(i?.StartTime).format("HH:ss")} - ${dayjs(i?.EndTime).format("HH:ss")}`
         )
       }
       const resLearnHistory = await LearnHistoryService.createLearnHistory(bodyLearnHistory)
       if (!!resLearnHistory?.isError) return
-      const bodyTimeTable = data?.Schedules?.map(i => ({
+      const bodyTimeTable = dataPayment?.Schedules?.map(i => ({
         LearnHistory: resLearnHistory?.data?._id,
-        Teacher: data?.Receiver?._id,
-        Subject: data?.Subject?._id,
+        Teacher: dataPayment?.Receiver?._id,
+        Subject: dataPayment?.Subject?._id,
         StartTime: dayjs(i?.StartTime),
         EndTime: dayjs(i?.EndTime),
-        LearnType: data?.LearnType,
-        Address: !!data?.Address
-          ? data?.Address
+        LearnType: dataPayment?.LearnType,
+        Address: !!dataPayment?.Address
+          ? dataPayment?.Address
           : undefined,
-        Price: getRealFee(data?.TotalFee, profitPercent) / data?.Schedules?.length
+        Price: getRealFee(dataPayment?.TotalFee, profitPercent) / dataPayment?.Schedules?.length
       }))
       const resTimeTable = await TimeTableService.createTimeTable(bodyTimeTable)
       if (!!resTimeTable?.isError) return
       localStorage.removeItem("paymentMethod")
-      setOpenModalSuccessBooking({ FullName: data?.Receiver?.FullName })
+      setOpenModalSuccessBooking({ FullName: dataPayment?.Receiver?.FullName })
     } finally {
       setLoading(false)
     }
@@ -161,8 +161,8 @@ const CheckoutPage = () => {
 
 
   useEffect(() => {
-    if (!data?.IsPaid) {
-      if (!!queryParams.get("id") && !!confirm) {
+    if (!dataPayment?.IsPaid) {
+      if (!!queryParams.get("id") && !!dataPayment) {
         const paymentLinkID = queryParams.get("id")
         if (!intervalRef.current) {
           intervalRef.current = setInterval(() => checkPaymentLinkStatus(paymentLinkID), 3000)
@@ -170,7 +170,7 @@ const CheckoutPage = () => {
       } else if (
         !!queryParams.get("vnp_ResponseCode") &&
         queryParams.get("vnp_ResponseCode") === "00" &&
-        !!confirm
+        !!dataPayment
       ) {
         handleCompleteBooking()
       }
@@ -181,7 +181,7 @@ const CheckoutPage = () => {
         intervalRef.current = null
       }
     }
-  }, [location.search, confirm])
+  }, [location.search, dataPayment])
 
 
   return (
@@ -195,25 +195,25 @@ const CheckoutPage = () => {
             <Col span={12}>
               <div className="mb-6">
                 <span className="mr-4 fs-15 fw-600">Giáo viên:</span>
-                <span>{data?.Receiver?.FullName}</span>
+                <span>{dataPayment?.Receiver?.FullName}</span>
               </div>
               <div className="mb-6">
                 <span className="mr-4 fs-15 fw-600">Môn học:</span>
-                <span>{data?.Subject?.SubjectName}</span>
+                <span>{dataPayment?.Subject?.SubjectName}</span>
               </div>
               <div className="mb-6">
                 <span className="mr-4 fs-15 fw-600">Hình thức học:</span>
                 <span>
                   {
                     getListComboKey(SYSTEM_KEY.LEARN_TYPE, listSystemKey)
-                      .find(i => i.ParentID === data?.LearnType)?.ParentName
+                      .find(i => i.ParentID === dataPayment?.LearnType)?.ParentName
                   }
                 </span>
               </div>
               <div className="mb-6">
-                <p className="mb-4 fs-15 fw-600">Lịch học ({data?.Schedules?.length} buổi):</p>
+                <p className="mb-4 fs-15 fw-600">Lịch học ({dataPayment?.Schedules?.length} buổi):</p>
                 {
-                  data?.Schedules?.map((i, idx) =>
+                  dataPayment?.Schedules?.map((i, idx) =>
                     <div key={idx} className="mb-4">
                       <span className="mr-2">Ngày</span>
                       <span className="mr-4">{dayjs(i?.StartTime).format("DD/MM/YYYY")}:</span>
@@ -229,7 +229,7 @@ const CheckoutPage = () => {
               <p className="fs-16 fw-600 mb-8">Phương thức thanh toán:</p>
               <Radio.Group
                 onChange={e => localStorage.setItem("paymentMethod", e.target.value)}
-                disabled={data?.IsPaid}
+                disabled={dataPayment?.IsPaid}
                 className="mb-12"
               >
                 <PaymentMethodStyled
@@ -269,14 +269,14 @@ const CheckoutPage = () => {
               </Radio.Group>
               <div>
                 <span className="gray-text fs-15 fw-600 mr-4">Số tiền thanh toán:</span>
-                <span className="fs-17 fw-700 primary-text">{formatMoney(data?.TotalFee)} VNĐ</span>
+                <span className="fs-17 fw-700 primary-text">{formatMoney(dataPayment?.TotalFee)} VNĐ</span>
               </div>
             </Col>
             <Col span={12}>
             </Col>
             <Col span={12} className="mt-12">
               {
-                !data?.IsPaid
+                !dataPayment?.IsPaid
                   ?
                   <ButtonCustom
                     className="medium-size primary"

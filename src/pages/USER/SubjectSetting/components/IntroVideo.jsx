@@ -37,10 +37,7 @@ const IntroVideo = ({
             valuePropName="fileList"
             getValueFromEvent={normFile}
             rules={[
-              {
-                required: form.getFieldValue("IntroVideos") ? false : true,
-                message: "Hãy chọn file tải lên",
-              },
+              { required: true, message: "Hãy chọn file tải lên" }
             ]}
           >
             <Upload.Dragger
