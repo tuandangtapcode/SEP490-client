@@ -32,6 +32,7 @@ import {
   apiCreateAccountStaff,
   apiGetListAccountStaff,
   apiResetPasswordAccountStaff,
+  apiUpdateAccountStaff,
 } from "./urls"
 
 const getInforByGoogleLogin = (access_token) => axios.get(apiGetInforByGoogleLogin, {
@@ -69,6 +70,7 @@ const disabledOrEnabledSubjectSetting = body => http.post(apiDisabledOrEnabledSu
 const createAccountStaff = body => http.post(apiCreateAccountStaff, body)
 const getListAccountStaff = body => http.post(apiGetListAccountStaff, body)
 const resetPasswordAccountStaff = UserID => http.get(`${apiResetPasswordAccountStaff}/${UserID}`)
+const updateAccountStaff = body => http.post(apiUpdateAccountStaff, body)
 
 const UserService = {
   getInforByGoogleLogin,
@@ -101,7 +103,8 @@ const UserService = {
   disabledOrEnabledSubjectSetting,
   createAccountStaff,
   getListAccountStaff,
-  resetPasswordAccountStaff
+  resetPasswordAccountStaff,
+  updateAccountStaff
 }
 
 export default UserService

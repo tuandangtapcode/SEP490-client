@@ -1,4 +1,4 @@
-import { Col, Image, Row } from "antd"
+import { Col, Image, Row, Space } from "antd"
 import { useSelector } from "react-redux"
 import ModalCustom from "src/components/ModalCustom"
 import { getListComboKey } from "src/lib/commonFunction"
@@ -9,11 +9,20 @@ import dayjs from "dayjs"
 import VideoItem from "src/pages/ANONYMOUS/TeacherDetail/components/VideoItem"
 import { useState } from "react"
 import PreviewVideo from "src/pages/USER/SubjectSetting/modal/PreviewVideo"
+import ButtonCustom from "src/components/MyButton/ButtonCustom"
+import ModalReasonReject from "./ModalReasonReject"
 
-const ModalViewSubjectSetting = ({ open, onCancel }) => {
+const ModalViewSubjectSetting = ({
+  open,
+  onCancel,
+  handleConfirmSubjectSetting,
+  onOk
+}) => {
 
   const { listSystemKey } = useSelector(globalSelector)
   const [openPreviewVideo, setOpenPreviewVideo] = useState()
+  const [loading, setLoading] = useState(false)
+  const [openModalReasonReject, setOpenModalReasonReject] = useState(false)
 
   return (
     <ModalCustom
@@ -21,7 +30,31 @@ const ModalViewSubjectSetting = ({ open, onCancel }) => {
       onCancel={onCancel}
       title="Chi tiết môn học"
       width="70vw"
-      footer={null}
+      footer={
+        <Space className="d-flex-end">
+          <ButtonCustom
+            className="third"
+            onClick={() => onCancel()}
+          >
+            Đóng
+          </ButtonCustom>
+          <ButtonCustom
+            className="primary"
+            disabled={open?.IsConfirm}
+            loading={loading}
+            onClick={() => handleConfirmSubjectSetting({ ...open, isModalDetail: true }, setLoading, onCancel)}
+          >
+            Duyệt
+          </ButtonCustom>
+          <ButtonCustom
+            className="primary"
+            disabled={open?.IsReject}
+            onClick={() => setOpenModalReasonReject({ ...open, isModalDetail: true })}
+          >
+            Không duyệt
+          </ButtonCustom>
+        </Space>
+      }
     >
       <div className="p-12">
         <Row>
@@ -164,6 +197,17 @@ const ModalViewSubjectSetting = ({ open, onCancel }) => {
             onCancel={() => setOpenPreviewVideo(false)}
           />
         }
+
+        {
+          !!openModalReasonReject &&
+          <ModalReasonReject
+            open={openModalReasonReject}
+            onCancel={() => setOpenModalReasonReject(false)}
+            cancelModalDetail={onCancel}
+            onOk={onOk}
+          />
+        }
+
       </div>
     </ModalCustom>
   )

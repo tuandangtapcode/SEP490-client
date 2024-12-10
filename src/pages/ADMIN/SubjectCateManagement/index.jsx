@@ -27,7 +27,7 @@ const SubjectCateManagement = () => {
   const getListSubjectCate = async () => {
     try {
       setLoading(true)
-      const res = await SubjectCateService.getListSubjectCate(pagination)
+      const res = await SubjectCateService.getListSubjectCateByAdmin(pagination)
       if (!!res?.isError) return toast.error(res?.msg)
       setListData(res?.data?.List)
       setTotal(res?.data?.Total)
@@ -45,6 +45,7 @@ const SubjectCateManagement = () => {
       const res = await SubjectCateService.deleteSubjectCate(id)
       if (!!res?.isError) return toast.error(res?.msg)
       toast.success(res?.msg)
+      getListSubjectCate()
     } finally {
       setLoading(false)
     }
@@ -62,13 +63,13 @@ const SubjectCateManagement = () => {
       onClick: () => setOpenModalSubjectCate(record)
     },
     {
-      title: "Xóa",
-      icon: ListIcons?.ICON_DELETE,
+      title: !!record?.IsDeleted ? "Hiển thị môn học" : "Ẩn môn học",
+      icon: !!record?.IsDeleted ? ListIcons.ICON_UNBLOCK : ListIcons.ICON_BLOCK,
       onClick: () => {
         ConfirmModal({
-          description: `Bạn có chắc chắn muốn xoá môn học "${record?.SubjectName}" không?`,
+          description: `Bạn có chắc chắn muốn ${!!record?.IsDeleted ? "hiển thị danh mục" : "ẩn danh mục"} môn học "${record?.SubjectCateName}" không?`,
           onOk: async close => {
-            handleDeleteSubjectCate(record?._id)
+            handleDeleteSubjectCate({ SubjectCateID: record?._id, IsDeleted: !record?.IsDeleted })
             getListSubjectCate()
             close()
           }
@@ -92,12 +93,14 @@ const SubjectCateManagement = () => {
       width: 100,
       dataIndex: "SubjectCateName",
       key: "SubjectCateName",
+      align: "center",
     },
     {
       title: "Mô tả",
       width: 400,
       dataIndex: "Description",
       key: "Description",
+      align: "center",
     },
     {
       title: "Chức năng",
@@ -170,20 +173,24 @@ const SubjectCateManagement = () => {
           />
         </Col>
 
-        {!!openModalSubjectCate && (
-          <InsertUpdateSubjectCate
-            open={openModalSubjectCate}
-            onCancel={() => setOpenModalSubjectCate(false)}
-            onOk={() => getListSubjectCate()}
-          />
-        )}
+        {
+          !!openModalSubjectCate && (
+            <InsertUpdateSubjectCate
+              open={openModalSubjectCate}
+              onCancel={() => setOpenModalSubjectCate(false)}
+              onOk={() => getListSubjectCate()}
+            />
+          )
+        }
 
-        {!!openModalSubject && (
-          <ModalSubject
-            open={openModalSubject}
-            onCancel={() => setOpenModalSubject(false)}
-          />
-        )}
+        {
+          !!openModalSubject && (
+            <ModalSubject
+              open={openModalSubject}
+              onCancel={() => setOpenModalSubject(false)}
+            />
+          )
+        }
 
       </Row>
     </SpinCustom>

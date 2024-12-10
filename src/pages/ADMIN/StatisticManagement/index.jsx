@@ -100,7 +100,7 @@ const StatisticManagement = () => {
         </Col>
         <Col span={7}>
           <StatisticCardWrapper onClick={() => setOpenChangeProfitPercent(profitPercent)}>
-            <Statistic title="Phần trăm lợi nhuận" value={`${profitPercent * 100}%`} />
+            <Statistic title="Phí đăng ký" value={`${profitPercent * 100}%`} />
           </StatisticCardWrapper>
         </Col>
         <Col span={12}>

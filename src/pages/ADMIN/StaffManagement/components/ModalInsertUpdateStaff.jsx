@@ -1,5 +1,5 @@
 import { Col, Form, Row, Space } from "antd"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { toast } from "react-toastify"
 import InputCustom from "src/components/InputCustom"
 import ModalCustom from "src/components/ModalCustom"
@@ -7,16 +7,22 @@ import ButtonCustom from "src/components/MyButton/ButtonCustom"
 import { getRegexEmail, getRegexPassowrd, getRegexPhoneNumber } from "src/lib/stringUtils"
 import UserService from "src/services/UserService"
 
-const ModalInsertStaff = ({ open, onCancel, onOk }) => {
+const ModalInsertUpdateStaff = ({ open, onCancel, onOk }) => {
 
   const [form] = Form.useForm()
   const [loading, setLoading] = useState(false)
 
-  const createAccountStaff = async () => {
+  const handleSubmit = async () => {
     try {
       setLoading(true)
       const values = await form.validateFields()
-      const res = await UserService.createAccountStaff(values)
+      const res = !!open?._id
+        ? await UserService.updateAccountStaff({
+          FullName: values?.FullName,
+          Phone: values?.Phone,
+          UserID: open?._id
+        })
+        : await UserService.createAccountStaff(values)
       if (!!res?.isError) return
       toast.success(res?.msg)
       onOk()
@@ -26,11 +32,17 @@ const ModalInsertStaff = ({ open, onCancel, onOk }) => {
     }
   }
 
+  useEffect(() => {
+    if (!!open?._id) {
+      form.setFieldsValue(open)
+    }
+  }, [open])
+
   return (
     <ModalCustom
       open={open}
       onCancel={onCancel}
-      title="Thêm mới staff"
+      title={!!open?._id ? "Chỉnh sửa tài khoản staff" : "Thêm mới tài khoản staff"}
       width="30vw"
       footer={
         <Space className="d-flex-end">
@@ -43,9 +55,9 @@ const ModalInsertStaff = ({ open, onCancel, onOk }) => {
           <ButtonCustom
             className="primary"
             loading={loading}
-            onClick={() => createAccountStaff()}
+            onClick={() => handleSubmit()}
           >
-            Gửi
+            Lưu
           </ButtonCustom>
         </Space>
       }
@@ -70,7 +82,10 @@ const ModalInsertStaff = ({ open, onCancel, onOk }) => {
                 { pattern: getRegexEmail(), message: "Email sai định dạng" }
               ]}
             >
-              <InputCustom placeholder="Email" />
+              <InputCustom
+                placeholder="Email"
+                disabled={!!open?._id ? true : false}
+              />
             </Form.Item>
           </Col>
           <Col span={24}>
@@ -84,21 +99,24 @@ const ModalInsertStaff = ({ open, onCancel, onOk }) => {
               <InputCustom placeholder="Số diện thoại" />
             </Form.Item>
           </Col>
-          <Col span={24}>
-            <Form.Item
-              name="Password"
-              rules={[
-                { required: true, message: "Hãy nhập vào mật khẩu mới của bạn" },
-                { pattern: getRegexPassowrd(), message: "Mật khẩu sai định dạng" }
-              ]}
-            >
-              <InputCustom type="isPassword" placeholder="Mật khẩu" />
-            </Form.Item>
-          </Col>
+          {
+            !open?._id &&
+            <Col span={24}>
+              <Form.Item
+                name="Password"
+                rules={[
+                  { required: true, message: "Hãy nhập vào mật khẩu mới của bạn" },
+                  { pattern: getRegexPassowrd(), message: "Mật khẩu sai định dạng" }
+                ]}
+              >
+                <InputCustom type="isPassword" placeholder="Mật khẩu" />
+              </Form.Item>
+            </Col>
+          }
         </Row>
       </Form>
     </ModalCustom>
   )
 }
 
-export default ModalInsertStaff
+export default ModalInsertUpdateStaff
