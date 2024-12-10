@@ -29,3 +29,4 @@ export const apiDisabledOrEnabledSubjectSetting = "user/disabledOrEnabledSubject
 export const apiCreateAccountStaff = "user/createAccountStaff"
 export const apiGetListAccountStaff = "user/getListAccountStaff"
 export const apiResetPasswordAccountStaff = "user/resetPasswordAccountStaff"
+export const apiUpdateAccountStaff = "user/updateAccountStaff"

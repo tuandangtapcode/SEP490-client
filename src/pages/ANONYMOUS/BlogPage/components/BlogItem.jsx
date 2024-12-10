@@ -6,7 +6,7 @@ import ListIcons from "src/components/ListIcons"
 import dayjs from "dayjs"
 import { getListComboKey } from "src/lib/commonFunction"
 import { Roles, SYSTEM_KEY } from "src/lib/constant"
-import { useSelector } from "react-redux"
+import { useDispatch, useSelector } from "react-redux"
 import { globalSelector } from "src/redux/selector"
 import { defaultDays } from "src/lib/dateUtils"
 import { useNavigate } from "react-router-dom"
@@ -17,12 +17,14 @@ import { toast } from "react-toastify"
 import NotificationService from "src/services/NotificationService"
 import Router from "src/routers"
 import ConfirmModal from "src/components/ModalCustom/ConfirmModal"
+import globalSlice from "src/redux/globalSlice"
 
 const BlogItem = ({ blog }) => {
 
   const { listSystemKey, user, profitPercent } = useSelector(globalSelector)
   const navigate = useNavigate()
   const [loading, setLoading] = useState(false)
+  const dispatch = useDispatch()
 
   const sendRequestReceive = async () => {
     try {
@@ -83,12 +85,15 @@ const BlogItem = ({ blog }) => {
             </div>
           </Col>
           {
-            !!user?._id && user?.RoleID === Roles.ROLE_TEACHER &&
+            user?.RoleID !== Roles.ROLE_STUDENT &&
             <Col span={12} className="d-flex-end">
               <ButtonCustom
                 className="third-type-2"
                 onClick={() => {
-                  if (!!user?.SubjectSettings?.find(i => i?.Subject?._id === blog?.Subject?._id && i?.RegisterStatus === 3)) {
+                  if (!user?._id) {
+                    dispatch(globalSlice.actions.setRouterBeforeLogin(location.pathname))
+                    navigate("/dang-nhap")
+                  } else if (!!user?.SubjectSettings?.find(i => i?.Subject?._id === blog?.Subject?._id && i?.RegisterStatus === 3)) {
                     sendRequestReceive()
                   } else {
                     message.error("Bạn hãy đăng ký dạy môn học này để có thể nhận lớp")

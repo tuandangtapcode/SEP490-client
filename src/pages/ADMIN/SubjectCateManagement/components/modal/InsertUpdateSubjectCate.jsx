@@ -60,7 +60,7 @@ const InsertUpdateSubjectCate = ({ open, onCancel, onOk }) => {
       >
         Ghi lại
       </ButtonCustom>
-      <ButtonCustom btnType="cancel" onClick={onCancel}>
+      <ButtonCustom className="third" onClick={onCancel}>
         Đóng
       </ButtonCustom>
     </Space>

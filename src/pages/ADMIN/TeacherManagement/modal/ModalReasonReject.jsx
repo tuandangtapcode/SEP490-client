@@ -6,7 +6,7 @@ import ModalCustom from "src/components/ModalCustom"
 import ButtonCustom from "src/components/MyButton/ButtonCustom"
 import UserService from "src/services/UserService"
 
-const ModalReasonReject = ({ open, onCancel, onOk }) => {
+const ModalReasonReject = ({ open, onCancel, onOk, cancelModalDetail }) => {
 
   const [loading, setLoading] = useState(false)
   const [form] = Form.useForm()
@@ -25,6 +25,9 @@ const ModalReasonReject = ({ open, onCancel, onOk }) => {
       if (!!res?.isError) return toast.error(res?.msg)
       onOk()
       onCancel()
+      if (!!open?.isModalDetail) {
+        cancelModalDetail()
+      }
     } finally {
       setLoading(false)
     }

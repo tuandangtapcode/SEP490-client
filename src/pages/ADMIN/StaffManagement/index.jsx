@@ -9,7 +9,7 @@ import SpinCustom from "src/components/SpinCustom"
 import TableCustom from "src/components/TableCustom"
 import UserService from "src/services/UserService"
 import socket from "src/utils/socket"
-import ModalInsertStaff from "./components/ModalInsertStaff"
+import ModalInsertUpdateStaff from "./components/ModalInsertUpdateStaff"
 import { toast } from "react-toastify"
 
 const StaffManagement = () => {
@@ -64,6 +64,43 @@ const StaffManagement = () => {
     getListStaff()
   }, [pagination])
 
+  const listBtn = record => [
+    {
+      title: "Chỉnh sửa",
+      icon: ListIcons?.ICON_EDIT,
+      onClick: () => setOpenModalInsertStaff(record)
+    },
+    {
+      title: "Reset mật khẩu",
+      icon: ListIcons.ICON_RESET,
+      onClick: () => {
+        ConfirmModal({
+          description: `Bạn có chắc chắn reset mật khẩu tài khoản staff ${record?.FullName} không?`,
+          onOk: async close => {
+            handleResetPasswordAccountStaff(record?._id)
+            close()
+          }
+        })
+      }
+    },
+    {
+      title: !!record?.IsActive ? "Khóa tài khoản" : "Mở khóa tài khoản",
+      icon: !!record?.IsActive ? ListIcons?.ICON_BLOCK : ListIcons?.ICON_UNBLOCK,
+      onClick: () => {
+        ConfirmModal({
+          description: `Bạn có chắc chắn ${!!record?.IsActive ? "khóa" : "mở khóa"} tài khoản ${record?.FullName} không?`,
+          onOk: async close => {
+            handleInactiveOrActiveAccount({
+              UserID: record?._id,
+              IsActive: !!record?.IsActive ? false : true,
+            })
+            close()
+          }
+        })
+      }
+    },
+  ]
+
   const columns = [
     {
       title: "STT",
@@ -87,6 +124,12 @@ const StaffManagement = () => {
       key: 'Email',
     },
     {
+      title: 'Số điện thoại',
+      width: 100,
+      dataIndex: 'Phone',
+      key: 'Phone',
+    },
+    {
       title: "Trạng thái tài khoản",
       width: 80,
       dataIndex: "IsActive",
@@ -107,35 +150,16 @@ const StaffManagement = () => {
       align: "center",
       render: (_, record) => (
         <Space direction="horizontal">
-          <ButtonCircle
-            title="Reset mật khẩu"
-            icon={ListIcons.ICON_RESET}
-            onClick={() => {
-              ConfirmModal({
-                description: `Bạn có chắc chắn reset mật khẩu tài khoản staff ${record?.FullName} không?`,
-                onOk: async close => {
-                  handleResetPasswordAccountStaff(record?._id)
-                  close()
-                }
-              })
-            }}
-          />
-          <ButtonCircle
-            title={!!record?.IsActive ? "Khóa tài khoản" : "Mở khóa tài khoản"}
-            icon={!!record?.IsActive ? ListIcons?.ICON_BLOCK : ListIcons?.ICON_UNBLOCK}
-            onClick={() => {
-              ConfirmModal({
-                description: `Bạn có chắc chắn ${!!record?.IsActive ? "khóa" : "mở khóa"} tài khoản ${record?.FullName} không?`,
-                onOk: async close => {
-                  handleInactiveOrActiveAccount({
-                    UserID: record?._id,
-                    IsActive: !!record?.IsActive ? false : true,
-                  })
-                  close()
-                }
-              })
-            }}
-          />
+          {
+            listBtn(record)?.map((i, idx) =>
+              <ButtonCircle
+                key={idx}
+                title={i?.title}
+                icon={i?.icon}
+                onClick={i?.onClick}
+              />
+            )
+          }
         </Space>
       ),
     },
@@ -199,7 +223,7 @@ const StaffManagement = () => {
 
         {
           !!openModalInsertStaff &&
-          <ModalInsertStaff
+          <ModalInsertUpdateStaff
             open={openModalInsertStaff}
             onCancel={() => setOpenModalInsertStaff(false)}
             onOk={getListStaff}
