@@ -1,13 +1,24 @@
 import ModalCustom from "src/components/ModalCustom"
 import { PatentChildBorder, TabStyled } from "../styled"
-import { Tabs } from "antd"
+import { Space, Tabs } from "antd"
 import Information from "../components/Information"
 import BankInfor from "../components/BankInfor"
 import Schedules from "../components/Schedules"
 import LearnHistories from "../components/LearnHistories"
+import ButtonCustom from "src/components/MyButton/ButtonCustom"
+import { useState } from "react"
+import ModalReasonReject from "./ModalReasonReject"
 
 
-const ViewProfileTeacher = ({ open, onCancel }) => {
+const ViewProfileTeacher = ({
+  open,
+  onCancel,
+  handleConfirmRegister,
+  onOk
+}) => {
+
+  const [loading, setLoading] = useState(false)
+  const [openModalReasonReject, setOpenModalReasonReject] = useState(false)
 
   const items = [
     {
@@ -54,7 +65,31 @@ const ViewProfileTeacher = ({ open, onCancel }) => {
       width="80vw"
       title="Thông tin chi tiết"
       onCancel={onCancel}
-      footer={null}
+      footer={
+        <Space className="d-flex-end">
+          <ButtonCustom
+            className="third"
+            onClick={() => onCancel()}
+          >
+            Đóng
+          </ButtonCustom>
+          <ButtonCustom
+            className="primary"
+            disabled={open?.IsConfirm}
+            loading={loading}
+            onClick={() => handleConfirmRegister({ ...open, isModalDetail: true }, setLoading, onCancel)}
+          >
+            Duyệt
+          </ButtonCustom>
+          <ButtonCustom
+            className="primary"
+            disabled={open?.IsReject}
+            onClick={() => setOpenModalReasonReject({ ...open, isModalDetail: true })}
+          >
+            Không duyệt
+          </ButtonCustom>
+        </Space>
+      }
     >
       <TabStyled>
         <Tabs
@@ -65,6 +100,17 @@ const ViewProfileTeacher = ({ open, onCancel }) => {
           }}
         />
       </TabStyled>
+
+      {
+        !!openModalReasonReject &&
+        <ModalReasonReject
+          open={openModalReasonReject}
+          onCancel={() => setOpenModalReasonReject(false)}
+          cancelModalDetail={onCancel}
+          onOk={onOk}
+        />
+      }
+
     </ModalCustom>
   )
 }

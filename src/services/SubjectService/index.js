@@ -4,6 +4,7 @@ import {
   apiDeleteSubject,
   apiGetDetailSubject,
   apiGetListSubject,
+  apiGetListSubjectByAdmin,
   apiGetListTopSubject,
   apiUpdateSubject,
 } from "./urls"
@@ -11,9 +12,10 @@ import {
 const createSubject = body => http.post(apiCreateSubject, body)
 const getListSubject = body => http.post(apiGetListSubject, body)
 const updateSubject = body => http.post(apiUpdateSubject, body)
-const deleteSubject = SubjectID => http.get(`${apiDeleteSubject}/${SubjectID}`)
+const deleteSubject = body => http.post(apiDeleteSubject, body)
 const getDetailSubject = SubjectID => http.get(`${apiGetDetailSubject}/${SubjectID}`)
 const getListTopSubject = () => http.get(apiGetListTopSubject)
+const getListSubjectByAdmin = body => http.post(apiGetListSubjectByAdmin, body)
 
 const SubjectService = {
   createSubject,
@@ -21,7 +23,8 @@ const SubjectService = {
   updateSubject,
   deleteSubject,
   getDetailSubject,
-  getListTopSubject
+  getListTopSubject,
+  getListSubjectByAdmin
 }
 
 export default SubjectService

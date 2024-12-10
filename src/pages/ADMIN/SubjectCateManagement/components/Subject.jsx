@@ -29,7 +29,7 @@ const ModalSubject = ({ open, onCancel }) => {
   const getListSubject = async () => {
     try {
       setLoading(true)
-      const res = await SubjectService.getListSubject(pagination)
+      const res = await SubjectService.getListSubjectByAdmin(pagination)
       if (!!res?.isError) return toast.error(res?.msg)
       setListData(res?.data?.List)
       setTotal(res?.data?.Total)
@@ -42,17 +42,17 @@ const ModalSubject = ({ open, onCancel }) => {
     if (pagination.PageSize) getListSubject()
   }, [pagination])
 
-  const onDelete = async (id) => {
+  const onDelete = async (body) => {
     try {
       setLoading(true)
-      const res = await SubjectService.deleteSubject(id)
+      const res = await SubjectService.deleteSubject(body)
       if (!!res?.isError) return toast.error(res?.msg)
       toast.success(res?.msg)
+      getListSubject()
     } finally {
       setLoading(false)
     }
   }
-
 
   const columns = [
     {
@@ -68,6 +68,7 @@ const ModalSubject = ({ open, onCancel }) => {
       width: 100,
       dataIndex: "SubjectName",
       key: "SubjectName",
+      align: "center",
     },
     {
       title: "Ảnh minh hoạ",
@@ -90,14 +91,13 @@ const ModalSubject = ({ open, onCancel }) => {
             onClick={() => setOpenModalAddAndEditSubject({ ...record, open })}
           />
           <ButtonCircle
-            title="Xóa"
-            icon={ListIcons?.ICON_DELETE}
+            title={!!record?.IsDeleted ? "Hiển thị môn học" : "Ẩn môn học"}
+            icon={!!record?.IsDeleted ? ListIcons.ICON_UNBLOCK : ListIcons.ICON_BLOCK}
             onClick={() => {
               ConfirmModal({
-                description: `Bạn có chắc chắn muốn xoá môn học "${record?.SubjectName}" không?`,
+                description: `Bạn có chắc chắn muốn ${!!record?.IsDeleted ? "hiển thị môn học" : "ẩn môn học"} "${record?.SubjectName}" không?`,
                 onOk: async close => {
-                  onDelete(record?._id)
-                  getListSubject()
+                  onDelete({ SubjectID: record?._id, IsDeleted: !record?.IsDeleted })
                   close()
                 }
               })
@@ -162,13 +162,15 @@ const ModalSubject = ({ open, onCancel }) => {
               }
             />
           </Col>
-          {!!openModalAddAndEditSubject && (
-            <InsertUpdateSubject
-              open={openModalAddAndEditSubject}
-              onCancel={() => setOpenModalAddAndEditSubject(false)}
-              onOk={() => getListSubject()}
-            />
-          )}
+          {
+            !!openModalAddAndEditSubject && (
+              <InsertUpdateSubject
+                open={openModalAddAndEditSubject}
+                onCancel={() => setOpenModalAddAndEditSubject(false)}
+                onOk={() => getListSubject()}
+              />
+            )
+          }
 
         </Row>
       </SpinCustom>

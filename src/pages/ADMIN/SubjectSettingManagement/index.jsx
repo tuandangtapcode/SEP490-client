@@ -73,7 +73,7 @@ const SubjectSettingManagement = () => {
     getListSubjectSetting()
   }, [pagination])
 
-  const handleConfirmSubjectSetting = async (record) => {
+  const handleConfirmSubjectSetting = async (record, setLoading, onCancel) => {
     try {
       setLoading(true)
       const res = await UserService.responseConfirmSubjectSetting({
@@ -84,6 +84,9 @@ const SubjectSettingManagement = () => {
       })
       if (!!res?.isError) return toast.error(res?.msg)
       getListSubjectSetting()
+      if (!!record?.isModalDetail) {
+        onCancel()
+      }
     } finally {
       setLoading(false)
     }
@@ -315,6 +318,8 @@ const SubjectSettingManagement = () => {
           <ModalViewSubjectSetting
             open={openViewSubjectSetting}
             onCancel={() => setOpenViewSubjectSetting(false)}
+            handleConfirmSubjectSetting={handleConfirmSubjectSetting}
+            onOk={getListSubjectSetting}
           />
         }
 

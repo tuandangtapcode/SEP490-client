@@ -47,7 +47,6 @@ instance.interceptors.response.use(
         msg: `Bạn không có quyền truy cập`,
         isSuccess: false,
       })
-      window.location.replace(Router.TRANG_CHU)
     } else if (error.code === "ERR_NETWORK") {
       Notice({
         msg: `Hệ thống đang bị gián đoạn, vui lòng kiểm tra lại đường truyền!`,

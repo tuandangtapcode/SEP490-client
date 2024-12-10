@@ -52,7 +52,7 @@ const TeacherManagement = () => {
     getListTeacher()
   }, [pagination])
 
-  const handleConfirmRegister = async (record) => {
+  const handleConfirmRegister = async (record, setLoading, onCancel) => {
     try {
       setLoading(true)
       const res = await UserService.responseConfirmRegister({
@@ -63,6 +63,9 @@ const TeacherManagement = () => {
       })
       if (!!res?.isError) return toast.error(res?.msg)
       getListTeacher()
+      if (!!record?.isModalDetail) {
+        onCancel()
+      }
     } finally {
       setLoading(false)
     }
@@ -97,7 +100,7 @@ const TeacherManagement = () => {
         ConfirmModal({
           description: `Bạn có chắc chắn duyệt tài khoản ${record?.FullName} không?`,
           onOk: async close => {
-            handleConfirmRegister(record)
+            handleConfirmRegister(record, setLoading)
             close()
           }
         })
@@ -273,6 +276,8 @@ const TeacherManagement = () => {
           <ViewProfileTeacher
             open={openViewProfile}
             onCancel={() => setOpenViewProfile(false)}
+            handleConfirmRegister={handleConfirmRegister}
+            onOk={getListTeacher}
           />
         }
 

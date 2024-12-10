@@ -5,15 +5,17 @@ import {
   apiGetDetailSubjectCate,
   apiGetListSubjectCate,
   apiGetListSubjectCateAndSubject,
+  apiGetListSubjectCateByAdmin,
   apiUpdateSubjectCate,
 } from "./urls"
 
 const createSubjectCate = body => http.post(apiCreateSubjectCate, body)
 const getListSubjectCate = body => http.post(apiGetListSubjectCate, body)
 const updateSubjectCate = body => http.post(apiUpdateSubjectCate, body)
-const deleteSubjectCate = SubjectCateID => http.get(`${apiDeleteSubjectCate}/${SubjectCateID}`)
+const deleteSubjectCate = body => http.post(apiDeleteSubjectCate, body)
 const getListSubjectCateAndSubject = () => http.get(apiGetListSubjectCateAndSubject)
 const getDetailSubjectCate = body => http.post(apiGetDetailSubjectCate, body)
+const getListSubjectCateByAdmin = body => http.post(apiGetListSubjectCateByAdmin, body)
 
 const SubjectCateService = {
   createSubjectCate,
@@ -22,6 +24,7 @@ const SubjectCateService = {
   updateSubjectCate,
   getListSubjectCateAndSubject,
   getDetailSubjectCate,
+  getListSubjectCateByAdmin
 }
 
 export default SubjectCateService
