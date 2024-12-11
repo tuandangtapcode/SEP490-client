@@ -23,7 +23,7 @@ import ModalSuccessBooking from "./components/ModalSuccessBooking"
 import BlogService from "src/services/BlogService"
 import Router from "src/routers"
 
-const RootURLWebsite = import.meta.env.VITE_ROOT_URL_WEBSITE
+const RootURLWebsite = import.meta.env.VITE_ROOT_URL_WEBSITE_CLOUD
 
 const CheckoutPage = () => {
 
