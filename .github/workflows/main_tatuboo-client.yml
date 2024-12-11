@@ -59,4 +59,4 @@ jobs:
           app-name: 'tatuboo-client'
           slot-name: 'Production'
           package: .
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_BF78BF47418440FCA0C9CB9A02FB2492 }}
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_F95498F68B594C6495720A7E3B93E351 }}
