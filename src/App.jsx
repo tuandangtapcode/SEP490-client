@@ -82,13 +82,14 @@ const LazyLoadingComponent = ({ children }) => {
 const App = () => {
 
   const [tokenInfor, setTotenInfor] = useState()
+  const [loading, setLoading] = useState(false)
 
   const routes = [
     // ADMIN
     {
       element: (
         <LazyLoadingComponent>
-          <AdminRoutes tokenInfor={tokenInfor} />
+          <AdminRoutes tokenInfor={tokenInfor} loading={loading} />
         </LazyLoadingComponent>
       ),
       children: [
@@ -186,7 +187,7 @@ const App = () => {
     {
       element: (
         <LazyLoadingComponent>
-          <UserRoutes tokenInfor={tokenInfor} />
+          <UserRoutes tokenInfor={tokenInfor} loading={loading} />
         </LazyLoadingComponent>
       ),
       children: [
@@ -428,43 +429,63 @@ const App = () => {
   const { isCheckAuth, user } = useSelector(globalSelector)
 
   const getListSystemkey = async () => {
-    const res = await CommonService.getListSystemkey()
-    if (!!res?.isError) return toast.error(res?.msg)
-    dispatch(globalSlice.actions.setListSystemKey(res?.data))
+    try {
+      setLoading(true)
+      const res = await CommonService.getListSystemkey()
+      if (!!res?.isError) return toast.error(res?.msg)
+      dispatch(globalSlice.actions.setListSystemKey(res?.data))
+    } finally {
+      setLoading(false)
+    }
   }
 
   const getProfitPercent = async () => {
-    const res = await CommonService.getProfitPercent()
-    if (!!res?.isError) return toast.error(res?.msg)
-    dispatch(globalSlice.actions.setProfitPercent(res?.data?.Percent))
+    try {
+      setLoading(true)
+      const res = await CommonService.getProfitPercent()
+      if (!!res?.isError) return toast.error(res?.msg)
+      dispatch(globalSlice.actions.setProfitPercent(res?.data?.Percent))
+    } finally {
+      setLoading(false)
+    }
   }
 
   const checkAuth = async () => {
-    const res = await UserService.checkAuth()
-    if (!!res?.isError) return
-    if (!!res?.data) {
-      const tokenInfor = decodeData(res?.data)
-      if (!!tokenInfor.ID) {
-        setTotenInfor(tokenInfor)
-        dispatch(globalSlice.actions.setIsLogin(true))
-        getDetailProfile()
-      } else {
-        navigate('/forbidden')
+    try {
+      setLoading(true)
+      const res = await UserService.checkAuth()
+      if (!!res?.isError) return
+      if (!!res?.data) {
+        const tokenInfor = decodeData(res?.data)
+        if (!!tokenInfor.ID) {
+          setTotenInfor(tokenInfor)
+          dispatch(globalSlice.actions.setIsLogin(true))
+          getDetailProfile()
+        } else {
+          navigate('/forbidden')
+        }
       }
+    } finally {
+      setLoading(false)
     }
   }
 
   const getDetailProfile = async () => {
-    const res = await UserService.getDetailProfile()
-    if (!!res?.isError) return toast.error(res?.msg)
-    const resTabs = await CommonService.getListTabs({
-      IsByGoogle: res?.data?.IsByGoogle
-    })
-    if (!!resTabs?.isError) return
-    socket.connect()
-    socket.emit("add-user-online", res?.data?._id)
-    dispatch(globalSlice.actions.setUser(res?.data))
-    dispatch(globalSlice.actions.setListTabs(resTabs?.data))
+    try {
+      setLoading(true)
+      const res = await UserService.getDetailProfile()
+      if (!!res?.isError) return toast.error(res?.msg)
+      const resTabs = await CommonService.getListTabs({
+        IsByGoogle: res?.data?.IsByGoogle
+      })
+      if (!!resTabs?.isError) return
+      socket.connect()
+      socket.emit("add-user-online", res?.data?._id)
+      dispatch(globalSlice.actions.setUser(res?.data))
+      dispatch(globalSlice.actions.setListTabs(resTabs?.data))
+    } finally {
+      setLoading(false)
+    }
   }
 
   useEffect(() => {
@@ -491,6 +512,7 @@ const App = () => {
   return (
     <div className="App">
       <ScrollToTop />
+      {/* <SpinCustom spinning={loading} fullscreen /> */}
       <ToastContainer
         autoClose={1500}
         hideProgressBar={true}

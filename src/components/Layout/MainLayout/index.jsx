@@ -11,7 +11,11 @@ const MainLayout = ({ children, tokenInfor }) => {
 
   return (
     <Layout>
-      <HeaderCommon />
+      {
+        !!tokenInfor
+          ? <HeaderCommon />
+          : <div></div>
+      }
       <Layout>
         <Content className="site-layout-background">
           {
