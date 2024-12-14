@@ -1,6 +1,7 @@
 import http from "../index"
 import {
   apiChangeProfitPercent,
+  apiChatBot,
   apiGetListSystemKey,
   apiGetListTabs,
   apiGetProfitPercent,
@@ -16,6 +17,7 @@ const teacherRecommend = body => http.post(apiTeacherRecommend, body)
 const getListTabs = body => http.post(apiGetListTabs, body)
 const teacherRecommendationByLearnHistory = () => http.get(apiTeacherRecommendationByLearnHistory)
 const getTotalUserAndSubject = () => http.get(apiGetTotalUserAndSubject)
+const chatbot = body => http.post(apiChatBot, body)
 
 const CommonService = {
   getListSystemkey,
@@ -25,6 +27,7 @@ const CommonService = {
   getListTabs,
   teacherRecommendationByLearnHistory,
   getTotalUserAndSubject,
+  chatbot
 }
 
 export default CommonService

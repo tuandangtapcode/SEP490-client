@@ -1,12 +1,11 @@
-import { FloatButton } from "antd"
+import { Col, FloatButton, Row } from "antd"
 import ListIcons from "src/components/ListIcons"
 import logo from '/logo.png'
 import { AiOutlineMinus } from "react-icons/ai"
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { ChatBoxContainerStyled } from "../styled"
 import InputCustom from "src/components/InputCustom"
 import { BiSolidSend } from "react-icons/bi"
-import SpinCustom from "src/components/SpinCustom"
 import MessageService from "src/services/MessageService"
 import socket from "src/utils/socket"
 import { useSelector } from "react-redux"
@@ -15,11 +14,12 @@ import ChatBox from "src/components/ChatBox"
 import { STAFF_ID } from "src/lib/constant"
 import NotificationService from "src/services/NotificationService"
 import { toast } from "react-toastify"
+import SpinCustom from "src/components/SpinCustom"
 
-const ModalChat = () => {
+const ModalChat = ({ open, onCancel }) => {
 
   const { user } = useSelector(globalSelector)
-  const [openChatBox, setOpenChatBox] = useState(false)
+  const modalRef = useRef(null)
   const [loading, setLoading] = useState(false)
   const [chat, setChat] = useState()
   const [messages, setMessages] = useState([])
@@ -132,66 +132,89 @@ const ModalChat = () => {
     })
   }, [])
 
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (modalRef.current && !modalRef.current.contains(event.target)) {
+        onCancel()
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside)
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside)
+    }
+  }, [onCancel])
+
+
   return (
     <FloatButton.Group
-      open={openChatBox}
+      open={open}
       trigger="click"
       type="primary"
-      onClick={() => setOpenChatBox(!openChatBox)}
-      icon={ListIcons.ICON_CHAT_DOT}
-      style={{
-        position: 'fixed',
-        zIndex: 1000
-      }}
+      onClick={() => onCancel()}
+      icon={ListIcons.ICON_ADMIN}
+      tooltip="Liên hệ với quản trị viên"
     >
-      <SpinCustom spinning={loading}>
-        <ChatBoxContainerStyled>
-          <div className="header d-flex-sb">
-            <img
-              className="cursor-pointer"
-              src={logo}
-              alt=""
-              style={{ width: '20px', height: "30px" }}
-            />
-            <AiOutlineMinus
-              onClick={() => setOpenChatBox(false)}
-              className="cursor-pointer"
-            />
-          </div>
-          <div className="messages">
-            <ChatBox
-              messages={messages}
-              total={total}
-              setPagination={setPagination}
-            />
-          </div>
-          <div className="input-message">
-            <InputCustom
-              placeholder="Nhập vào tin nhắn"
-              value={content}
-              onChange={e => setContent(e.target.value)}
-              onPressEnter={() => {
-                if (!!content) {
-                  setContent("")
-                  handleSendMessage()
-                }
-              }}
-              suffix={
-                <BiSolidSend
-                  className="cursor-pointer"
-                  onClick={() => {
-                    if (!!content) {
-                      setContent("")
-                      handleSendMessage()
-                    }
-                  }}
-                  color="#106ebe"
-                />
+      <ChatBoxContainerStyled ref={modalRef}>
+        <div className="header d-flex-sb">
+          <img
+            className="cursor-pointer"
+            src={logo}
+            alt=""
+            style={{ width: '50px', height: "20px", objectFit: "fill" }}
+          />
+          <AiOutlineMinus
+            onClick={() => onCancel()}
+            className="cursor-pointer"
+          />
+        </div>
+        <div className="messages">
+          <ChatBox
+            messages={messages}
+            total={total}
+            setPagination={setPagination}
+          />
+        </div>
+        <div className="input-message">
+          <Row className="d-flex-sb">
+            <Col span={23}>
+              <InputCustom
+                placeholder="Nhập vào tin nhắn"
+                type="isTextArea"
+                style={{
+                  width: "100%",
+                  marginRight: "12px"
+                }}
+                autoSize={{ minRows: 1, maxRows: 5 }}
+                value={content}
+                onChange={e => setContent(e.target.value)}
+                onPressEnter={(e) => {
+                  e.preventDefault()
+                  if (!!content) {
+                    setContent("")
+                    handleSendMessage()
+                  }
+                }}
+              />
+            </Col>
+            <Col span={1}>
+              {
+                !!loading
+                  ? <SpinCustom />
+                  : <BiSolidSend
+                    className="cursor-pointer fs-23 mt-5"
+                    onClick={() => {
+                      if (!!content) {
+                        setContent("")
+                        handleSendMessage()
+                      }
+                    }}
+                    color="#106ebe"
+                  />
               }
-            />
-          </div>
-        </ChatBoxContainerStyled>
-      </SpinCustom>
+            </Col>
+          </Row>
+        </div>
+      </ChatBoxContainerStyled>
     </FloatButton.Group>
   )
 }

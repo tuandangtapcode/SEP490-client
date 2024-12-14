@@ -22,9 +22,15 @@ const ChatBox = ({ messages, total, setPagination }) => {
         hasMore={true}
         inverse={true}
         scrollableTarget="scrollableDiv"
-        loader={total !== messages?.length ? <SpinCustom /> : <></>}
+        loader={
+          !!total
+            ? total !== messages?.length
+              ? <SpinCustom />
+              : <></>
+            : null
+        }
         next={() => {
-          if (total !== messages?.length) {
+          if (!!total && total !== messages?.length) {
             setPagination(pre => ({ ...pre, CurrentPage: pre?.CurrentPage + 1 }))
           }
         }}
