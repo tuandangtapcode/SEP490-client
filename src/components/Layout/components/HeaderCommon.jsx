@@ -13,7 +13,7 @@ import { useEffect, useState } from "react"
 import NotificationService from "src/services/NotificationService"
 import ButtonCircle from "src/components/MyButton/ButtonCircle"
 import socket from "src/utils/socket"
-import { Roles } from "src/lib/constant"
+import { Roles, STAFF_ID } from "src/lib/constant"
 import { toast } from "react-toastify"
 import ButtonCustom from "src/components/MyButton/ButtonCustom"
 
@@ -56,13 +56,19 @@ const HeaderCommon = () => {
   const location = useLocation()
 
   const handleChangeStatusNotification = async () => {
-    const res = await NotificationService.changeStatusNotification(user?._id)
+    const UserID = [Roles.ROLE_ADMIN, Roles.ROLE_STAFF].includes(user?.RoleID)
+      ? STAFF_ID
+      : user?._id
+    const res = await NotificationService.changeStatusNotification(UserID)
     if (!!res?.isError) return toast.error(res?.msg)
     getNotifications()
   }
 
   const getNotifications = async () => {
-    const res = await NotificationService.getListNotification(user?._id)
+    const UserID = [Roles.ROLE_ADMIN, Roles.ROLE_STAFF].includes(user?.RoleID)
+      ? STAFF_ID
+      : user?._id
+    const res = await NotificationService.getListNotification(UserID)
     if (!!res?.isError) return toast.error(res?.msg)
     setNotifications(res?.data?.List)
     setNewNotification(res?.data?.IsNew)
@@ -71,7 +77,9 @@ const HeaderCommon = () => {
   const seenNotification = async (NotificationID) => {
     const res = await NotificationService.seenNotification({
       NotificationID,
-      ReceiverID: user?._id
+      ReceiverID: [Roles.ROLE_ADMIN, Roles.ROLE_STAFF].includes(user?.RoleID)
+        ? STAFF_ID
+        : user?._id
     })
     if (!!res?.isError) return toast.error(res?.msg)
     getNotifications()
@@ -108,7 +116,7 @@ const HeaderCommon = () => {
         !!notifications?.length ?
           <div style={{ width: '300px', padding: '12px' }}>
             {
-              notifications?.reverse()?.map((i, idx) =>
+              notifications?.map((i, idx) =>
                 <NotificationItem
                   key={idx}
                   data={i}
@@ -127,7 +135,9 @@ const HeaderCommon = () => {
 
   useEffect(() => {
     socket.on('get-notification', (data) => {
-      setNotifications([...notifications, data])
+      const copyNotification = [...notifications]
+      copyNotification.unshift(data)
+      setNotifications(copyNotification)
       setNewNotification(newNotifications + 1)
     })
   }, [])
@@ -170,7 +180,10 @@ const HeaderCommon = () => {
                 menu={{ items: itemsNotification }}
                 trigger={['click']}
                 onOpenChange={() => {
-                  if (!!newNotifications) handleChangeStatusNotification()
+                  if (!!newNotifications) {
+                    console.log("asgasg");
+                    handleChangeStatusNotification()
+                  }
                 }}
               >
                 <BadgeStyled

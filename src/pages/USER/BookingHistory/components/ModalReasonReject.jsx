@@ -71,7 +71,7 @@ const ModalReasonReject = ({ open, onCancel, onOk }) => {
       title={
         user?.RoleID === Roles.ROLE_STUDENT
           ? "Lý do hủy"
-          : "Lý do khong duyệt"
+          : "Lý do không duyệt"
       }
       width="50vw"
       footer={

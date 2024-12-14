@@ -23,7 +23,7 @@ export const HeaderContainerStyled = styled.div`
   box-shadow: rgba(183, 189, 195, 0.2) 0px 8px 24px;
   background-image: ${props => props.isHome ? `url(${BackGroundImage})` : "none"};
   background-size: cover;
-  height: ${props => props.isHome ? "650px" : "auto"};
+  height: ${props => props.isHome ? "550px" : "auto"};
   margin-bottom: 30px;
   border-bottom: 1px solid var(--color-border-matte);
 `
@@ -63,10 +63,11 @@ export const ChatBoxContainerStyled = styled.div`
   min-width: 450px;
   box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
   padding: 8px 12px;
-  position: fixed; /* Chuyển từ absolute sang fixed */
-  right: 20px; /* Thêm khoảng cách từ cạnh */
-  bottom: 20px; /* Thêm khoảng cách từ đáy */
-  z-index: 1000; /* Đảm bảo xuất hiện trên cùng */
+  margin-right: 400px;
+  /* position: fixed; 
+  right: 20px;
+  bottom: 20px;  */
+  z-index: 1000; 
   .header {
     padding-bottom: 12px;
     margin-bottom: 12px;

@@ -12,7 +12,7 @@ const DataTotal = ({ dataTotal }) => {
         <StatisticCardWrapper>
           <Statistic
             title={<span className="green-text fs-18">Giáo viên</span>}
-            value={dataTotal?.totalTeacher}
+            value={dataTotal?.TotalTeacher}
             prefix={<span className="fs-25">{ListIcons.ICON_TEACHER}</span>}
           />
         </StatisticCardWrapper>
@@ -21,7 +21,7 @@ const DataTotal = ({ dataTotal }) => {
         <StatisticCardWrapper>
           <Statistic
             title={<span className="green-text fs-18">Môn học</span>}
-            value={dataTotal?.totalSubject}
+            value={dataTotal?.TotalSubject}
             prefix={<span className="fs-25">{ListIcons.ICON_SUBJECT_CATE}</span>}
           />
         </StatisticCardWrapper>
@@ -30,7 +30,7 @@ const DataTotal = ({ dataTotal }) => {
         <StatisticCardWrapper>
           <Statistic
             title={<span className="green-text fs-18">Học sinh</span>}
-            value={dataTotal?.totalStudent}
+            value={dataTotal?.TotalStudent}
             prefix={<span className="fs-25">{ListIcons.ICON_STUDENT}</span>}
           />
         </StatisticCardWrapper>
