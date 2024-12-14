@@ -3,14 +3,14 @@ import { useSelector } from "react-redux"
 import ModalCustom from "src/components/ModalCustom"
 import ButtonCustom from "src/components/MyButton/ButtonCustom"
 import { getListComboKey } from "src/lib/commonFunction"
-import { SYSTEM_KEY } from "src/lib/constant"
+import { Roles, SYSTEM_KEY } from "src/lib/constant"
 import { globalSelector } from "src/redux/selector"
 import dayjs from "dayjs"
 import { formatMoney } from "src/lib/stringUtils"
 
 const ModalViewBooking = ({ open, onCancel }) => {
 
-  const { listSystemKey } = useSelector(globalSelector)
+  const { listSystemKey, user } = useSelector(globalSelector)
 
   return (
     <ModalCustom
@@ -34,10 +34,10 @@ const ModalViewBooking = ({ open, onCancel }) => {
           <Col span={24}>
           </Col>
           <Col span={10}>
-            <p>{!!open?.Receiver?._id ? "Giáo viên:" : "Học sinh"}</p>
+            <p>{!!user?.RoleID === Roles.ROLE_STUDENT ? "Giáo viên:" : "Học sinh"}</p>
           </Col>
           <Col span={14}>
-            <p>{!!open?.Receiver?._id ? open?.Receiver?.FullName : open?.Sender?.FullName}</p>
+            <p>{!!user?.RoleID === Roles.ROLE_STUDENT ? open?.Receiver?.FullName : open?.Sender?.FullName}</p>
           </Col>
           <Col span={10}>
             <p>Môn học:</p>

@@ -52,7 +52,8 @@ import {
   AiOutlineFileSearch,
   AiOutlineSync,
   AiOutlineClockCircle,
-  AiOutlineSchedule
+  AiOutlineSchedule,
+  AiOutlineAndroid
 } from "react-icons/ai"
 
 import {
@@ -77,7 +78,8 @@ import {
   FaRegFile,
   FaUserCog,
   FaUserGraduate,
-  FaPercent
+  FaPercent,
+  FaUsersCog
 } from "react-icons/fa"
 
 import {
@@ -116,7 +118,7 @@ const ListIcons = {
   ICON_PAYMENT: <FaMoneyCheckAlt className="fs-18" />,
   ICON_PAYMENT_BOOKING: <FaMoneyCheckAlt className="fs-18 green-text" />,
   ICON_TEACHER: <FaChalkboardTeacher />,
-  ICON_STAFF: <FaUserCog className="fs-18" />,
+  ICON_STAFF: <FaUsersCog className="fs-18" />,
   ICON_STUDENT: <FaUserGraduate />,
   ICON_REPORT: <MdReportProblem className="fs-18" />,
   ICON_SUBJECT_CATE: <ImBooks />,
@@ -153,7 +155,7 @@ const ListIcons = {
   ICON_INSTAGRAM: <BsInstagram className="white-text fs-18" />,
   ICON_TWITTER: <BsTwitterX className="white-text fs-18" />,
   ICON_HOME: <FaHome className="fs-18" />,
-  ICON_CHAT_DOT: <BsChatDots className="white-text" />,
+  ICON_CHAT_DOT: <BsChatDots />,
   ICON_MESSAGE: <AiFillMessage className="fs-18" />,
   ICON_CLOUD_UPLOAD: <CloudUploadOutlined className="cursor-pointer" />,
   ICON_MIC: <BsMic className="white-text fs-17" />,
@@ -188,7 +190,9 @@ const ListIcons = {
   ICON_RESET: <AiOutlineSync className="fs-18" />,
   ICON_CLOCK: <AiOutlineClockCircle className="fs-18" />,
   ICON_SCHEDULE: <AiOutlineSchedule className="fs-18" />,
-  ICON_GENDER: <BsGenderAmbiguous className="fs-18" />
+  ICON_GENDER: <BsGenderAmbiguous className="fs-18" />,
+  ICON_MACHINE: <AiOutlineAndroid />,
+  ICON_ADMIN: <FaUserCog />
 }
 
 export default ListIcons
