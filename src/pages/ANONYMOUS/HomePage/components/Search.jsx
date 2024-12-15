@@ -22,7 +22,7 @@ const Search = ({ subjects }) => {
     <SearchContainerStyled>
       <Form form={form}>
         <Row gutter={[16, 16]} className="d-flex-center">
-          <Col span={7}>
+          <Col xxl={7} xl={7} lg={7} md={24} sm={24} xs={24}>
             <div className="d-flex align-items-center mb-8">
               {ListIcons.ICON_SUBJECT_CATE_PRIMARY_COLOR}
               <p className="primary-text ml-8 fw-500 fs-17">Môn học</p>
@@ -57,7 +57,7 @@ const Search = ({ subjects }) => {
               </Form.Item>
             </div>
           </Col>
-          <Col span={7}>
+          <Col xxl={7} xl={7} lg={7} md={24} sm={24} xs={24}>
             <div className="d-flex align-items-center mb-8">
               {ListIcons.ICON_SUBJECT_CATE_PRIMARY_COLOR}
               <p className="primary-text ml-8 fw-500 fs-17">Trình độ của bạn</p>
@@ -84,7 +84,7 @@ const Search = ({ subjects }) => {
               </Form.Item>
             </div>
           </Col>
-          <Col span={7}>
+          <Col xxl={7} xl={7} lg={7} md={24} sm={24} xs={24}>
             <div className="d-flex align-items-center mb-8">
               {ListIcons.ICON_SUBJECT_CATE_PRIMARY_COLOR}
               <p className="primary-text ml-8 fw-500 fs-17">Hình thức học bạn muốn</p>
@@ -110,7 +110,7 @@ const Search = ({ subjects }) => {
               </Form.Item>
             </div>
           </Col>
-          <Col span={3} className="d-flex-center">
+          <Col xxl={3} xl={3} lg={3} md={24} sm={24} xs={24} className="d-flex-center">
             <ButtonCustom
               className="yellow-btn submit-btn"
               onClick={async () => {
