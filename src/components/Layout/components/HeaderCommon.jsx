@@ -156,7 +156,7 @@ const HeaderCommon = () => {
               style={{ width: '100%', height: "50px", marginTop: '5px', marginRight: "12px" }}
             />
           </Col>
-          <Col xxl={18} xl={18} lg={18} md={16} sm={16} xs={16} className="d-flex-end">
+          <Col xxl={18} xl={18} lg={18} md={14} sm={12} xs={12} className="d-flex-end">
             {
               ![Roles.ROLE_ADMIN, Roles.ROLE_STAFF].includes(user?.RoleID) &&
               <div>
