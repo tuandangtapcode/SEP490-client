@@ -213,7 +213,7 @@ const ModalInsertBlog = ({ open, onCancel, onOk }) => {
                   )
                 }
               </Col>
-              <Col span={6}>
+              <Col span={5}>
                 <Form.Item
                   name="ProfessionalLevel"
                   label="Trình độ:"
@@ -232,7 +232,7 @@ const ModalInsertBlog = ({ open, onCancel, onOk }) => {
                   </Select>
                 </Form.Item>
               </Col>
-              <Col span={6}>
+              <Col span={8}>
                 <Form.Item
                   name="Price"
                   label="Giá tiền/buổi(VNĐ)"
@@ -276,7 +276,7 @@ const ModalInsertBlog = ({ open, onCancel, onOk }) => {
                   />
                 </Form.Item>
               </Col>
-              <Col span={6}>
+              <Col span={5}>
                 <Form.Item
                   name="Gender"
                   label="Giới tính"
