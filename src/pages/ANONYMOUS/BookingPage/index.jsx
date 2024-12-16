@@ -68,7 +68,9 @@ const BookingPage = () => {
   const getTimeTable = async () => {
     try {
       setLoading(true)
-      const res = await TimeTableService.getTimeTableByUser()
+      const res = await TimeTableService.getTimeTableByUser({
+        IsBookingPage: true
+      })
       if (!!res?.isError) return toast.error(res?.msg)
       setTimeTablesStudent(res?.data?.List)
     } finally {

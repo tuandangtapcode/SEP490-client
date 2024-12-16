@@ -12,7 +12,7 @@ const createTimeTable = body => http.post(apiCreateTimeTable, body)
 const getTimeTableOfTeacherOrStudent = body => http.post(apiGetTimeTableOfTeacherOrStudent, body)
 const attendanceTimeTable = TimeTableID => http.get(`${apiAttendanceTimeTable}/${TimeTableID}`)
 const updateTimeTable = body => http.post(apiUpdateTimeTable, body)
-const getTimeTableByUser = () => http.get(apiGetTimeTableByUser)
+const getTimeTableByUser = body => http.post(apiGetTimeTableByUser, body)
 const attendanceOrCancelTimeTable = body => http.post(apiAttendanceOrCancelTimeTable, body)
 
 const TimeTableService = {
