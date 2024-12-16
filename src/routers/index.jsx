@@ -33,6 +33,7 @@ const Router = {
 
   // ADMIN
   QUAN_LY_THONG_KE: "/dashboard",
+  PHAN_TICH_HE_THONG: "/analysis",
   QUAN_LY_STAFF: "/dashboard/staff",
   QUAN_LY_GIAO_VIEN: "/dashboard/teacher",
   QUAN_LY_SUBJECT_SETTING: "/dashboard/subject-setting",
