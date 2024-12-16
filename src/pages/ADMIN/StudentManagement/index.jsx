@@ -69,7 +69,7 @@ const StudentManagement = () => {
       ),
     },
     {
-      title: 'Tên học viên',
+      title: 'Tên học sinh',
       width: 80,
       align: 'center',
       dataIndex: 'FullName',

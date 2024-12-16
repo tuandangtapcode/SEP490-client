@@ -25,8 +25,8 @@ const PaymentTransfer = () => {
   const [pagination, setPagination] = useState({
     CurrentPage: 1,
     PageSize: 10,
-    FromDate: getCurrentWeekRange().startOfWeek,
-    ToDate: getCurrentWeekRange().endOfWeek
+    // FromDate: getCurrentWeekRange().startOfWeek,
+    // ToDate: getCurrentWeekRange().endOfWeek
   })
   const [openModalPaymentTransfer, setOpenModalTransfer] = useState(false)
   const { listSystemKey } = useSelector(globalSelector)
@@ -160,7 +160,7 @@ const PaymentTransfer = () => {
             QUẢN LÝ TIỀN LƯƠNG
           </div>
         </Col>
-        <Col span={18}>
+        <Col span={24}>
           <InputCustom
             type="isSearch"
             placeholder="Tìm kiếm tên người nhận..."
@@ -181,7 +181,7 @@ const PaymentTransfer = () => {
             ))}
           </Select>
         </Col> */}
-        <Col span={6}>
+        {/* <Col span={6}>
           <DatePicker.RangePicker
             value={[dayjs(pagination?.FromDate), dayjs(pagination?.ToDate)]}
             format="DD/MM/YYYY"
@@ -191,7 +191,7 @@ const PaymentTransfer = () => {
               ToDate: dayjs(e[1]).endOf("day")
             }))}
           />
-        </Col>
+        </Col> */}
         <Col span={24} className="mt-16">
           <TableCustom
             isPrimary

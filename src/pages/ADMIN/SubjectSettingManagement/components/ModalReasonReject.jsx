@@ -27,6 +27,7 @@ const ModalReasonReject = ({ open, onCancel, onOk, cancelModalDetail }) => {
       if (!!open?.isModalDetail) {
         cancelModalDetail()
       }
+      onCancel()
     } finally {
       setLoading(false)
     }

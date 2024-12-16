@@ -12,12 +12,13 @@ import { globalSelector } from "src/redux/selector"
 import ModalChangeProfitPercent from "./components/ModalChangeProfitPercent"
 import SubjectService from "src/services/SubjectService"
 import ListTopSubject from "./components/ListTopSubject"
+import ListTopTeacher from "./components/ListTopTeacher"
 
 const formatter = (value) => <CountUp end={value} separator="," />
 
 export const StatisticCardWrapper = styled(Card)`
-  display: flex;
-  align-items: center;
+  /* display: flex;
+  align-items: center; */
   padding: 10px;
   border-radius: 10px;
   box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
@@ -26,19 +27,23 @@ export const StatisticCardWrapper = styled(Card)`
 const StatisticManagement = () => {
 
   const [loading, setLoading] = useState(false)
-  const [newRegister, setNewRegister] = useState({})
+  const [dataUser, setDataUser] = useState({})
   const [financial, setFinancial] = useState([])
   const { profitPercent } = useSelector(globalSelector)
   const [openChangeProfitPercent, setOpenChangeProfitPercent] = useState(false)
-  const [key, setKey] = useState("")
   const [subjects, setSubjects] = useState([])
+  const [dataTeacher, setDataTeacher] = useState([])
+  const [dataStudent, setDataStudent] = useState([])
+  const [topTeachers, setTopTeachers] = useState([])
 
-  const statisticNewRegisteredUser = async () => {
+  const statisticTotalUser = async () => {
     try {
       setLoading(true)
-      const res = await StatisticService.statisticNewRegisteredUser(key)
+      const res = await StatisticService.statisticTotalUser()
       if (!!res?.isError) return toast.error(res?.msg)
-      setNewRegister(res?.data)
+      setDataUser(res?.data?.DataTotal)
+      setDataTeacher(res?.data?.DataTeacher)
+      setDataStudent(res?.data?.DataStudent)
     } finally {
       setLoading(false)
     }
@@ -66,54 +71,63 @@ const StatisticManagement = () => {
     }
   }
 
-  useEffect(() => {
-    statisticNewRegisteredUser()
-  }, [key])
+  const statisticTopTeacher = async () => {
+    try {
+      setLoading(true)
+      const res = await StatisticService.statisticTopTeacher()
+      if (!!res?.isError) return toast.error(res?.msg)
+      setTopTeachers(res?.data)
+    } finally {
+      setLoading(false)
+    }
+  }
 
   useEffect(() => {
+    statisticTotalUser()
     statisticFinancial()
     getListTopSubject()
+    statisticTopTeacher()
   }, [])
 
   return (
     <SpinCustom spinning={loading}>
       <Row gutter={[16, 16]} className="d-flex-center mb-20">
-        <Col span={8}>
+        <Col span={5}>
           <StatisticCardWrapper>
             <Statistic title="Doanh thu" value={financial?.Revenue} formatter={formatter} />
           </StatisticCardWrapper>
         </Col>
-        <Col span={8}>
+        <Col span={5}>
           <StatisticCardWrapper>
             <Statistic title="Chi phí cho giáo viên" value={financial?.Expense} formatter={formatter} />
           </StatisticCardWrapper>
         </Col>
-        <Col span={8}>
+        <Col span={5}>
           <StatisticCardWrapper>
             <Statistic title="Chi phí đã thanh toán" value={financial?.CostPaid} formatter={formatter} />
           </StatisticCardWrapper>
         </Col>
-        <Col span={7}>
+        <Col span={5}>
           <StatisticCardWrapper>
             <Statistic title="Lợi nhuận" value={financial?.Profit} formatter={formatter} />
           </StatisticCardWrapper>
         </Col>
-        <Col span={7}>
+        <Col span={4}>
           <StatisticCardWrapper onClick={() => setOpenChangeProfitPercent(profitPercent)}>
             <Statistic title="Phí đăng ký" value={`${profitPercent * 100}%`} />
           </StatisticCardWrapper>
         </Col>
         <Col span={12}>
-          <Pie
-            newRegister={newRegister}
-            setKey={setKey}
-          />
+          <LineRace dataTeacher={dataTeacher} dataStudent={dataStudent} />
         </Col>
         <Col span={12}>
-          <LineRace />
+          <Pie dataUser={dataUser} />
         </Col>
         <Col span={12}>
           <ListTopSubject subjects={subjects} />
+        </Col>
+        <Col span={12}>
+          <ListTopTeacher topTeachers={topTeachers} />
         </Col>
       </Row>
 

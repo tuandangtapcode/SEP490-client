@@ -53,7 +53,8 @@ import {
   AiOutlineSync,
   AiOutlineClockCircle,
   AiOutlineSchedule,
-  AiOutlineAndroid
+  AiOutlineAndroid,
+  AiFillDashboard,
 } from "react-icons/ai"
 
 import {
@@ -94,7 +95,10 @@ import {
   EllipsisOutlined
 } from '@ant-design/icons'
 
-import { CgArrowUpR } from "react-icons/cg"
+import {
+  CgArrowUpR,
+  CgBrowse
+} from "react-icons/cg"
 
 import { HiLocationMarker } from "react-icons/hi"
 
@@ -186,13 +190,15 @@ const ListIcons = {
   ICON_NOTED: <AiOutlineFileDone className="fs-18" />,
   ICON_UNVIEW: <AiFillEyeInvisible className="fs-18 green-text" />,
   ICON_SEND_BLACK: <BiSend className="fs-18 black-text" />,
-  ICON_BLOG: <AiOutlineFileSearch className="fs-18 black-text" />,
+  ICON_BLOG: <AiOutlineFileSearch className="fs-18 black-text fw-600" />,
   ICON_RESET: <AiOutlineSync className="fs-18" />,
   ICON_CLOCK: <AiOutlineClockCircle className="fs-18" />,
   ICON_SCHEDULE: <AiOutlineSchedule className="fs-18" />,
   ICON_GENDER: <BsGenderAmbiguous className="fs-18" />,
   ICON_MACHINE: <AiOutlineAndroid />,
-  ICON_ADMIN: <FaUserCog />
+  ICON_ADMIN: <FaUserCog />,
+  ICON_DASHBOARD: <AiFillDashboard className="fs-18" />,
+  ICON_ANALYSIS: <CgBrowse className="fs-18" />
 }
 
 export default ListIcons

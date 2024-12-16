@@ -10,7 +10,6 @@ import { SYSTEM_KEY } from "src/lib/constant"
 import { globalSelector } from "src/redux/selector"
 import UserService from "src/services/UserService"
 import InputCustom from "src/components/InputCustom"
-import socket from "src/utils/socket"
 import SpinCustom from "src/components/SpinCustom"
 import { toast } from "react-toastify"
 import SubjectService from "src/services/SubjectService"
@@ -108,7 +107,7 @@ const SubjectSettingManagement = () => {
         ConfirmModal({
           description: `Bạn có chắc chắn duyệt môn học của giáo viên ${record?.Teacher?.FullName} không?`,
           onOk: async close => {
-            handleConfirmSubjectSetting(record)
+            handleConfirmSubjectSetting(record, setLoading)
             close()
           }
         })
@@ -178,6 +177,20 @@ const SubjectSettingManagement = () => {
           {
             getListComboKey(SYSTEM_KEY.REGISTER_STATUS, listSystemKey)
               ?.find(i => i?.ParentID === val)?.ParentName
+          }
+        </Tag>
+      )
+    },
+    {
+      title: "Trạng thái sử dụng",
+      width: 60,
+      dataIndex: "IsDisabled",
+      align: "center",
+      key: "IsDisabled",
+      render: (val) => (
+        <Tag color={!val ? "success" : "error"} className="p-5 fs-16">
+          {
+            !val ? "Đang sử dụng" : "Đã ẩn"
           }
         </Tag>
       )

@@ -8,7 +8,7 @@ const LineRaceWrapper = styled(Card)`
 `
 
 
-const LineRace = ({ dataTeacher, dataStudent }) => {
+const LineRace = ({ dataTotalUser }) => {
 
   const getOption = () => ({
     title: {
@@ -19,23 +19,23 @@ const LineRace = ({ dataTeacher, dataStudent }) => {
     },
     xAxis: {
       type: 'category',
-      data: dataTeacher.map(item => item?.Month),
+      data: dataTotalUser?.TotalUserByMonth?.map(item => item?.Month),
     },
     yAxis: {
       type: 'value',
     },
     series: [
       {
-        data: dataTeacher.map(item => item?.Total),
+        data: dataTotalUser?.TotalUserByMonth?.map(item => item?.Total),
         type: 'line',
         smooth: true,
-        name: "Giáo viên"
+        name: "Tổng số người dùng"
       },
       {
-        data: dataStudent.map(item => item?.Total),
+        data: dataTotalUser?.TotalNewUserByMonth.map(item => item?.Total),
         type: 'line',
         smooth: true,
-        name: "Học sinh"
+        name: "Người dùng mới"
       },
     ],
   })

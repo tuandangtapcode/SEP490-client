@@ -12,7 +12,6 @@ import { useDispatch, useSelector } from "react-redux"
 import globalSlice from "src/redux/globalSlice"
 import SpinCustom from "src/components/SpinCustom"
 import { decodeData } from "src/lib/commonFunction"
-import { Roles } from "src/lib/constant"
 import { globalSelector } from "src/redux/selector"
 import Router from "src/routers"
 
@@ -22,22 +21,7 @@ const LoginPage = () => {
   const [loading, setLoading] = useState(false)
   const dispatch = useDispatch()
   const navigate = useNavigate()
-  const { isLogin, routerBeforeLogin } = useSelector(globalSelector)
-
-  const handleNavigate = (tokenInfor) => {
-    if (!!routerBeforeLogin) {
-      dispatch(globalSlice.actions.setRouterBeforeLogin(""))
-      navigate(routerBeforeLogin)
-    } else {
-      if (tokenInfor.RoleID === Roles.ROLE_ADMIN) {
-        navigate("/dashboard")
-      } else if (tokenInfor.RoleID === Roles.ROLE_STAFF) {
-        navigate(Router.QUAN_LY_GIAO_VIEN)
-      } else {
-        navigate('/')
-      }
-    }
-  }
+  const { isLogin } = useSelector(globalSelector)
 
   const loginByGoogle = useGoogleLogin({
     onSuccess: async (tokenResponse) => {
@@ -49,7 +33,6 @@ const LoginPage = () => {
         const tokenInfor = decodeData(res?.data)
         if (!!tokenInfor.ID) {
           dispatch(globalSlice.actions.setIsCheckAuth(true))
-          handleNavigate(tokenInfor)
         } else {
           navigate('/forbidden')
         }
@@ -68,7 +51,6 @@ const LoginPage = () => {
       const tokenInfor = decodeData(res?.data)
       if (!!tokenInfor.ID) {
         dispatch(globalSlice.actions.setIsCheckAuth(true))
-        handleNavigate(tokenInfor)
       } else {
         navigate('/forbidden')
       }

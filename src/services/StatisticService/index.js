@@ -1,21 +1,27 @@
 import http from "../index"
 import {
-  apiStatisticBooking,
+  apiStatisticTotalBooking,
   apiStatisticFinancial,
   apiStatisticNewRegisteredUser,
-  apiStatisticTotalUser
+  apiStatisticTopTeacher,
+  apiStatisticTotalUser,
+  apiStatisticBooking
 } from "./urls"
 
-const statisticNewRegisteredUser = params => http.get(`${apiStatisticNewRegisteredUser}?Key=${params}`)
-const statisticTotalUser = body => http.post(apiStatisticTotalUser, body)
-const statisticBooking = () => http.get(apiStatisticBooking)
+const statisticNewRegisteredUser = () => http.get(apiStatisticNewRegisteredUser)
+const statisticTotalUser = () => http.get(apiStatisticTotalUser)
+const statisticTotalBooking = () => http.get(apiStatisticTotalBooking)
 const statisticFinancial = body => http.post(apiStatisticFinancial, body)
+const statisticTopTeacher = () => http.get(apiStatisticTopTeacher)
+const statisticBooking = body => http.post(apiStatisticBooking, body)
 
 const StatisticService = {
   statisticNewRegisteredUser,
   statisticTotalUser,
-  statisticBooking,
+  statisticTotalBooking,
   statisticFinancial,
+  statisticTopTeacher,
+  statisticBooking
 }
 
 export default StatisticService

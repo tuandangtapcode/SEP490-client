@@ -102,7 +102,13 @@ const ModalViewTimeTable = ({ open, onCancel, onOk }) => {
       align: "center",
       key: "AttendanceTime",
       render: (val) => (
-        <div>{dayjs(val).format("DD/MM/YYYY HH:mm")}</div>
+        <div>
+          {
+            !!val
+              ? dayjs(val).format("DD/MM/YYYY HH:mm")
+              : <div></div>
+          }
+        </div>
       )
     },
     {
