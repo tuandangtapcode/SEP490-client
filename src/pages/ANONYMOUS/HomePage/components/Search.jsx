@@ -4,8 +4,8 @@ import { useSelector } from "react-redux"
 import { globalSelector } from "src/redux/selector"
 import { getListComboKey } from "src/lib/commonFunction"
 import { SYSTEM_KEY } from "src/lib/constant"
-import ButtonCustom from "src/components/MyButton/ButtonCustom"
-import { SearchContainerStyled } from "../styled"
+// import ButtonCustom from "src/components/MyButton/ButtonCustom"
+import { SearchContainerStyled,ButtonCustom } from "../styled"
 import { useNavigate } from "react-router-dom"
 import Router from "src/routers"
 
@@ -112,7 +112,7 @@ const Search = ({ subjects }) => {
           </Col>
           <Col xxl={3} xl={3} lg={3} md={24} sm={24} xs={24} className="d-flex-center">
             <ButtonCustom
-              className="yellow-btn submit-btn"
+              className="submit-btn"
               onClick={async () => {
                 const values = await form.validateFields()
                 navigate(
@@ -121,7 +121,7 @@ const Search = ({ subjects }) => {
                 )
               }}
             >
-              Tìm
+              Tìm kiếm
             </ButtonCustom>
           </Col>
         </Row>

@@ -12,10 +12,10 @@ const Footer = () => {
       <FooterStyled>
         <Row gutter={[16, 16]} className="d-flex justify-content-space-aroun">
           <Col span={8}>
-            <Title level={3} style={{ color: "white" }} className="fw-700">Get In Touch</Title>
-            <Paragraph className="white-text">
+            <Title level={3} style={{ color: "white" }} className="fw-700">Liên hệ</Title>
+            {/* <Paragraph className="white-text">
               The quick fox jumps over the lazy dog
-            </Paragraph>
+            </Paragraph> */}
             <div className="d-flex">
               <div className="mr-10">
                 {ListIcons?.ICON_FACEBOOK}
@@ -29,18 +29,17 @@ const Footer = () => {
             </div>
           </Col>
           <Col xs={24} sm={12} md={8} xl={8}>
-            <Title level={3} style={{ color: "white" }} className="fw-700">Company info</Title>
+            <Title level={3} style={{ color: "white" }} className="fw-700">Thông tin dự án</Title>
             <div className="d-flex flex-column g-10">
-              <Link className="white-text">About Us</Link>
-              <Link className="white-text">Carrier</Link>
-              <Link className="white-text">We are hiring</Link>
+              <Link className="white-text">Về chúng tôi</Link>
+              <Link className="white-text">Cách hoạt động</Link>
               <Link className="white-text">Blog</Link>
             </div>
           </Col>
           <Col xs={24} sm={12} md={8} xl={8}>
-            <Title level={3} style={{ color: "white" }} className="fw-700">Features</Title>
+            <Title level={3} style={{ color: "white" }} className="fw-700">Tính năng</Title>
             <div className="d-flex flex-column g-10">
-              <Link className="white-text">Business Marketing</Link>
+              <Link className="white-text">Bài đăng của học sinh</Link>
               <Link className="white-text">User Analytic</Link>
               <Link className="white-text">Live Chat</Link>
               <Link className="white-text">Unlimited Support</Link>

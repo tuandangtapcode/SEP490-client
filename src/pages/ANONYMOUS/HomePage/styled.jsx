@@ -1,4 +1,5 @@
 import styled from 'styled-components'
+import { Button } from "antd";
 
 export const HomeContainerStyled = styled.div`
 `
@@ -39,6 +40,25 @@ export const SubjectCareContainerStyled = styled.div`
   width: 80%;
 `
 
-export const BecomeTeacherContainerStyled = styled.div`
-  width: 80%;
-`
+// export const BecomeTeacherContainerStyled = styled.div`
+//   width: 80%;
+// `
+export const ButtonCustom = styled(Button)`
+  background-color: #f7c600;
+  color: #fff;
+  font-weight: 600;
+  width: 200px;
+  height: 50px;
+  border: none;
+  border-radius: 25px;
+  transition: all 0.3s ease;
+
+  &:hover {
+    background-color: #f7b700;
+    transform: scale(1.05);
+  }
+
+  &:focus {
+    outline: none;
+  }
+`;
