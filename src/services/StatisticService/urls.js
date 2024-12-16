@@ -1,4 +1,6 @@
 export const apiStatisticTotalUser = "statistic/statisticTotalUser"
 export const apiStatisticNewRegisteredUser = "statistic/statisticNewRegisteredUser"
-export const apiStatisticBooking = "statistic/statisticBooking"
+export const apiStatisticTotalBooking = "statistic/statisticTotalBooking"
 export const apiStatisticFinancial = "statistic/statisticFinancial"
+export const apiStatisticTopTeacher = "statistic/statisticTopTeacher"
+export const apiStatisticBooking = "statistic/statisticBooking"

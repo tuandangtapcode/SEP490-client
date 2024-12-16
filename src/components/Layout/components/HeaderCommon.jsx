@@ -99,7 +99,7 @@ const HeaderCommon = () => {
       label: (
         <div>Hồ sơ</div>
       ),
-      onClick: () => navigate(Router.PROFILE)
+      onClick: () => navigate(Router.LICH_HOC)
     },
     {
       label: (
@@ -181,7 +181,6 @@ const HeaderCommon = () => {
                 trigger={['click']}
                 onOpenChange={() => {
                   if (!!newNotifications) {
-                    console.log("asgasg");
                     handleChangeStatusNotification()
                   }
                 }}

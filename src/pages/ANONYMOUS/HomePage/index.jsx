@@ -31,6 +31,11 @@ const HomePage = () => {
       let res
       if (!!user?._id && user?.RoleID === Roles.ROLE_STUDENT) {
         res = await CommonService.teacherRecommendationByLearnHistory()
+        if (!!res?.isError) {
+          res = await UserService.getListTopTeacher({
+            IsBlogPage: false
+          })
+        }
       } else if (!!prompt) {
         res = await CommonService.teacherRecommend({
           prompt: prompt
@@ -40,7 +45,6 @@ const HomePage = () => {
           IsBlogPage: false
         })
       }
-      if (!!res?.isError) return toast.error(res?.msg)
       setTeachers(res?.data)
     } finally {
       setLoading(false)
@@ -81,7 +85,8 @@ const HomePage = () => {
 
   useEffect(() => {
     getListTeacherRecommend()
-  }, [prompt, user])
+  }, [prompt])
+
 
   return (
     <SpinCustom spinning={loading}>

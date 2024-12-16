@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { useNavigate, useRoutes } from 'react-router-dom'
+import { useLocation, useNavigate, useRoutes } from 'react-router-dom'
 import { toast, ToastContainer } from 'react-toastify'
 import SpinCustom from './components/SpinCustom'
 import globalSlice from './redux/globalSlice'
@@ -13,10 +13,12 @@ import { decodeData } from './lib/commonFunction'
 import { globalSelector } from './redux/selector'
 import ScrollToTop from './components/ScrollToTop'
 import ModalChangeProfile from './components/Layout/components/ModalChangeProfile'
+import { Roles } from './lib/constant'
 
 // ADMIN
 const AdminRoutes = React.lazy(() => import("src/pages/ADMIN/AdminRoutes"))
 const StatisticManagement = React.lazy(() => import("src/pages/ADMIN/StatisticManagement"))
+const SystemAnalysis = React.lazy(() => import("src/pages/ADMIN/SystemAnalysis"))
 const StaffManagement = React.lazy(() => import("src/pages/ADMIN/StaffManagement"))
 const StudentManagement = React.lazy(() => import("src/pages/ADMIN/StudentManagement"))
 const TeacherManagement = React.lazy(() => import("src/pages/ADMIN/TeacherManagement"))
@@ -98,6 +100,14 @@ const App = () => {
           element: (
             <LazyLoadingComponent>
               <StatisticManagement />
+            </LazyLoadingComponent>
+          )
+        },
+        {
+          path: Router.PHAN_TICH_HE_THONG,
+          element: (
+            <LazyLoadingComponent>
+              <SystemAnalysis />
             </LazyLoadingComponent>
           )
         },
@@ -426,7 +436,23 @@ const App = () => {
   const navigate = useNavigate()
   const [modalInactiveAccount, setModalInactiveAccount] = useState(false)
   const [openModalChangeProfile, setOpenModalChangeProfile] = useState(false)
-  const { isCheckAuth, user } = useSelector(globalSelector)
+  const { isCheckAuth, user, routerBeforeLogin } = useSelector(globalSelector)
+  const location = useLocation()
+
+  const handleNavigate = (tokenInfor) => {
+    if (!!routerBeforeLogin) {
+      dispatch(globalSlice.actions.setRouterBeforeLogin(""))
+      navigate(routerBeforeLogin)
+    } else {
+      if (tokenInfor.RoleID === Roles.ROLE_ADMIN) {
+        navigate("/dashboard")
+      } else if (tokenInfor.RoleID === Roles.ROLE_STAFF) {
+        navigate(Router.QUAN_LY_GIAO_VIEN)
+      } else {
+        navigate('/')
+      }
+    }
+  }
 
   const getListSystemkey = async () => {
     try {
@@ -483,6 +509,9 @@ const App = () => {
       socket.emit("add-user-online", res?.data?._id)
       dispatch(globalSlice.actions.setUser(res?.data))
       dispatch(globalSlice.actions.setListTabs(resTabs?.data))
+      if (location.pathname === Router.DANG_NHAP) {
+        handleNavigate(res?.data)
+      }
     } finally {
       setLoading(false)
     }

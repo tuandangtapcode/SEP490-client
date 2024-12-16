@@ -1,26 +1,11 @@
-import { Card, Select } from "antd"
+import { Card } from "antd"
 import ReactECharts from 'echarts-for-react'
 
-const listKey = [
-  {
-    id: "Day",
-    title: "Ngày",
-  },
-  {
-    id: "Week",
-    title: "Tuần",
-  },
-  {
-    id: "Month",
-    title: "Tháng",
-  }
-]
-
-const Pie = ({ newRegister, setKey }) => {
+const Pie = ({ dataUser }) => {
 
   const chartOptions = {
     title: {
-      text: `Tài khoản mới đăng ký (${newRegister?.Total})`,
+      text: `Tài khoản (${dataUser?.Total})`,
       left: 'center'
     },
     tooltip: {
@@ -35,8 +20,8 @@ const Pie = ({ newRegister, setKey }) => {
         type: 'pie',
         radius: '50%',
         data: [
-          { value: newRegister.TotalTeacher, name: 'Tài khoản giáo viên' },
-          { value: newRegister.TotalStudent, name: 'Tài khoản học sinh' },
+          { value: dataUser.TotalTeacher, name: 'Tài khoản giáo viên' },
+          { value: dataUser.TotalStudent, name: 'Tài khoản học sinh' },
         ],
         emphasis: {
           itemStyle: {
@@ -51,23 +36,6 @@ const Pie = ({ newRegister, setKey }) => {
 
   return (
     <Card style={{ width: '100%', borderRadius: '10px', boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)' }}>
-      <Select
-        placeholder="Tìm theo ngày/tuần/tháng"
-        allowClear
-        onChange={e => setKey(e)}
-        className="mb-12"
-      >
-        {
-          listKey?.map(i =>
-            <Select.Option
-              key={i?.id}
-              value={i?.id}
-            >
-              {i?.title}
-            </Select.Option>
-          )
-        }
-      </Select>
       <ReactECharts option={chartOptions} />
     </Card>
   )

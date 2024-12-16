@@ -20,21 +20,6 @@ export const MenuCommon = () => [
 
 export const MenuUser = (user) => [
   {
-    key: Router.PROFILE,
-    label: "Profile",
-    TabID: 1
-  },
-  {
-    key: Router.CAI_DAT_MAT_KHAU,
-    label: "Cài đặt mật khẩu",
-    TabID: 2
-  },
-  {
-    key: Router.SUBJECT_SETTING,
-    label: "Cài đặt môn học",
-    TabID: 3
-  },
-  {
     key: Router.LICH_HOC,
     label: user?.RoleID === Roles.ROLE_TEACHER
       ? "Lịch dạy"
@@ -50,9 +35,9 @@ export const MenuUser = (user) => [
     TabID: 5
   },
   {
-    key: Router.KHOA_HOC,
-    label: "Khóa học",
-    TabID: 6
+    key: Router.SUBJECT_SETTING,
+    label: "Cài đặt môn học",
+    TabID: 3
   },
   {
     key: Router.LICH_SU_BOOKING,
@@ -65,9 +50,24 @@ export const MenuUser = (user) => [
     TabID: 8
   },
   {
+    key: Router.KHOA_HOC,
+    label: "Khóa học",
+    TabID: 6
+  },
+  {
     key: Router.DANG_BAI_VIET,
     label: "Đăng bài",
     TabID: 9
+  },
+  {
+    key: Router.PROFILE,
+    label: "Profile",
+    TabID: 1
+  },
+  {
+    key: Router.CAI_DAT_MAT_KHAU,
+    label: "Cài đặt mật khẩu",
+    TabID: 2
   },
   {
     key: Router.HOP_THU_DEN,
@@ -88,10 +88,21 @@ export const MenuUser = (user) => [
 
 export const MenuAdmin = () => [
   {
-    icon: ListIcons.ICON_STATISTIC,
-    label: "Thống kê",
-    key: Router.QUAN_LY_THONG_KE,
-    TabID: 1
+    icon: ListIcons.ICON_DASHBOARD,
+    label: "Dashboard",
+    TabID: 1,
+    children: [
+      {
+        icon: ListIcons.ICON_STATISTIC,
+        label: "Tổng quan",
+        key: Router.QUAN_LY_THONG_KE,
+      },
+      {
+        icon: ListIcons.ICON_ANALYSIS,
+        label: "Thống kê",
+        key: Router.PHAN_TICH_HE_THONG,
+      },
+    ]
   },
   {
     icon: ListIcons.ICON_STAFF,

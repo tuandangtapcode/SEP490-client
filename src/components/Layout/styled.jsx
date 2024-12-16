@@ -79,6 +79,9 @@ export const ChatBoxContainerStyled = styled.div`
 `
 
 export const LayoutUserStyled = styled.div`
+.ant-menu-light .ant-menu-submenu-selected >.ant-menu-submenu-title {
+  color: var(--color-primary) !important;
+}
 .menu-container {
   border: 1px solid #ddd;
   height: calc(100vh - 86px);
