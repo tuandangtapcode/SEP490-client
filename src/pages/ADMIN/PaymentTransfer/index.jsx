@@ -113,14 +113,14 @@ const PaymentTransfer = () => {
         <div>{formatMoney(record.TotalFee)}</div>
       ),
     },
-    {
-      title: 'Số lượng tiết học trong tuần',
-      width: 80,
-      align: 'center',
-      render: (_, record) => (
-        <div>{record?.Receiver?.TimeTables?.length}</div>
-      )
-    },
+    // {
+    //   title: 'Số lượng tiết học trong tuần',
+    //   width: 80,
+    //   align: 'center',
+    //   render: (_, record) => (
+    //     <div>{record?.Receiver?.TimeTables?.length}</div>
+    //   )
+    // },
     {
       title: "Trạng thái",
       width: 80,
