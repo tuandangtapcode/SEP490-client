@@ -16,7 +16,7 @@ const instance = axios.create({
 
 instance.interceptors.request.use(
   config => {
-    config.baseURL = ReactAppRootAPILocal
+    config.baseURL = ReactAppRootAPICloud
     config.withCredentials = true
     return config
   },
