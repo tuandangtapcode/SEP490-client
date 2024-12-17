@@ -161,7 +161,7 @@ const CheckoutPage = () => {
 
 
   useEffect(() => {
-    if (!dataPayment?.IsPaid) {
+    if (!dataPayment?.IsPaid && !!user) {
       if (!!queryParams.get("id") && !!dataPayment) {
         const paymentLinkID = queryParams.get("id")
         if (!intervalRef.current) {
@@ -181,7 +181,7 @@ const CheckoutPage = () => {
         intervalRef.current = null
       }
     }
-  }, [location.search, dataPayment])
+  }, [location.search, dataPayment, user])
 
 
   return (
