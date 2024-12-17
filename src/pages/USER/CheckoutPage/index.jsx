@@ -93,7 +93,12 @@ const CheckoutPage = () => {
   const handleCompleteBooking = async () => {
     try {
       setLoading(true)
-      const resConfirm = await ConfirmService.changeConfirmPaid(CheckoutID)
+      let resConfirm
+      if (Type === "Confirm") {
+        resConfirm = await ConfirmService.changeConfirmPaid(CheckoutID)
+      } else {
+        resConfirm = await BlogService.changeBlogPaid(CheckoutID)
+      }
       if (!!resConfirm?.isError) return
       const resPayment = await PaymentService.createPayment({
         PaymentType: 1,
