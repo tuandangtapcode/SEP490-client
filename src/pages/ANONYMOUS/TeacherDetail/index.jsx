@@ -20,7 +20,7 @@ import ListIcons from "src/components/ListIcons"
 import VideoItem from "./components/VideoItem"
 import PreviewVideo from "src/pages/USER/SubjectSetting/modal/PreviewVideo"
 import { getListComboKey } from "src/lib/commonFunction"
-import { SYSTEM_KEY } from "src/lib/constant"
+import { Roles, SYSTEM_KEY } from "src/lib/constant"
 import dayjs from "dayjs"
 import Feedback from "./components/Feedback"
 import globalSlice from "src/redux/globalSlice"
@@ -303,7 +303,7 @@ const TeacherDetail = () => {
                 <span className="primary-text fw-700 fs-17">{formatMoney(teacher?.Price)} VNĐ</span>
               </div>
               {
-                user?._id !== TeacherID &&
+                user?.RoleID !== Roles.ROLE_TEACHER &&
                 <div>
                   <ButtonCustom
                     className="primary submit-btn"
